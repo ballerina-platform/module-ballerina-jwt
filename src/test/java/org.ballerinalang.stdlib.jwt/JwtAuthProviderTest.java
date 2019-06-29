@@ -20,11 +20,9 @@ package org.ballerinalang.stdlib.jwt;
 
 import org.ballerinalang.config.ConfigRegistry;
 import org.ballerinalang.model.values.BBoolean;
-import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.model.values.BValueArray;
 import org.ballerinalang.test.util.BCompileUtil;
 import org.ballerinalang.test.util.BRunUtil;
 import org.ballerinalang.test.util.CompileResult;
@@ -44,18 +42,18 @@ import java.util.Map;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 /**
- * Test JWT authenticator.
+ * Test JWT auth provider.
  */
-public class JWTAuthenticatorTest {
+public class JwtAuthProviderTest {
 
     /**
-     * #JWT Authenticator configurations.
-     * [authenticator_jwt]
+     * #JWT auth provider configurations.
+     * [auth_provider_jwt]
      * issuer=&lt;jwt token issuer>
      * audience=&lt;audience>
      * certificateAlias=&lt;public certificate of the issuer>
      * <p>
-     * #JWT Authenticator cache configuration
+     * #JWT auth provider cache configuration
      * [jwt_auth_cache]
      * enabled=&lt;true of false>
      * expiryTime=&lt;expiry time in milliseconds>
@@ -105,7 +103,7 @@ public class JWTAuthenticatorTest {
         Files.copy(ballerinaKeyStorePath, ballerinaKeyStoreCopyPath, new CopyOption[]{REPLACE_EXISTING});
         Files.copy(ballerinaTrustStorePath, ballerinaTrustStoreCopyPath, new CopyOption[]{REPLACE_EXISTING});
 
-        compileResult = BCompileUtil.compile(sourceRoot.resolve("jwt-authenticator-test.bal").toString());
+        compileResult = BCompileUtil.compile(sourceRoot.resolve("jwt-auth-provider-test.bal").toString());
         // load configs
         ConfigRegistry registry = ConfigRegistry.getInstance();
         registry.initRegistry(getRuntimeProperties(), ballerinaConfPath.toString(), null);
@@ -113,20 +111,7 @@ public class JWTAuthenticatorTest {
 
     @Test(description = "Test JWT issuer", priority = 1)
     private void testGenerateJwt() {
-        BMap<String, BValue> jwtHeader = new BMap<>();
-        jwtHeader.put("alg", new BString("RS256"));
-        jwtHeader.put("typ", new BString("JWT"));
-
-        long time = 32475251189000L;
-        BMap<String, BValue> jwtBody = new BMap<>();
-        jwtBody.put("sub", new BString("John"));
-        jwtBody.put("iss", new BString("wso2"));
-        jwtBody.put("aud", new BValueArray(new String[] {"ballerina"}));
-        jwtBody.put("scope", new BString("John test Doe"));
-        jwtBody.put("roles", new BValueArray(new String[] {"admin", "admin2"}));
-        jwtBody.put("exp", new BInteger(time));
-
-        BValue[] inputBValues = {jwtHeader, jwtBody, new BString(keyStorePath)};
+        BValue[] inputBValues = {new BString(keyStorePath)};
         BValue[] returns = BRunUtil.invoke(compileResult, "generateJwt", inputBValues);
         Assert.assertTrue(returns[0] instanceof BString);
         Assert.assertTrue(returns[0].stringValue().startsWith("eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QifQ==.eyJzdWIiO" +
@@ -137,32 +122,23 @@ public class JWTAuthenticatorTest {
 
     @Test(description = "Test JWT verification", priority = 2)
     private void testVerifyJwt() {
-        BMap<String, BValue> trustStore = new BMap<>();
-        trustStore.put("path", new BString(trustStorePath));
-        trustStore.put("password", new BString("ballerina"));
-        BMap<String, BValue> jwtConfig = new BMap<>();
-        jwtConfig.put("issuer", new BString("wso2"));
-        jwtConfig.put("audience", new BString("ballerina"));
-        jwtConfig.put("trustStore", trustStore);
-        jwtConfig.put("clockSkew", new BInteger(0));
-        jwtConfig.put("certificateAlias", new BString("ballerina"));
-        BValue[] inputBValues = {new BString(jwtToken), jwtConfig};
+        BValue[] inputBValues = {new BString(jwtToken), new BString(trustStorePath)};
         BValue[] returns = BRunUtil.invoke(compileResult, "verifyJwt", inputBValues);
         Assert.assertTrue(returns[0] instanceof BMap);
     }
 
-    @Test(description = "Test case for creating JWT authenticator with a cache", priority = 2)
-    public void testCreateJwtAuthenticatorWithCache() {
+    @Test(description = "Test case for creating JWT auth provider with a cache", priority = 2)
+    public void testCreateJwtAuthProvider() {
         BValue[] inputBValues = {new BString(trustStorePath)};
-        BValue[] returns = BRunUtil.invoke(compileResult, "testJwtAuthenticatorCreationWithCache", inputBValues);
+        BValue[] returns = BRunUtil.invoke(compileResult, "testCreateJwtAuthProvider", inputBValues);
         Assert.assertNotNull(returns);
         Assert.assertTrue(returns[0] instanceof BMap);
     }
 
-    @Test(description = "Test case for JWT authenticator for authentication success", priority = 2)
-    public void testAuthenticationSuccess() {
+    @Test(description = "Test case for JWT auth provider for authentication success", priority = 2)
+    public void testJwtAuthProviderAuthenticationSuccess() {
         BValue[] inputBValues = {new BString(jwtToken), new BString(trustStorePath)};
-        BValue[] returns = BRunUtil.invoke(compileResult, "testAuthenticationSuccess", inputBValues);
+        BValue[] returns = BRunUtil.invoke(compileResult, "testJwtAuthProviderAuthenticationSuccess", inputBValues);
         Assert.assertTrue(returns[0] instanceof BBoolean);
         Assert.assertTrue(((BBoolean) returns[0]).booleanValue());
     }
@@ -179,5 +155,4 @@ public class JWTAuthenticatorTest {
                 Paths.get(resourceRoot, "datafiles", "config", "jwt", BALLERINA_CONF).toString());
         return runtimeConfigs;
     }
-
 }

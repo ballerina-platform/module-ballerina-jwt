@@ -17,33 +17,43 @@
 import ballerina/crypto;
 import ballerina/jwt;
 
-function testJwtAuthenticatorCreationWithCache(string trustStorePath) returns (jwt:JWTAuthProvider) {
+function testCreateJwtAuthProvider(string trustStorePath) returns jwt:InboundJwtAuthProvider {
     crypto:TrustStore trustStore = { path: trustStorePath, password: "ballerina" };
-    jwt:JWTAuthProviderConfig jwtConfig = {
+    jwt:JwtValidatorConfig jwtConfig = {
         issuer: "wso2",
         audience: ["ballerina"],
         certificateAlias: "ballerina",
         trustStore: trustStore
     };
-    jwt:JWTAuthProvider jwtAuthProvider = new(jwtConfig);
+    jwt:InboundJwtAuthProvider jwtAuthProvider = new(jwtConfig);
     return jwtAuthProvider;
 }
 
-function testAuthenticationSuccess(string jwtToken, string trustStorePath) returns @tainted (boolean|error) {
+function testJwtAuthProviderAuthenticationSuccess(string jwtToken, string trustStorePath) returns boolean|error {
     crypto:TrustStore trustStore = { path: trustStorePath, password: "ballerina" };
-    jwt:JWTAuthProviderConfig jwtConfig = {
+    jwt:JwtValidatorConfig jwtConfig = {
         issuer: "wso2",
         audience: ["ballerina"],
         certificateAlias: "ballerina",
         trustStore: trustStore
     };
-    jwt:JWTAuthProvider jwtAuthProvider = new(jwtConfig);
+    jwt:InboundJwtAuthProvider jwtAuthProvider = new(jwtConfig);
     return jwtAuthProvider.authenticate(jwtToken);
 }
 
-function generateJwt(jwt:JwtHeader header, jwt:JwtPayload payload, string keyStorePath) returns string|error {
+function generateJwt(string keyStorePath) returns string|error {
+    jwt:JwtHeader header = {
+        alg: "RS256",
+        typ: "JWT"
+    };
+    jwt:JwtPayload payload = {
+        iss: "wso2",
+        sub: "John",
+        aud: ["ballerina"],
+        exp: 32475251189000
+    };
     crypto:KeyStore keyStore = { path: keyStorePath, password: "ballerina" };
-    jwt:JWTIssuerConfig issuerConfig = {
+    jwt:JwtIssuerConfig issuerConfig = {
         keyStore: keyStore,
         keyAlias: "ballerina",
         keyPassword: "ballerina"
@@ -51,6 +61,14 @@ function generateJwt(jwt:JwtHeader header, jwt:JwtPayload payload, string keySto
     return jwt:issueJwt(header, payload, issuerConfig);
 }
 
-function verifyJwt(string jwt, jwt:JWTValidatorConfig config) returns @tainted jwt:JwtPayload|error {
-    return jwt:validateJwt(jwt, config);
+function verifyJwt(string jwt, string trustStorePath) returns jwt:JwtPayload|error {
+    crypto:TrustStore trustStore = { path: trustStorePath, password: "ballerina" };
+    jwt:JwtValidatorConfig validatorConfig = {
+        issuer: "wso2",
+        certificateAlias: "ballerina",
+        audience: ["ballerina"],
+        clockSkew: 0,
+        trustStore: trustStore
+    };
+    return jwt:validateJwt(jwt, validatorConfig);
 }
