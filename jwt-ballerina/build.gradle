@@ -1,0 +1,135 @@
+/*
+ * Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+import org.apache.tools.ant.taskdefs.condition.Os
+
+apply from: "$rootDir/gradle/mvnPublisher.gradle"
+
+description = 'Ballerina - JWT Ballerina Generator'
+
+configurations {
+    balTools
+    jwtBallerinaBirDir
+    jwtBallerinaJar
+}
+
+dependencies {
+    balTools ("org.ballerinalang:jballerina-tools:${ballerinaLangVersion}") {
+        transitive = false
+    }
+}
+
+clean {
+    delete "$project.projectDir/target"
+    delete "$project.projectDir/Ballerina.lock"
+}
+
+jar {
+    manifest {
+        attributes('Implementation-Title': project.name,
+                'Implementation-Version': project.version)
+    }
+}
+
+task unzip {
+    doLast {
+        configurations.balTools.resolvedConfiguration.resolvedArtifacts.each { artifact ->
+            copy {
+                from project.zipTree(artifact.getFile())
+                into new File(project.buildDir, "extracted-distribution/")
+            }
+        }
+    }
+}
+
+def artifactJwtBallerinaBirDir = file("$project.projectDir/target/caches/bir_cache/")
+def artifactJwtBallerinaJar = file("$project.projectDir/target/caches/jar_cache/ballerina/jwt/ballerina.jwt.jar")
+def balJwtJar =  file("$project.projectDir/build/libs/ballerina-jwt-${ballerinaLangVersion}.jar")
+
+task ballerinaBuild {
+    dependsOn unzip
+    inputs.dir file(project.projectDir)
+    doLast {
+        def distributionBinPath =  project.projectDir.absolutePath + "/build/extracted-distribution/jballerina-tools-${ballerinaLangVersion}/bin"
+        exec {
+            workingDir project.projectDir
+            environment "JAVA_OPTS", "-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
+            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                commandLine 'cmd', '/c', "$distributionBinPath/ballerina.bat build --code-coverage -c -a"
+            } else {
+                commandLine 'sh', '-c', "$distributionBinPath/ballerina build --code-coverage -c -a"
+            }
+        }
+        exec {
+            workingDir project.projectDir
+            environment "JAVA_OPTS", "-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
+            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                commandLine 'cmd', '/c', "$distributionBinPath/ballerina.bat build --code-coverage -c -a"
+            } else {
+                commandLine 'sh', '-c', "$distributionBinPath/ballerina doc -a "
+            }
+        }
+        copy {
+            // Copying the jar from ballerina build
+            from "$project.projectDir/target/caches/jar_cache/ballerina/jwt/ballerina-jwt-.jar"
+            into "$project.projectDir/target/caches/jar_cache/ballerina/jwt/"
+            rename { String fileName ->
+                fileName.replace("ballerina-jwt-.jar", artifactJwtBallerinaJar.getName())
+            }
+        }
+        // Copy the BIR to the 0.0.0 folder within it
+        ant.move file: "${artifactJwtBallerinaBirDir}/ballerina/jwt/jwt.bir",
+                todir: "${artifactJwtBallerinaBirDir}/ballerina/jwt/0.0.0/"
+        copy {
+            // Copy the TOML to the same folder as the BIR
+            from file("$project.projectDir/Ballerina.toml")
+            into file("${artifactJwtBallerinaBirDir}/ballerina/jwt/0.0.0")
+        }
+
+        copy {
+            from "$project.projectDir/build/libs/jwt-generator-${ballerinaLangVersion}.jar"
+            into "$project.projectDir/build/libs/"
+            rename { String fileName ->
+                fileName.replace("jwt-generator-${ballerinaLangVersion}.jar", balJwtJar.getName())
+            }
+        }
+    }
+    outputs.dir artifactJwtBallerinaBirDir
+    outputs.file artifactJwtBallerinaJar
+}
+
+artifacts {
+
+    jwtBallerinaBirDir file: artifactJwtBallerinaBirDir, builtBy: ballerinaBuild
+    jwtBallerinaJar file: artifactJwtBallerinaJar, builtBy: ballerinaBuild
+
+}
+
+task createArtifactZip(type: Zip) {
+    destinationDirectory = file("$buildDir/distributions")
+    from ballerinaBuild
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact source: createArtifactZip, extension: 'zip'
+        }
+    }
+}
+
+build.dependsOn ballerinaBuild
