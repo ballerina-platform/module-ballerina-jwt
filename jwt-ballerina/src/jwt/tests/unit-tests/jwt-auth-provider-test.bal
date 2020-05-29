@@ -17,8 +17,6 @@
 import ballerina/crypto;
 import ballerina/test;
 
-const string KEYSTORE_PATH = "src/jwt/tests/resources/datafiles/keystore/ballerinaKeystore.p12";
-const string TRUSTSTORE_PATH = "src/jwt/tests/resources/datafiles/keystore/ballerinaTruststore.p12";
 string jwt1 = "";
 string jwt2 = "";
 
