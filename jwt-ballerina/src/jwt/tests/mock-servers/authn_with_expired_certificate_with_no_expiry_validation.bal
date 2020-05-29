@@ -16,16 +16,16 @@
 
 import ballerina/http;
 
-InboundJwtAuthProvider jwtAuthProvider09 = new({
+InboundJwtAuthProvider jwtAuthProvider04 = new({
     issuer:"ballerina",
     audience: "ballerina.io"
 });
 
-http:BearerAuthHandler jwtAuthHandler09 = new(jwtAuthProvider09);
+http:BearerAuthHandler jwtAuthHandler04 = new(jwtAuthProvider04);
 
-listener http:Listener listener09 = new(20103, {
+listener http:Listener listener04 = new(20103, {
     auth: {
-        authHandlers: [jwtAuthHandler09]
+        authHandlers: [jwtAuthHandler04]
     },
     secureSocket: {
         keyStore: {
@@ -38,7 +38,7 @@ listener http:Listener listener09 = new(20103, {
 @http:ServiceConfig {
     basePath: "/echo"
 }
-service echo09 on listener09 {
+service echo04 on listener04 {
 
     resource function test(http:Caller caller, http:Request req) {
         checkpanic caller->respond();

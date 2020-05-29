@@ -16,7 +16,7 @@
 
 import ballerina/http;
 
-InboundJwtAuthProvider jwtAuthProvider13_1 = new({
+InboundJwtAuthProvider jwtAuthProvider08_1 = new({
     issuer: "example1",
     audience: ["ballerina"],
     signatureConfig: {
@@ -27,11 +27,11 @@ InboundJwtAuthProvider jwtAuthProvider13_1 = new({
         }
     }
 });
-http:BearerAuthHandler jwtAuthHandler13_1 = new(jwtAuthProvider13_1);
+http:BearerAuthHandler jwtAuthHandler08_1 = new(jwtAuthProvider08_1);
 
-listener http:Listener listener13_1 = new(20110, {
+listener http:Listener listener08_1 = new(20110, {
     auth: {
-        authHandlers: [jwtAuthHandler13_1]
+        authHandlers: [jwtAuthHandler08_1]
     },
     secureSocket: {
         keyStore: {
@@ -41,7 +41,7 @@ listener http:Listener listener13_1 = new(20110, {
     }
 });
 
-OutboundJwtAuthProvider jwtAuthProvider13_2 = new({
+OutboundJwtAuthProvider jwtAuthProvider08_2 = new({
     issuer: "example2",
     audience: ["ballerina"],
     keyStoreConfig: {
@@ -53,11 +53,11 @@ OutboundJwtAuthProvider jwtAuthProvider13_2 = new({
         }
     }
 });
-http:BearerAuthHandler jwtAuthHandler13_2 = new(jwtAuthProvider13_2);
+http:BearerAuthHandler jwtAuthHandler08_2 = new(jwtAuthProvider08_2);
 
-http:Client nyseEP13 = new("https://localhost:20111", {
+http:Client nyseEP08 = new("https://localhost:20111", {
     auth: {
-        authHandler: jwtAuthHandler13_2
+        authHandler: jwtAuthHandler08_2
     },
     secureSocket: {
        trustStore: {
@@ -68,14 +68,14 @@ http:Client nyseEP13 = new("https://localhost:20111", {
 });
 
 @http:ServiceConfig { basePath: "/passthrough" }
-service passthroughService13 on listener13_1 {
+service passthroughService08 on listener08_1 {
 
     @http:ResourceConfig {
         methods: ["GET"],
         path: "/"
     }
     resource function passthrough(http:Caller caller, http:Request clientRequest) {
-        var response = nyseEP13->get("/nyseStock/stocks", <@untainted> clientRequest);
+        var response = nyseEP08->get("/nyseStock/stocks", <@untainted> clientRequest);
         if (response is http:Response) {
             checkpanic caller->respond(response);
         } else {
@@ -88,7 +88,7 @@ service passthroughService13 on listener13_1 {
     }
 }
 
-InboundJwtAuthProvider jwtAuthProvider13_3 = new({
+InboundJwtAuthProvider jwtAuthProvider08_3 = new({
     issuer: "example2",
     audience: ["ballerina"],
     signatureConfig: {
@@ -99,11 +99,11 @@ InboundJwtAuthProvider jwtAuthProvider13_3 = new({
         }
     }
 });
-http:BearerAuthHandler jwtAuthHandler13_3 = new(jwtAuthProvider13_3);
+http:BearerAuthHandler jwtAuthHandler08_3 = new(jwtAuthProvider08_3);
 
-listener http:Listener listener13_2 = new(20111, {
+listener http:Listener listener08_2 = new(20111, {
     auth: {
-        authHandlers: [jwtAuthHandler13_3]
+        authHandlers: [jwtAuthHandler08_3]
     },
     secureSocket: {
         keyStore: {
@@ -114,7 +114,7 @@ listener http:Listener listener13_2 = new(20111, {
 });
 
 @http:ServiceConfig { basePath: "/nyseStock" }
-service nyseStockQuote13 on listener13_2 {
+service nyseStockQuote08 on listener08_2 {
 
     @http:ResourceConfig {
         methods: ["GET"],

@@ -17,12 +17,12 @@
 import ballerina/auth;
 import ballerina/http;
 
-auth:InboundBasicAuthProvider basicAuthProvider11_1 = new;
-http:BasicAuthHandler basicAuthHandler11_1 = new(basicAuthProvider11_1);
+auth:InboundBasicAuthProvider basicAuthProvider06_1 = new;
+http:BasicAuthHandler basicAuthHandler06_1 = new(basicAuthProvider06_1);
 
-listener http:Listener listener11_1 = new(20106, {
+listener http:Listener listener06_1 = new(20106, {
     auth: {
-        authHandlers: [basicAuthHandler11_1]
+        authHandlers: [basicAuthHandler06_1]
     },
     secureSocket: {
         keyStore: {
@@ -32,7 +32,7 @@ listener http:Listener listener11_1 = new(20106, {
     }
 });
 
-OutboundJwtAuthProvider jwtAuthProvider11_2 = new({
+OutboundJwtAuthProvider jwtAuthProvider06_2 = new({
     issuer: "ballerina",
     audience: ["ballerina"],
     keyStoreConfig: {
@@ -44,11 +44,11 @@ OutboundJwtAuthProvider jwtAuthProvider11_2 = new({
         }
     }
 });
-http:BearerAuthHandler jwtAuthHandler11_2 = new(jwtAuthProvider11_2);
+http:BearerAuthHandler jwtAuthHandler06_2 = new(jwtAuthProvider06_2);
 
 http:Client nyseEP03 = new("https://localhost:20107", {
     auth: {
-        authHandler: jwtAuthHandler11_2
+        authHandler: jwtAuthHandler06_2
     },
     secureSocket: {
        trustStore: {
@@ -59,7 +59,7 @@ http:Client nyseEP03 = new("https://localhost:20107", {
 });
 
 @http:ServiceConfig { basePath: "/passthrough" }
-service passthroughService11 on listener11_1 {
+service passthroughService06 on listener06_1 {
 
     @http:ResourceConfig {
         methods: ["GET"],
@@ -79,7 +79,7 @@ service passthroughService11 on listener11_1 {
     }
 }
 
-InboundJwtAuthProvider jwtAuthProvider11_3 = new({
+InboundJwtAuthProvider jwtAuthProvider06_3 = new({
     issuer: "ballerina",
     audience: ["ballerina"],
     signatureConfig: {
@@ -90,11 +90,11 @@ InboundJwtAuthProvider jwtAuthProvider11_3 = new({
         }
     }
 });
-http:BearerAuthHandler jwtAuthHandler11_3 = new(jwtAuthProvider11_3);
+http:BearerAuthHandler jwtAuthHandler06_3 = new(jwtAuthProvider06_3);
 
-listener http:Listener listener11_2 = new(20107, {
+listener http:Listener listener06_2 = new(20107, {
     auth: {
-        authHandlers: [jwtAuthHandler11_3]
+        authHandlers: [jwtAuthHandler06_3]
     },
     secureSocket: {
         keyStore: {
@@ -105,7 +105,7 @@ listener http:Listener listener11_2 = new(20107, {
 });
 
 @http:ServiceConfig { basePath: "/nyseStock" }
-service nyseStockQuote11 on listener11_2 {
+service nyseStockQuote06 on listener06_2 {
 
     @http:ResourceConfig {
         methods: ["GET"],

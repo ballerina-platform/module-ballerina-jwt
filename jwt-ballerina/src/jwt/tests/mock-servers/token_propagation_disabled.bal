@@ -18,12 +18,12 @@ import ballerina/auth;
 import ballerina/http;
 
 // token propagation is set to false by default
-auth:InboundBasicAuthProvider basicAuthProvider10 = new;
-http:BasicAuthHandler basicAuthHandler10 = new(basicAuthProvider10);
+auth:InboundBasicAuthProvider basicAuthProvider05 = new;
+http:BasicAuthHandler basicAuthHandler05 = new(basicAuthProvider05);
 
-listener http:Listener listener10_1 = new(20104, {
+listener http:Listener listener05_1 = new(20104, {
     auth: {
-        authHandlers: [basicAuthHandler10]
+        authHandlers: [basicAuthHandler05]
     },
     secureSocket: {
         keyStore: {
@@ -44,7 +44,7 @@ http:Client nyseEP = new("https://localhost:20105", {
 });
 
 @http:ServiceConfig { basePath: "/passthrough" }
-service passthroughService10 on listener10_1 {
+service passthroughService05 on listener05_1 {
 
     @http:ResourceConfig {
         methods: ["GET"],
@@ -64,7 +64,7 @@ service passthroughService10 on listener10_1 {
     }
 }
 
-InboundJwtAuthProvider jwtAuthProvider10 = new({
+InboundJwtAuthProvider jwtAuthProvider05 = new({
     issuer: "ballerina",
     audience: "ballerina",
     signatureConfig: {
@@ -76,11 +76,11 @@ InboundJwtAuthProvider jwtAuthProvider10 = new({
     }
 });
 
-http:BearerAuthHandler jwtAuthHandler10 = new(jwtAuthProvider10);
+http:BearerAuthHandler jwtAuthHandler05 = new(jwtAuthProvider05);
 
-listener http:Listener listener10_2 = new(20105, {
+listener http:Listener listener05_2 = new(20105, {
     auth: {
-        authHandlers: [jwtAuthHandler10]
+        authHandlers: [jwtAuthHandler05]
     },
     secureSocket: {
         keyStore: {
@@ -91,7 +91,7 @@ listener http:Listener listener10_2 = new(20105, {
 });
 
 @http:ServiceConfig { basePath: "/nyseStock" }
-service nyseStockQuote10 on listener10_2 {
+service nyseStockQuote05 on listener05_2 {
 
     @http:ResourceConfig {
         methods: ["GET"],
