@@ -17,7 +17,9 @@
 import ballerina/http;
 import ballerina/test;
 
-@test:Config {}
+@test:Config {
+    enable: false
+}
 public function testAuthenticationSuccess() {
     http:Client clientEP = new("https://localhost:20114", {
         secureSocket: {
