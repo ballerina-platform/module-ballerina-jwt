@@ -59,7 +59,7 @@ function testVerifyJwt() {
         issuer: "wso2",
         audience: "ballerina",
         clockSkewInSeconds: 0,
-        signatureConfig: {
+        trustStoreConfig: {
             trustStore: trustStore,
             certificateAlias: "ballerina"
         }
@@ -79,7 +79,7 @@ function testJwtAuthProviderAuthenticationSuccess() {
     JwtValidatorConfig jwtConfig = {
         issuer: "wso2",
         audience: "ballerina",
-        signatureConfig: {
+        trustStoreConfig: {
             trustStore: trustStore,
             certificateAlias: "ballerina"
         }

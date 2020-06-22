@@ -376,7 +376,7 @@ function testValidateJwt() {
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
         clockSkewInSeconds: 60,
-        signatureConfig: {
+        trustStoreConfig: {
             trustStore: trustStore,
             certificateAlias: "ballerina"
         }
@@ -398,7 +398,7 @@ function testValidateJwtWithSingleAud() {
         issuer: "wso2",
         audience: "ballerina",
         clockSkewInSeconds: 60,
-        signatureConfig: {
+        trustStoreConfig: {
             trustStore: trustStore,
             certificateAlias: "ballerina"
         }
@@ -420,7 +420,7 @@ function testValidateJwtWithSingleAudAndAudAsArray() {
         issuer: "wso2",
         audience: "ballerina",
         clockSkewInSeconds: 60,
-        signatureConfig: {
+        trustStoreConfig: {
             trustStore: trustStore,
             certificateAlias: "ballerina"
         }
@@ -441,7 +441,7 @@ function testValidateJwtWithNoIssOrSub() {
     JwtValidatorConfig config = {
         audience: "ballerinaSamples",
         clockSkewInSeconds: 60,
-        signatureConfig: {
+        trustStoreConfig: {
             trustStore: trustStore,
             certificateAlias: "ballerina"
         }
@@ -460,7 +460,7 @@ function testValidateJwtWithNoIssOrSub() {
 function testValidateJwtWithInvalidSignature() {
     crypto:TrustStore trustStore = { path: TRUSTSTORE_PATH, password: "ballerina" };
     JwtValidatorConfig config = {
-        signatureConfig: {
+        trustStoreConfig: {
             trustStore: trustStore,
             certificateAlias: "ballerina"
         }

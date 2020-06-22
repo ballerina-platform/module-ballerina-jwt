@@ -82,7 +82,7 @@ service passthroughService06 on listener06_1 {
 InboundJwtAuthProvider jwtAuthProvider06_3 = new({
     issuer: "ballerina",
     audience: ["ballerina"],
-    signatureConfig: {
+    trustStoreConfig: {
         certificateAlias: "ballerina",
         trustStore: {
            path: TRUSTSTORE_PATH,

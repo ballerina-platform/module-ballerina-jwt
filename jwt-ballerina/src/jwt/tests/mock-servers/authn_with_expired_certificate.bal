@@ -19,7 +19,7 @@ import ballerina/http;
 InboundJwtAuthProvider jwtAuthProvider03 = new({
     issuer:"ballerina",
     audience: "ballerina.io",
-    signatureConfig: {
+    trustStoreConfig: {
         certificateAlias: "cert",
         trustStore: {
             path: EXPIRED_TRUSTSTORE_PATH,
