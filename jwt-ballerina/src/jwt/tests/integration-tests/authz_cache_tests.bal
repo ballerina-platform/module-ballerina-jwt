@@ -54,7 +54,7 @@ public function testAuthCache() {
     if (response is http:Response) {
         assertOK(response);
     } else {
-        test:assertFail(msg = "Test Failed! " + <string>response.detail()?.message);
+        test:assertFail(msg = "Test Failed! " + <string>response.message());
     }
 
     // JWT used in the second request:
@@ -83,7 +83,7 @@ public function testAuthCache() {
     if (response is http:Response) {
         assertForbidden(response);
     } else {
-        test:assertFail(msg = "Test Failed! " + <string>response.detail()?.message);
+        test:assertFail(msg = "Test Failed! " + <string>response.message());
     }
 
     // JWT used in the third request:
@@ -112,6 +112,6 @@ public function testAuthCache() {
     if (response is http:Response) {
         assertUnauthorized(response);
     } else {
-        test:assertFail(msg = "Test Failed! " + <string>response.detail()?.message);
+        test:assertFail(msg = "Test Failed! " + <string>response.message());
     }
 }

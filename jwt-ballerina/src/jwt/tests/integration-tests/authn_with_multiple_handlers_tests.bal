@@ -54,7 +54,7 @@ public function testAuthSuccessWithExample1Issuer() {
     if (response is http:Response) {
         assertOK(response);
     } else {
-        test:assertFail(msg = "Test Failed! " + <string>response.detail()?.message);
+        test:assertFail(msg = "Test Failed! " + <string>response.message());
     }
 }
 
@@ -86,7 +86,7 @@ public function testAuthSuccessWithExample2Issuer() {
     if (response is http:Response) {
         assertOK(response);
     } else {
-        test:assertFail(msg = "Test Failed! " + <string>response.detail()?.message);
+        test:assertFail(msg = "Test Failed! " + <string>response.message());
     }
 }
 
@@ -118,7 +118,7 @@ public function testAuthFailWithExample3Issuer() {
     if (response is http:Response) {
         assertUnauthorized(response);
     } else {
-        test:assertFail(msg = "Test Failed! " + <string>response.detail()?.message);
+        test:assertFail(msg = "Test Failed! " + <string>response.message());
     }
 }
 
@@ -150,6 +150,6 @@ public function testAuthFailWithExample1IssuerAndInvalidAudience() {
     if (response is http:Response) {
         assertUnauthorized(response);
     } else {
-        test:assertFail(msg = "Test Failed! " + <string>response.detail()?.message);
+        test:assertFail(msg = "Test Failed! " + <string>response.message());
     }
 }

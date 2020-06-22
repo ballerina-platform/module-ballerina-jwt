@@ -74,7 +74,7 @@ function testIssueJwt() {
             test:assertFail(msg = "Expected byte[], but found error");
         }
     } else {
-        string? errMsg = results.detail()?.message;
+        string? errMsg = results.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT");
     }
 }
@@ -132,7 +132,7 @@ function testIssueJwtWithSingleAud() {
             test:assertFail(msg = "Expected byte[], but found error");
         }
     } else {
-        string? errMsg = results.detail()?.message;
+        string? errMsg = results.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT");
     }
 }
@@ -190,7 +190,7 @@ function testIssueJwtWithSingleAudAndAudAsArray() {
             test:assertFail(msg = "Expected byte[], but found error");
         }
     } else {
-        string? errMsg = results.detail()?.message;
+        string? errMsg = results.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT");
     }
 }
@@ -246,7 +246,7 @@ function testIssueJwtWithNoIssOrSub() {
             test:assertFail(msg = "Expected byte[], but found error");
         }
     } else {
-        string? errMsg = results.detail()?.message;
+        string? errMsg = results.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT");
     }
 }
@@ -303,7 +303,7 @@ function testIssueJwtWithNoAudOrSub() {
             test:assertFail(msg = "Expected byte[], but found error");
         }
     } else {
-        string? errMsg = results.detail()?.message;
+        string? errMsg = results.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT");
     }
 }
@@ -362,7 +362,7 @@ function testIssueJwtWithCustomClaims() {
             test:assertFail(msg = "Expected byte[], but found error");
         }
     } else {
-        string? errMsg = results.detail()?.message;
+        string? errMsg = results.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT");
     }
 }
@@ -384,7 +384,7 @@ function testValidateJwt() {
 
     var result = validateJwt(jwt2, config);
     if !(result is JwtPayload) {
-        string? errMsg = result.detail()?.message;
+        string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT");
     }
 }
@@ -406,7 +406,7 @@ function testValidateJwtWithSingleAud() {
 
     var result = validateJwt(jwt2, config);
     if !(result is JwtPayload) {
-        string? errMsg = result.detail()?.message;
+        string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT");
     }
 }
@@ -428,7 +428,7 @@ function testValidateJwtWithSingleAudAndAudAsArray() {
 
     var result = validateJwt(jwt2, config);
     if !(result is JwtPayload) {
-        string? errMsg = result.detail()?.message;
+        string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT");
     }
 }
@@ -449,7 +449,7 @@ function testValidateJwtWithNoIssOrSub() {
 
     var result = validateJwt(jwt2, config);
     if !(result is JwtPayload) {
-        string? errMsg = result.detail()?.message;
+        string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT");
     }
 }
@@ -468,7 +468,7 @@ function testValidateJwtWithInvalidSignature() {
 
     var result = validateJwt(jwt2, config);
     if !(result is JwtPayload) {
-        string? errMsg = result.detail()?.message;
+        string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT");
     }
 }
