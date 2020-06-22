@@ -93,20 +93,6 @@ function testJwtAuthProviderAuthenticationSuccess() {
     }
 }
 
-function testCreateJwtAuthProvider(string trustStorePath) returns InboundJwtAuthProvider {
-    crypto:TrustStore trustStore = { path: trustStorePath, password: "ballerina" };
-    JwtValidatorConfig jwtConfig = {
-        issuer: "wso2",
-        audience: "ballerina",
-        trustStoreConfig: {
-            trustStore: trustStore,
-            certificateAlias: "ballerina"
-        }
-    };
-    InboundJwtAuthProvider jwtAuthProvider = new(jwtConfig);
-    return jwtAuthProvider;
-}
-
 function generateJwt(string keyStorePath) returns string|Error {
     JwtHeader header = {
         alg: "RS256",
