@@ -92,37 +92,3 @@ function testJwtAuthProviderAuthenticationSuccess() {
         test:assertFail(msg = errMsg is string ? errMsg : "Error in JWT authentication");
     }
 }
-
-function generateJwt(string keyStorePath) returns string|Error {
-    JwtHeader header = {
-        alg: "RS256",
-        typ: "JWT"
-    };
-    JwtPayload payload = {
-        iss: "wso2",
-        sub: "John",
-        aud: "ballerina",
-        exp: 32475251189000
-    };
-    crypto:KeyStore keyStore = { path: keyStorePath, password: "ballerina" };
-    JwtKeyStoreConfig keyStoreConfig = {
-        keyStore: keyStore,
-        keyAlias: "ballerina",
-        keyPassword: "ballerina"
-    };
-    return issueJwt(header, payload, keyStoreConfig);
-}
-
-function verifyJwt(string jwt, string trustStorePath) returns @tainted (JwtPayload|Error) {
-    crypto:TrustStore trustStore = { path: trustStorePath, password: "ballerina" };
-    JwtValidatorConfig validatorConfig = {
-        issuer: "wso2",
-        audience: "ballerina",
-        clockSkewInSeconds: 0,
-        trustStoreConfig: {
-            trustStore: trustStore,
-            certificateAlias: "ballerina"
-        }
-    };
-    return validateJwt(jwt, validatorConfig);
-}
