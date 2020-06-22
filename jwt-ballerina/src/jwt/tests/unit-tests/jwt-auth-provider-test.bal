@@ -108,21 +108,6 @@ function testCreateJwtAuthProvider(string trustStorePath) returns InboundJwtAuth
     return jwtAuthProvider;
 }
 
-function testJwtAuthProviderAuthenticationSuccess(string jwtToken, string trustStorePath)
-                                                  returns @tainted (boolean|auth:Error) {
-    crypto:TrustStore trustStore = { path: trustStorePath, password: "ballerina" };
-    JwtValidatorConfig jwtConfig = {
-        issuer: "wso2",
-        audience: "ballerina",
-        trustStoreConfig: {
-            trustStore: trustStore,
-            certificateAlias: "ballerina"
-        }
-    };
-    InboundJwtAuthProvider jwtAuthProvider = new(jwtConfig);
-    return jwtAuthProvider.authenticate(jwtToken);
-}
-
 function generateJwt(string keyStorePath) returns string|Error {
     JwtHeader header = {
         alg: "RS256",
