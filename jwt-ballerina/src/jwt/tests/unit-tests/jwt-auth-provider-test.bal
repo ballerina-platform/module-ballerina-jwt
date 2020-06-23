@@ -44,7 +44,7 @@ function testGenerateJwt() {
         jwt1 = results;
         test:assertTrue(results.startsWith("eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QifQ.eyJzdWIiOiJKb2huIiwgImlzcyI6IndzbzIiLCAiZXhwIjozMjQ3NTI1MTE4OTAwMCwgImF1ZCI6ImJhbGxlcmluYSJ9."));
     } else {
-        string? errMsg = results.detail()?.message;
+        string? errMsg = results.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT");
     }
 }
@@ -58,14 +58,14 @@ function testVerifyJwt() {
         issuer: "wso2",
         audience: "ballerina",
         clockSkewInSeconds: 0,
-        signatureConfig: {
+        trustStoreConfig: {
             trustStore: trustStore,
             certificateAlias: "ballerina"
         }
     };
     var results = validateJwt(jwt1, validatorConfig);
     if !(results is JwtPayload) {
-        string? errMsg = results.detail()?.message;
+        string? errMsg = results.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT");
     }
 }
@@ -78,7 +78,7 @@ function testJwtAuthProviderAuthenticationSuccess() {
     JwtValidatorConfig jwtConfig = {
         issuer: "wso2",
         audience: "ballerina",
-        signatureConfig: {
+        trustStoreConfig: {
             trustStore: trustStore,
             certificateAlias: "ballerina"
         }
@@ -88,7 +88,7 @@ function testJwtAuthProviderAuthenticationSuccess() {
     if (results is boolean) {
         test:assertTrue(results);
     } else {
-        string? errMsg = results.detail()?.message;
+        string? errMsg = results.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in JWT authentication");
     }
 }

@@ -19,7 +19,7 @@ import ballerina/http;
 InboundJwtAuthProvider jwtAuthProvider07_1 = new({
     issuer: "example1",
     audience: ["ballerina"],
-    signatureConfig: {
+    trustStoreConfig: {
         certificateAlias: "ballerina",
         trustStore: {
             path: TRUSTSTORE_PATH,
@@ -69,7 +69,7 @@ service passthroughService07 on listener07_1 {
             checkpanic caller->respond(response);
         } else {
             http:Response resp = new;
-            json errMsg = { "error": "error occurred while invoking the service: " + response.reason() };
+            json errMsg = { "error": "error occurred while invoking the service: " + response.message() };
             resp.statusCode = 500;
             resp.setPayload(errMsg);
             checkpanic caller->respond(resp);
@@ -80,7 +80,7 @@ service passthroughService07 on listener07_1 {
 InboundJwtAuthProvider jwtAuthProvider07_3 = new({
     issuer: "example1",
     audience: ["ballerina"],
-    signatureConfig: {
+    trustStoreConfig: {
         certificateAlias: "ballerina",
         trustStore: {
            path: TRUSTSTORE_PATH,
