@@ -19,10 +19,10 @@ plugins {
     id "com.github.spotbugs" version "4.0.5"
     id "com.github.johnrengelman.shadow" version "5.2.0"
     id "de.undercouch.download" version "4.0.4"
-    id 'maven-publish'
+    id "net.researchgate.release" version "2.6.0"
 }
 
-ext.ballerinaLangVersion = project.version
+ext.ballerinaLangVersion = project.ballerinaLangVersion
 ext.puppycrawlCheckstyleVersion = "8.18"
 
 allprojects {
@@ -61,6 +61,20 @@ allprojects {
 
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'maven-publish'
+
+    release {
+        // Disable check snapshots temporarily
+        buildTasks = []
+        failOnSnapshotDependencies = false
+        failOnCommitNeeded = false
+        versionPropertyFile = 'gradle.properties'
+        tagTemplate = 'v${version}'
+        git {
+            // To release from any branch
+            requireBranch = null
+        }
+    }
 }
 
 task codeCoverageReport(type: JacocoReport) {
