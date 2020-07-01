@@ -20,13 +20,13 @@ import org.apache.tools.ant.taskdefs.condition.Os
 description = 'Ballerina - JWT Ballerina Generator'
 
 configurations {
-    balTools
+    jbalTools
     jwtBallerinaBirDir
     jwtBallerinaJar
 }
 
 dependencies {
-    balTools ("org.ballerinalang:jballerina-tools:${ballerinaLangVersion}") {
+    jbalTools ("org.ballerinalang:jballerina-tools:${ballerinaLangVersion}") {
         transitive = false
     }
 }
@@ -43,13 +43,51 @@ jar {
     }
 }
 
-task unzip {
+task unpackJballerinaTools(type: Copy) {
+    configurations.jbalTools.resolvedConfiguration.resolvedArtifacts.each { artifact ->
+        from zipTree(artifact.getFile())
+        into new File("${buildDir}/target/extracted-distributions", "jballerina-tools-zip")
+    }
+
+}
+
+task unpackStdLibs() {
     doLast {
-        configurations.balTools.resolvedConfiguration.resolvedArtifacts.each { artifact ->
+        configurations.ballerinaStdLibs.resolvedConfiguration.resolvedArtifacts.each { artifact ->
             copy {
                 from project.zipTree(artifact.getFile())
-                into new File(project.buildDir, "extracted-distribution/")
+                into new File("${buildDir}/target/extracted-distributions", artifact.name + "-zip")
             }
+        }
+    }
+}
+
+task copyStdlibs(type: Copy) {
+    def ballerinaDist = "build/target/extracted-distributions/jballerina-tools-zip/jballerina-tools-${ballerinaLangVersion}"
+    into ballerinaDist
+
+    /* Standard Libraries */
+    configurations.ballerinaStdLibs.resolvedConfiguration.resolvedArtifacts.each { artifact ->
+        def artifactExtractedPath = "${buildDir}/target/extracted-distributions/" + artifact.name + "-zip"
+        println(artifactExtractedPath)
+        into("bir-cache/") {
+            from "${artifactExtractedPath}/caches/bir"
+        }
+        into("bre/lib/") {
+            from "${artifactExtractedPath}/libs"
+        }
+        into("docs/") {
+            from "${artifactExtractedPath}/docs"
+        }
+        // pack to new cache
+        into("cache/bir/") {
+            from "${artifactExtractedPath}/caches/bir"
+        }
+        into("cache/balo/") {
+            from "${artifactExtractedPath}/caches/balo"
+        }
+        into("cache/jar/") {
+            from "${artifactExtractedPath}/caches/jar"
         }
     }
 }
@@ -65,7 +103,6 @@ def ballerinaCentralAccessToken = System.getenv('BALLERINA_CENTRAL_ACCESS_TOKEN'
 def targetBallerinaJar = file("$project.projectDir/target/caches/jar_cache/${moduleOrg}/${moduleName}/${tomlVersion}/${moduleOrg}-${moduleName}-${tomlVersion}.jar")
 
 task ballerinaBuild {
-    dependsOn unzip
     inputs.dir file(project.projectDir)
     doLast {
         def originalConfig = ballerinaConfigFile.text
@@ -73,7 +110,7 @@ task ballerinaBuild {
         newConfig = newConfig.replace("@toml.version@", tomlVersion)
         ballerinaConfigFile.text = newConfig
 
-        def distributionBinPath =  project.projectDir.absolutePath + "/build/extracted-distribution/jballerina-tools-${ballerinaLangVersion}/bin"
+        def distributionBinPath =  project.projectDir.absolutePath + "//build/target/extracted-distributions/jballerina-tools-zip/jballerina-tools-${ballerinaLangVersion}/bin"
 
         // Build and populate caches
         exec {
@@ -174,4 +211,7 @@ publishing {
     }
 }
 
+unpackStdLibs.dependsOn unpackJballerinaTools
+copyStdlibs.dependsOn unpackStdLibs
+ballerinaBuild.dependsOn copyStdlibs
 build.dependsOn ballerinaBuild

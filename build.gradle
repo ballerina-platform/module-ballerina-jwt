@@ -23,7 +23,7 @@ plugins {
 }
 
 ext.ballerinaLangVersion = project.ballerinaLangVersion
-ext.puppycrawlCheckstyleVersion = "8.18"
+ext.stdlibEncodingVersion = project.stdlibEncodingVersion
 
 allprojects {
     group = 'org.ballerinalang'
@@ -62,6 +62,14 @@ allprojects {
 subprojects {
     apply plugin: 'java'
     apply plugin: 'maven-publish'
+
+    configurations {
+        ballerinaStdLibs
+    }
+    dependencies {
+        /* Standard libraries */
+        ballerinaStdLibs "org.ballerinalang:encoding-ballerina:${stdlibEncodingVersion}"
+    }
 
     release {
         // Disable check snapshots temporarily
