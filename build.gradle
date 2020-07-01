@@ -56,6 +56,14 @@ allprojects {
         maven {
             url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-jwt'
         }
+
+        maven {
+            url "https://maven.pkg.github.com/ballerina-platform/module-ballerina-encoding"
+            credentials {
+                username System.getenv("packageUser")
+                password System.getenv("packagePAT")
+            }
+        }
     }
 }
 
