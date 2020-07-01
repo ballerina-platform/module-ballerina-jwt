@@ -19,6 +19,8 @@ jobs:
       - name: Publish artifact
         env:
           GITHUB_TOKEN: ${{ secrets.BALLERINA_STDLIB_TOKEN }}
+          packageUser: ${{ github.actor }}
+          packagePAT: ${{ secrets.BALLERINA_STDLIB_TOKEN }}
         run: |
           NEW_VERSION=$(echo "${GITHUB_REF}" | cut -d "/" -f3)
           echo "New version: ${NEW_VERSION}"

@@ -21,6 +21,8 @@ jobs:
       - name: Build with Gradle
         env:
           GITHUB_TOKEN: ${{ secrets.BALLERINA_STDLIB_TOKEN }}
+          packageUser: ${{ github.actor }}
+          packagePAT: ${{ secrets.BALLERINA_STDLIB_TOKEN }}
         run: |
           ./gradlew build
           ./gradlew publish
