@@ -23,7 +23,7 @@ plugins {
 }
 
 ext.ballerinaLangVersion = project.ballerinaLangVersion
-ext.puppycrawlCheckstyleVersion = "8.18"
+ext.stdlibEncodingVersion = project.stdlibEncodingVersion
 
 allprojects {
     group = 'org.ballerinalang'
@@ -56,12 +56,28 @@ allprojects {
         maven {
             url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-jwt'
         }
+
+        maven {
+            url "https://maven.pkg.github.com/ballerina-platform/module-ballerina-encoding"
+            credentials {
+                username System.getenv("packageUser")
+                password System.getenv("packagePAT")
+            }
+        }
     }
 }
 
 subprojects {
     apply plugin: 'java'
     apply plugin: 'maven-publish'
+
+    configurations {
+        ballerinaStdLibs
+    }
+    dependencies {
+        /* Standard libraries */
+        ballerinaStdLibs "org.ballerinalang:encoding-ballerina:${stdlibEncodingVersion}"
+    }
 
     release {
         // Disable check snapshots temporarily

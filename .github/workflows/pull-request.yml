@@ -14,6 +14,9 @@ jobs:
         with:
           java-version: 1.8
       - name: Build with Gradle
+        env:
+          packageUser: ${{ github.actor }}
+          packagePAT: ${{ secrets.BALLERINA_STDLIB_TOKEN }}
         run: ./gradlew build
 
   windows-build:
@@ -27,4 +30,7 @@ jobs:
         with:
           java-version: 1.8
       - name: Build with Gradle
+        env:
+          packageUser: ${{ github.actor }}
+          packagePAT: ${{ secrets.BALLERINA_STDLIB_TOKEN }}
         run: ./gradlew.bat build
