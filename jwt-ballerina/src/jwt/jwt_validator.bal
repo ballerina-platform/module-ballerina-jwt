@@ -46,9 +46,11 @@ public type JwtValidatorConfig record {|
 #
 # + url - URL of the JWKs endpoint
 # + clientConfig - HTTP client configurations which calls the JWKs endpoint
+# + jwksCache - Cache used to store preloaded JWKs information
 public type JwksConfig record {|
     string url;
     http:ClientConfiguration clientConfig = {};
+    cache:Cache jwksCache?;
 |};
 
 # Represents JWT trust store configurations.
@@ -397,6 +399,19 @@ function validateSignature(string jwt, JwtSigningAlgorithm alg, crypto:PublicKey
 }
 
 function getJwk(string kid, JwksConfig jwksConfig) returns @tainted (json|Error) {
+    cache:Cache? jwksCache = jwksConfig?.jwksCache;
+    if (jwksCache is cache:Cache) {
+        if (jwksCache.hasKey(kid)) {
+            any|cache:Error jwk = jwksCache.get(kid);
+            if (jwk is json) {
+                return jwk;
+            } else {
+                log:printDebug(function() returns string {
+                    return "Failed to retrieve JWK for the kid: " + kid + " from the cache";
+                });
+            }
+        }
+    }
     http:Client jwksClient = new(jwksConfig.url, jwksConfig.clientConfig);
     http:Response|http:ClientError response = jwksClient->get("");
     if (response is http:Response) {
