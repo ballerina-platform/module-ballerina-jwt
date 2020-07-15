@@ -15,6 +15,8 @@
 // under the License.
 
 import ballerina/auth;
+import ballerina/cache;
+import ballerina/http;
 import ballerina/stringutils;
 
 # Represents the inbound JWT auth provider, which authenticates by validating a JWT.
@@ -44,6 +46,16 @@ public type InboundJwtAuthProvider object {
     # + jwtValidatorConfig - JWT validator configurations
     public function init(JwtValidatorConfig jwtValidatorConfig) {
         self.jwtValidatorConfig = jwtValidatorConfig;
+        JwksConfig? jwksConfig = jwtValidatorConfig?.jwksConfig;
+        if (jwksConfig is JwksConfig) {
+            cache:Cache? jwksCache = jwksConfig?.jwksCache;
+            if (jwksCache is cache:Cache) {
+                Error? result = preloadJwksToCache(jwksConfig);
+                if (result is Error) {
+                    panic result;
+                }
+            }
+        }
     }
 
 # Authenticates provided JWT against `jwt:JwtValidatorConfig`.
@@ -69,6 +81,28 @@ public type InboundJwtAuthProvider object {
         }
     }
 };
+
+function preloadJwksToCache(JwksConfig jwksConfig) returns @tainted Error? {
+    cache:Cache jwksCache = <cache:Cache>jwksConfig?.jwksCache;
+    http:Client jwksClient = new(jwksConfig.url, jwksConfig.clientConfig);
+    http:Response|http:ClientError response = jwksClient->get("");
+    if (response is http:Response) {
+        json|http:ClientError result = response.getJsonPayload();
+        if (result is http:ClientError) {
+            return prepareError(result.message(), result);
+        }
+        json payload = <json>result;
+        json[] jwks = <json[]>payload.keys;
+        foreach json jwk in jwks {
+            cache:Error? cachedResult = jwksCache.put(<string>jwk.kid, jwk);
+            if (cachedResult is cache:Error) {
+                return prepareError("Failed to put JWK for the kid: " + <string>jwk.kid + " to the cache.", cachedResult);
+            }
+        }
+    } else {
+        return prepareError("Failed to call JWKs endpoint to preload JWKs to the cache.", response);
+    }
+}
 
 function setPrincipal(JwtPayload jwtPayload) {
     string? iss = jwtPayload?.iss;
