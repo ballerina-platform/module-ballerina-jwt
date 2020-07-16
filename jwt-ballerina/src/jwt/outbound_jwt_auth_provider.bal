@@ -15,7 +15,6 @@
 // under the License.
 
 import ballerina/auth;
-import ballerina/runtime;
 import ballerina/system;
 import ballerina/time;
 
@@ -64,9 +63,9 @@ public type OutboundJwtAuthProvider object {
             }
             authToken = <string>result;
         } else {
-            string? authToken = auth:getInvocationContext()?.token;
-            if (authToken is string) {
-                authToken = authToken;
+            string? token = auth:getInvocationContext()?.token;
+            if (token is string) {
+                authToken = token;
             }
         }
         if (authToken == "") {
