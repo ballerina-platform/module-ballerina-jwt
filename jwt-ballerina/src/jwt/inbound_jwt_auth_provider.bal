@@ -73,8 +73,7 @@ public type InboundJwtAuthProvider object {
 
         JwtPayload|Error validationResult = validateJwt(credential, self.jwtValidatorConfig);
         if (validationResult is JwtPayload) {
-            auth:setAuthenticationContext("jwt", credential);
-            setPrincipal(validationResult);
+            setInvocationContext(credential, validationResult);
             return true;
         } else {
             return prepareAuthError("JWT validation failed.", validationResult);
@@ -104,20 +103,18 @@ function preloadJwksToCache(JwksConfig jwksConfig) returns @tainted Error? {
     }
 }
 
-function setPrincipal(JwtPayload jwtPayload) {
-    string? iss = jwtPayload?.iss;
+function setInvocationContext(string credential, JwtPayload jwtPayload) {
     string? sub = jwtPayload?.sub;
-    string userId = (iss is () ? "" : iss) + ":" + (sub is () ? "" : sub);
     // By default set sub as username.
     string username = (sub is () ? "" : sub);
-    auth:setPrincipal(userId, username);
+    auth:setInvocationContext("jwt", credential, username);
     map<json>? claims = jwtPayload?.customClaims;
     if (claims is map<json>) {
-        auth:setPrincipal(claims = claims);
+        auth:setInvocationContext(claims = claims);
         if (claims.hasKey("scope")) {
             json scopeString = claims["scope"];
             if (scopeString is string && scopeString != "") {
-                auth:setPrincipal(scopes = stringutils:split(scopeString, " "));
+                auth:setInvocationContext(scopes = stringutils:split(scopeString, " "));
             }
         }
     }

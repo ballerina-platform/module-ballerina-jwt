@@ -15,7 +15,6 @@
 // under the License.
 
 import ballerina/auth;
-import ballerina/runtime;
 import ballerina/system;
 import ballerina/time;
 
@@ -64,9 +63,9 @@ public type OutboundJwtAuthProvider object {
             }
             authToken = <string>result;
         } else {
-            runtime:AuthenticationContext? authContext = runtime:getInvocationContext()?.authenticationContext;
-            if (authContext is runtime:AuthenticationContext) {
-                authToken = authContext?.authToken ?: "";
+            string? token = auth:getInvocationContext()?.token;
+            if (token is string) {
+                authToken = token;
             }
         }
         if (authToken == "") {
@@ -95,16 +94,11 @@ function getJwtAuthToken(JwtIssuerConfig jwtIssuerConfig) returns string|Error {
     if (configUsername is string) {
         username = configUsername;
     } else {
-        runtime:Principal? principal = runtime:getInvocationContext()?.principal;
-        if (principal is runtime:Principal) {
-            string? principalUsername = principal?.username;
-            if (principalUsername is string) {
-                username = principalUsername;
-            } else {
-                return prepareError("Failed to generate auth token since username is not provided at issuer config and the username is not defined at runtime:Principal record.");
-            }
+        string? userId = auth:getInvocationContext()?.userId;
+        if (userId is string) {
+            username = userId;
         } else {
-            return prepareError("Failed to generate auth token since username is not provided at issuer config and the runtime:Principal record is also not defined at the invocation context.");
+            return prepareError("Failed to generate auth token since username is not provided at issuer config and the username is not defined at auth:getInvocationContext() record.");
         }
     }
 
