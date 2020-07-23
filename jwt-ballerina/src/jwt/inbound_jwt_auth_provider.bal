@@ -103,6 +103,8 @@ function preloadJwksToCache(JwksConfig jwksConfig) returns @tainted Error? {
     }
 }
 
+type StringArray string[];
+
 function setInvocationContext(string credential, JwtPayload jwtPayload) {
     string? sub = jwtPayload?.sub;
     // By default set sub as username.
@@ -115,6 +117,14 @@ function setInvocationContext(string credential, JwtPayload jwtPayload) {
             json scopeString = claims["scope"];
             if (scopeString is string && scopeString != "") {
                 auth:setInvocationContext(scopes = stringutils:split(scopeString, " "));
+            }
+        } else if (claims.hasKey("scp")) {
+            json scopeString = claims["scp"];
+            if (scopeString is json[] && scopeString.length() > 0) {
+                string[]|error scopes = scopeString.cloneWithType(StringArray);
+                if (scopes is string[]) {
+                    auth:setInvocationContext(scopes = scopes);
+                }
             }
         }
     }
