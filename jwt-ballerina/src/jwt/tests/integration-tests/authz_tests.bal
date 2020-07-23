@@ -41,7 +41,14 @@ public function testScopeClaim() {
     //   "scope": "test-scope"
     // }
     http:Request req = new;
-    req.setHeader("Authorization", "Bearer eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QiLCAia2lkIjoiTlRBeFptTXhORE15WkRnM01UVTFaR00wTXpFek9ESmhaV0k0TkRObFpEVTFPR0ZrTmpGaU1RIn0.eyJzdWIiOiJiYWxsZXJpbmEiLCAiaXNzIjoiYmFsbGVyaW5hIiwgImV4cCI6MTkxMDgzODU0MSwgImp0aSI6ImY1YWRlZDUwNTg1YzQ2ZjJiOGNhMjMzZDBjMmEzYzlkIiwgImF1ZCI6WyJiYWxsZXJpbmEiLCAiYmFsbGVyaW5hLm9yZyIsICJiYWxsZXJpbmEuaW8iXSwgInNjb3BlIjoidGVzdC1zY29wZSJ9.XggMwJZ22-N9geU-NAJAUrvhdhF2qyKM9grS6On_8dJV1wkHAP6wvFZ6GfFIf4rrrhYHV4aQns5FrlU043iBS-EQOVhgHPcN3Rfcx02zw1Q7-kem63PSIf_D5jlFlRc4noIT5AsK4D5oFSNDIoEeUHxwQyJBjojlTnF8fH8DZD7xEJvFRRGabHB20DVR5NgWzdu6h--dVNd1kHrsKQ6v1WGA-GIt2r9TGHFt3vq8KYTUH7eU3ZGyoyvgKoFepMOYg0RsxNqJPINZH5c-RX-Bdf7B2bEsbZA2mhNXkDP1QQEtcsopYdoCyY76k14gctA8Nf4R0R9JMwDlm0E_7Nj9tA");
+    req.setHeader("Authorization", "Bearer eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QiLCAia2lkIjoiTlRBeFptTXhORE15WkRnM01U" +
+                "VTFaR00wTXpFek9ESmhaV0k0TkRObFpEVTFPR0ZrTmpGaU1RIn0.eyJzdWIiOiJiYWxsZXJpbmEiLCAiaXNzIjoiYmFsbGVyaW" +
+                "5hIiwgImV4cCI6MTkxMDgzODU0MSwgImp0aSI6ImY1YWRlZDUwNTg1YzQ2ZjJiOGNhMjMzZDBjMmEzYzlkIiwgImF1ZCI6WyJi" +
+                "YWxsZXJpbmEiLCAiYmFsbGVyaW5hLm9yZyIsICJiYWxsZXJpbmEuaW8iXSwgInNjb3BlIjoidGVzdC1zY29wZSJ9.XggMwJZ22" +
+                "-N9geU-NAJAUrvhdhF2qyKM9grS6On_8dJV1wkHAP6wvFZ6GfFIf4rrrhYHV4aQns5FrlU043iBS-EQOVhgHPcN3Rfcx02zw1Q" +
+                "7-kem63PSIf_D5jlFlRc4noIT5AsK4D5oFSNDIoEeUHxwQyJBjojlTnF8fH8DZD7xEJvFRRGabHB20DVR5NgWzdu6h--dVNd1k" +
+                "HrsKQ6v1WGA-GIt2r9TGHFt3vq8KYTUH7eU3ZGyoyvgKoFepMOYg0RsxNqJPINZH5c-RX-Bdf7B2bEsbZA2mhNXkDP1QQEtcso" +
+                "pYdoCyY76k14gctA8Nf4R0R9JMwDlm0E_7Nj9tA");
     var response = clientEP->get("/echo/test", req);
     if (response is http:Response) {
         assertOK(response);
@@ -74,7 +81,14 @@ public function testScpClaim() {
     //   "scp": ["test-scp"]
     // }
     http:Request req = new;
-    req.setHeader("Authorization", "Bearer eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QiLCAia2lkIjoiTlRBeFptTXhORE15WkRnM01UVTFaR00wTXpFek9ESmhaV0k0TkRObFpEVTFPR0ZrTmpGaU1RIn0.eyJzdWIiOiJiYWxsZXJpbmEiLCAiaXNzIjoiYmFsbGVyaW5hIiwgImV4cCI6MTkxMDg1NjY0MCwgImp0aSI6ImY1YWRlZDUwNTg1YzQ2ZjJiOGNhMjMzZDBjMmEzYzlkIiwgImF1ZCI6WyJiYWxsZXJpbmEiLCAiYmFsbGVyaW5hLm9yZyIsICJiYWxsZXJpbmEuaW8iXSwgInNjcCI6WyJ0ZXN0LXNjcCJdfQ.WVFSmImmUT4fUPV3RMzEF3n7ZLmjoFCCUip2u3kFyvfbK60c1zNfy-OXlIVIRR56xCDa3ZHgHuEGRL_giBVpSCn0NYZdJdDia7EQV6n8rW6ptPHsUbftmDMYictz0qXGnQYRT9IxAoSBYCSKv5aRJpYbIF6Uk1saIUl6gQ4CiHstFFDDW3cR_BUcJsZcC05OtZteKMGp_LEwLKaz_vgyQZbbBlInSfww2ZOhLk9ijZFkP6KygU9JRpk8LnSwhACW-aIBhGMRxHdZc8C_-wRqiuTggPSkoJmpctq4650PYJJh9KTKfYJRbbwSDq0g7eubb2y09Iy9Q7ZehIbhwTokmQ");
+    req.setHeader("Authorization", "Bearer eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QiLCAia2lkIjoiTlRBeFptTXhORE15WkRnM01U" +
+                "VTFaR00wTXpFek9ESmhaV0k0TkRObFpEVTFPR0ZrTmpGaU1RIn0.eyJzdWIiOiJiYWxsZXJpbmEiLCAiaXNzIjoiYmFsbGVyaW" +
+                "5hIiwgImV4cCI6MTkxMDg1NjY0MCwgImp0aSI6ImY1YWRlZDUwNTg1YzQ2ZjJiOGNhMjMzZDBjMmEzYzlkIiwgImF1ZCI6WyJi" +
+                "YWxsZXJpbmEiLCAiYmFsbGVyaW5hLm9yZyIsICJiYWxsZXJpbmEuaW8iXSwgInNjcCI6WyJ0ZXN0LXNjcCJdfQ.WVFSmImmUT4" +
+                "fUPV3RMzEF3n7ZLmjoFCCUip2u3kFyvfbK60c1zNfy-OXlIVIRR56xCDa3ZHgHuEGRL_giBVpSCn0NYZdJdDia7EQV6n8rW6pt" +
+                "PHsUbftmDMYictz0qXGnQYRT9IxAoSBYCSKv5aRJpYbIF6Uk1saIUl6gQ4CiHstFFDDW3cR_BUcJsZcC05OtZteKMGp_LEwLKa" +
+                "z_vgyQZbbBlInSfww2ZOhLk9ijZFkP6KygU9JRpk8LnSwhACW-aIBhGMRxHdZc8C_-wRqiuTggPSkoJmpctq4650PYJJh9KTKf" +
+                "YJRbbwSDq0g7eubb2y09Iy9Q7ZehIbhwTokmQ");
     var response = clientEP->get("/echo/test", req);
     if (response is http:Response) {
         assertOK(response);
@@ -108,7 +122,14 @@ public function testScopeAndScpClaim() {
     //   "scp": ["test-scp"]
     // }
     http:Request req = new;
-    req.setHeader("Authorization", "Bearer eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QiLCAia2lkIjoiTlRBeFptTXhORE15WkRnM01UVTFaR00wTXpFek9ESmhaV0k0TkRObFpEVTFPR0ZrTmpGaU1RIn0.eyJzdWIiOiJiYWxsZXJpbmEiLCAiaXNzIjoiYmFsbGVyaW5hIiwgImV4cCI6MTkxMDg1NjYyMSwgImp0aSI6ImY1YWRlZDUwNTg1YzQ2ZjJiOGNhMjMzZDBjMmEzYzlkIiwgImF1ZCI6WyJiYWxsZXJpbmEiLCAiYmFsbGVyaW5hLm9yZyIsICJiYWxsZXJpbmEuaW8iXSwgInNjb3BlIjoidGVzdC1zY29wZSIsICJzY3AiOlsidGVzdC1zY3AiXX0.GkNICuMBZVhzb-bXu6ti8XbF57N_RRZDZYpb1gX-SFvpGuITQZDw7Xdn-g2EPIon_DJ4o0K75LKrPQq60R1Ms4eLZxIto3D9R2yCortUncCy5r7oZPVq2Z9QQyIwgErLX96pOsYqPqZRO9jRHl9V98YKALUgrq8loZER7sz08MwXKq1Jj74PnceTGYTrB2LEt3AoUNpis0OIriXsx7_dRrI5eotcQ5cCdZJtLUvu4DtgC4S550j33QBbb04ACvWpFhhXA5gPe7pbc20M1yIh5LAlLLRvAXkPwiyk4GXAl9mWixSdmG0TldEeGQBKW-fPpC87-PMqV5lXGAds8DvO_g");
+    req.setHeader("Authorization", "Bearer eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QiLCAia2lkIjoiTlRBeFptTXhORE15WkRnM01U" +
+                "VTFaR00wTXpFek9ESmhaV0k0TkRObFpEVTFPR0ZrTmpGaU1RIn0.eyJzdWIiOiJiYWxsZXJpbmEiLCAiaXNzIjoiYmFsbGVyaW" +
+                "5hIiwgImV4cCI6MTkxMDg1NjYyMSwgImp0aSI6ImY1YWRlZDUwNTg1YzQ2ZjJiOGNhMjMzZDBjMmEzYzlkIiwgImF1ZCI6WyJi" +
+                "YWxsZXJpbmEiLCAiYmFsbGVyaW5hLm9yZyIsICJiYWxsZXJpbmEuaW8iXSwgInNjb3BlIjoidGVzdC1zY29wZSIsICJzY3AiOl" +
+                "sidGVzdC1zY3AiXX0.GkNICuMBZVhzb-bXu6ti8XbF57N_RRZDZYpb1gX-SFvpGuITQZDw7Xdn-g2EPIon_DJ4o0K75LKrPQq6" +
+                "0R1Ms4eLZxIto3D9R2yCortUncCy5r7oZPVq2Z9QQyIwgErLX96pOsYqPqZRO9jRHl9V98YKALUgrq8loZER7sz08MwXKq1Jj7" +
+                "4PnceTGYTrB2LEt3AoUNpis0OIriXsx7_dRrI5eotcQ5cCdZJtLUvu4DtgC4S550j33QBbb04ACvWpFhhXA5gPe7pbc20M1yIh" +
+                "5LAlLLRvAXkPwiyk4GXAl9mWixSdmG0TldEeGQBKW-fPpC87-PMqV5lXGAds8DvO_g");
     var response = clientEP->get("/echo/test", req);
     if (response is http:Response) {
         assertOK(response);
@@ -140,7 +161,14 @@ public function testNoCustomClaim() {
     //   ]
     // }
     http:Request req = new;
-    req.setHeader("Authorization", "Bearer eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QiLCAia2lkIjoiTlRBeFptTXhORE15WkRnM01UVTFaR00wTXpFek9ESmhaV0k0TkRObFpEVTFPR0ZrTmpGaU1RIn0.eyJzdWIiOiJiYWxsZXJpbmEiLCAiaXNzIjoiYmFsbGVyaW5hIiwgImV4cCI6MTkxMDg1NTEwNSwgImp0aSI6ImY1YWRlZDUwNTg1YzQ2ZjJiOGNhMjMzZDBjMmEzYzlkIiwgImF1ZCI6WyJiYWxsZXJpbmEiLCAiYmFsbGVyaW5hLm9yZyIsICJiYWxsZXJpbmEuaW8iXX0.DRrfOk1iODee7Ek433UW1aPgrJL905-IdfqdjEqJk1x6J_skvxRNYSuQDJmiORrUmQjpirQaIx6wJKc70JHig1xKlgdwGZnfCQHbrYgdybp3nrFmk7dTurxybGui0i9lbmeSE2JVRUFjuEBgPyd0khF9tIcbyZFStV8fEl9bGZeRntT6L3IRVmjxt_zP_fLr8zdj9r035VwWgq-D6-W9Go9j465cxVb_waFI4AsxNPoQ_v__xIFUV5T5mq_tVpNCPFl8k1VInuMXaCY-XKmImY8HHFKFW2QwfauWpZp4gl4ope6NFqBG3u8Gm6FEysF33ChB37xPfkcHomoBL6vziw");
+    req.setHeader("Authorization", "Bearer eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QiLCAia2lkIjoiTlRBeFptTXhORE15WkRnM01U" +
+                "VTFaR00wTXpFek9ESmhaV0k0TkRObFpEVTFPR0ZrTmpGaU1RIn0.eyJzdWIiOiJiYWxsZXJpbmEiLCAiaXNzIjoiYmFsbGVyaW" +
+                "5hIiwgImV4cCI6MTkxMDg1NTEwNSwgImp0aSI6ImY1YWRlZDUwNTg1YzQ2ZjJiOGNhMjMzZDBjMmEzYzlkIiwgImF1ZCI6WyJi" +
+                "YWxsZXJpbmEiLCAiYmFsbGVyaW5hLm9yZyIsICJiYWxsZXJpbmEuaW8iXX0.DRrfOk1iODee7Ek433UW1aPgrJL905-IdfqdjE" +
+                "qJk1x6J_skvxRNYSuQDJmiORrUmQjpirQaIx6wJKc70JHig1xKlgdwGZnfCQHbrYgdybp3nrFmk7dTurxybGui0i9lbmeSE2JV" +
+                "RUFjuEBgPyd0khF9tIcbyZFStV8fEl9bGZeRntT6L3IRVmjxt_zP_fLr8zdj9r035VwWgq-D6-W9Go9j465cxVb_waFI4AsxNP" +
+                "oQ_v__xIFUV5T5mq_tVpNCPFl8k1VInuMXaCY-XKmImY8HHFKFW2QwfauWpZp4gl4ope6NFqBG3u8Gm6FEysF33ChB37xPfkcH" +
+                "omoBL6vziw");
     var response = clientEP->get("/echo/test", req);
     if (response is http:Response) {
         assertForbidden(response);
