@@ -45,7 +45,7 @@ listener http:Listener listener02 = new(20101, {
 @http:ServiceConfig {
     basePath: "/echo",
     auth: {
-        scopes: ["test-scope"]
+        scopes: ["test-scope", "test-scp"]
     }
 }
 service echo02 on listener02 {
