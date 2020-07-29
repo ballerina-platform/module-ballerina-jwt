@@ -110,21 +110,23 @@ function setInvocationContext(string credential, JwtPayload jwtPayload) {
     // By default set sub as username.
     string username = (sub is () ? "" : sub);
     auth:setInvocationContext("jwt", credential, username);
-    map<json>? claims = jwtPayload?.customClaims;
-    if (claims is map<json>) {
-        auth:setInvocationContext(claims = claims);
-        if (claims.hasKey("scope")) {
-            json scopeString = claims["scope"];
-            if (scopeString is string && scopeString != "") {
-                auth:setInvocationContext(scopes = stringutils:split(scopeString, " "));
-            }
-        } else if (claims.hasKey("scp")) {
-            json scopeString = claims["scp"];
-            if (scopeString is json[] && scopeString.length() > 0) {
-                string[]|error scopes = scopeString.cloneWithType(StringArray);
-                if (scopes is string[]) {
-                    auth:setInvocationContext(scopes = scopes);
-                }
+    map<json>? customClaims = jwtPayload?.customClaims;
+    if (customClaims is  ()) {
+        return;
+    }
+    map<json> claims = <map<json>>customClaims;
+    auth:setInvocationContext(claims = claims);
+    if (claims.hasKey("scope")) {
+        json scopeString = claims["scope"];
+        if (scopeString is string && scopeString != "") {
+            auth:setInvocationContext(scopes = stringutils:split(scopeString, " "));
+        }
+    } else if (claims.hasKey("scp")) {
+        json scopeString = claims["scp"];
+        if (scopeString is json[] && scopeString.length() > 0) {
+            string[]|error scopes = scopeString.cloneWithType(StringArray);
+            if (scopes is string[]) {
+                auth:setInvocationContext(scopes = scopes);
             }
         }
     }
