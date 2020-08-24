@@ -14,6 +14,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
+// NOTE: All the tokens/credentials used in this test are dummy tokens/credentials and used only for testing purposes.
+
 // Test cases for JWT signature validation with TrustStore and JWK based authentication/authorization scenarios.
 //
 // The following 8 scenarios are tested here.
