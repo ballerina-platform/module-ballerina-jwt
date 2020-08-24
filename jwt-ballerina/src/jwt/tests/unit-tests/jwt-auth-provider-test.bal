@@ -14,14 +14,15 @@
 // specific language governing permissions and limitations
 // under the License.
 
+// NOTE: All the tokens/credentials used in this test are dummy tokens/credentials and used only for testing purposes.
+
 import ballerina/crypto;
 import ballerina/test;
 
 string jwt1 = "";
 string jwt2 = "";
 
-@test:Config {
-}
+@test:Config {}
 function testGenerateJwt() {
     JwtHeader header = {
         alg: "RS256",
