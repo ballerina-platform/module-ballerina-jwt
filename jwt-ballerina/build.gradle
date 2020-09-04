@@ -99,15 +99,58 @@ def artifactLibParent = file("$project.projectDir/build/lib_parent/")
 def tomlVersion = project.version.split("-")[0]
 def ballerinaCentralAccessToken = System.getenv('BALLERINA_CENTRAL_ACCESS_TOKEN')
 def targetBallerinaJar = file("$project.projectDir/target/caches/jar_cache/${moduleOrg}/${moduleName}/${tomlVersion}/${moduleOrg}-${moduleName}-${tomlVersion}.jar")
+def originalConfig = ballerinaConfigFile.text
+
+task updateTomlVersions {
+    doLast {
+        def stdlibDependentAuthVersion = project.stdlibAuthVersion.split("-")[0]
+        def stdlibDependentCacheVersion = project.stdlibCacheVersion.split("-")[0]
+        def stdlibDependentHttpVersion = project.stdlibHttpVersion.split("-")[0]
+        def stdlibDependentStringUtilsVersion = project.stdlibStringUtilsVersion.split("-")[0]
+        def stdlibDependentLogVersion = project.stdlibLogVersion.split("-")[0]
+        def stdlibDependentCryptoVersion = project.stdlibCryptoVersion.split("-")[0]
+        def stdlibDependentEncodingVersion = project.stdlibEncodingVersion.split("-")[0]
+        def stdlibDependentIoVersion = project.stdlibIoVersion.split("-")[0]
+        def stdlibDependentTimeVersion = project.stdlibTimeVersion.split("-")[0]
+        def stdlibDependentSystemVersion = project.stdlibSystemVersion.split("-")[0]
+        def stdlibDependentConfigVersion = project.stdlibConfigVersion.split("-")[0]
+        def stdlibDependentTaskVersion = project.stdlibTaskVersion.split("-")[0]
+        def stdlibDependentReflectVersion = project.stdlibReflectVersion.split("-")[0]
+        def stdlibDependentFileVersion = project.stdlibFileVersion.split("-")[0]
+        def stdlibDependentMimeVersion = project.stdlibMimeVersion.split("-")[0]
+
+        def newConfig = ballerinaConfigFile.text.replace("@project.version@", project.version)
+        newConfig = newConfig.replace("@toml.version@", tomlVersion)
+        newConfig = newConfig.replace("@stdlib.auth.version@", stdlibDependentAuthVersion)
+        newConfig = newConfig.replace("@stdlib.cache.version@", stdlibDependentCacheVersion)
+        newConfig = newConfig.replace("@stdlib.http.version@", stdlibDependentHttpVersion)
+        newConfig = newConfig.replace("@stdlib.stringutils.version@", stdlibDependentStringUtilsVersion)
+        newConfig = newConfig.replace("@stdlib.log.version@", stdlibDependentLogVersion)
+        newConfig = newConfig.replace("@stdlib.crypto.version@", stdlibDependentCryptoVersion)
+        newConfig = newConfig.replace("@stdlib.encoding.version@", stdlibDependentEncodingVersion)
+        newConfig = newConfig.replace("@stdlib.io.version@", stdlibDependentIoVersion)
+        newConfig = newConfig.replace("@stdlib.time.version@", stdlibDependentTimeVersion)
+        newConfig = newConfig.replace("@stdlib.system.version@", stdlibDependentSystemVersion)
+        newConfig = newConfig.replace("@stdlib.config.version@", stdlibDependentConfigVersion)
+        newConfig = newConfig.replace("@stdlib.task.version@", stdlibDependentTaskVersion)
+        newConfig = newConfig.replace("@stdlib.reflect.version@", stdlibDependentReflectVersion)
+        newConfig = newConfig.replace("@stdlib.file.version@", stdlibDependentFileVersion)
+        newConfig = newConfig.replace("@stdlib.mime.version@", stdlibDependentMimeVersion)
+        ballerinaConfigFile.text = newConfig
+    }
+}
+
+task revertTomlFile {
+    doLast {
+        ballerinaConfigFile.text = originalConfig
+    }
+}
 
 task ballerinaBuild {
     inputs.dir file(project.projectDir)
-    doLast {
-        def originalConfig = ballerinaConfigFile.text
-        def newConfig = ballerinaConfigFile.text.replace("@project.version@", project.version)
-        newConfig = newConfig.replace("@toml.version@", tomlVersion)
-        ballerinaConfigFile.text = newConfig
+    finalizedBy(revertTomlFile)
 
+    doLast {
         def distributionBinPath =  project.projectDir.absolutePath + "/build/target/extracted-distributions/jballerina-tools-zip/jballerina-tools-${ballerinaLangVersion}/bin"
         def additionalBuildParams = ""
 
@@ -183,7 +226,6 @@ task ballerinaBuild {
             from file("$project.projectDir/target/apidocs/${moduleName}")
             into file("$project.projectDir/build/docs_parent/docs/${moduleName}")
         }
-        ballerinaConfigFile.text = originalConfig
     }
 
     outputs.dir artifactCacheParent
@@ -216,5 +258,6 @@ publishing {
 
 unpackStdLibs.dependsOn unpackJballerinaTools
 copyStdlibs.dependsOn unpackStdLibs
-ballerinaBuild.dependsOn copyStdlibs
+updateTomlVersions.dependsOn copyStdlibs
+ballerinaBuild.dependsOn updateTomlVersions
 build.dependsOn ballerinaBuild
