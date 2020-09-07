@@ -148,6 +148,35 @@ task revertTomlFile {
     }
 }
 
+task ballerinaTest {
+    dependsOn(copyStdlibs)
+    dependsOn(updateTomlVersions)
+    finalizedBy(revertTomlFile)
+
+    def distributionBinPath =  project.projectDir.absolutePath + "/build/target/extracted-distributions/jballerina-tools-zip/jballerina-tools-${ballerinaLangVersion}/bin"
+    def debugParams = ""
+    if (project.hasProperty("debug")) {
+        debugParams = "--debug ${project.findProperty("debug")}"
+    }
+
+    doLast {
+        exec {
+            workingDir project.projectDir
+            environment "JAVA_OPTS", "-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
+            // code coverage is not added due to issue https://github.com/ballerina-platform/ballerina-lang/issues/25399
+            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                commandLine 'cmd', '/c', "$distributionBinPath/ballerina.bat test --all ${debugParams}"
+            } else {
+                commandLine 'sh', '-c', "$distributionBinPath/ballerina test --all ${debugParams}"
+            }
+        }
+    }
+}
+
+test {
+    dependsOn(ballerinaTest)
+}
+
 task ballerinaBuild {
     inputs.dir file(project.projectDir)
     finalizedBy(revertTomlFile)
@@ -155,9 +184,8 @@ task ballerinaBuild {
     doLast {
         def distributionBinPath =  project.projectDir.absolutePath + "/build/target/extracted-distributions/jballerina-tools-zip/jballerina-tools-${ballerinaLangVersion}/bin"
         def additionalBuildParams = ""
-
-        if (project.hasProperty("skipBallerinaTests")) {
-            additionalBuildParams = "--skip-tests"
+        if (project.hasProperty("debug")) {
+            additionalBuildParams = "--debug ${project.findProperty("debug")}"
         }
 
         // Build and populate caches
@@ -165,9 +193,9 @@ task ballerinaBuild {
             workingDir project.projectDir
             environment "JAVA_OPTS", "-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
             if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                commandLine 'cmd', '/c', "$distributionBinPath/ballerina.bat build ${additionalBuildParams} --code-coverage -c ${moduleName}"
+                commandLine 'cmd', '/c', "$distributionBinPath/ballerina.bat build --skip-tests ${additionalBuildParams} --code-coverage -c ${moduleName}"
             } else {
-                commandLine 'sh', '-c', "$distributionBinPath/ballerina build ${additionalBuildParams} --code-coverage -c ${moduleName}"
+                commandLine 'sh', '-c', "$distributionBinPath/ballerina build --skip-tests ${additionalBuildParams} --code-coverage -c ${moduleName}"
             }
         }
         copy {
