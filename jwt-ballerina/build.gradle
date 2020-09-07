@@ -118,6 +118,7 @@ task updateTomlVersions {
         def stdlibDependentReflectVersion = project.stdlibReflectVersion.split("-")[0]
         def stdlibDependentFileVersion = project.stdlibFileVersion.split("-")[0]
         def stdlibDependentMimeVersion = project.stdlibMimeVersion.split("-")[0]
+        def stdlibDependentRuntimeVersion = project.stdlibRuntimeVersion.split("-")[0]
 
         def newConfig = ballerinaConfigFile.text.replace("@project.version@", project.version)
         newConfig = newConfig.replace("@toml.version@", tomlVersion)
@@ -136,6 +137,7 @@ task updateTomlVersions {
         newConfig = newConfig.replace("@stdlib.reflect.version@", stdlibDependentReflectVersion)
         newConfig = newConfig.replace("@stdlib.file.version@", stdlibDependentFileVersion)
         newConfig = newConfig.replace("@stdlib.mime.version@", stdlibDependentMimeVersion)
+        newConfig = newConfig.replace("@stdlib.runtime.version@", stdlibDependentRuntimeVersion)
         ballerinaConfigFile.text = newConfig
     }
 }
