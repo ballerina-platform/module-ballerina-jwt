@@ -34,7 +34,7 @@ import ballerina/time;
 #     }
 # });
 # ```
-public type OutboundJwtAuthProvider object {
+public class OutboundJwtAuthProvider {
 
     *auth:OutboundAuthProvider;
 
@@ -47,12 +47,12 @@ public type OutboundJwtAuthProvider object {
         self.jwtIssuerConfig = jwtIssuerConfig;
     }
 
-# Generates the token for JWT authentication.
-# ```ballerina
-# string|auth:Error token = outboundJwtAuthProvider.generateToken();
-# ```
-#
-# + return - Generated token or else an `auth:Error` if token can't be generated
+    # Generates the token for JWT authentication.
+    # ```ballerina
+    # string|auth:Error token = outboundJwtAuthProvider.generateToken();
+    # ```
+    #
+    # + return - Generated token or else an `auth:Error` if token can't be generated
     public function generateToken() returns string|auth:Error {
         string authToken = "";
         JwtIssuerConfig? jwtIssuerConfig = self.jwtIssuerConfig;
@@ -74,14 +74,14 @@ public type OutboundJwtAuthProvider object {
         return authToken;
     }
 
-# Inspects the incoming data and generates the token for JWT authentication.
-#
-# + data - Map of data, which is extracted from the HTTP response
-# + return - JWT as `string`, `()` if nothing to be returned or else an `auth:Error` if token can't be generated
+    # Inspects the incoming data and generates the token for JWT authentication.
+    #
+    # + data - Map of data, which is extracted from the HTTP response
+    # + return - JWT as `string`, `()` if nothing to be returned or else an `auth:Error` if token can't be generated
     public function inspect(map<anydata> data) returns string|auth:Error? {
         return ();
     }
-};
+}
 
 # Processes the auth token for JWT auth.
 #
