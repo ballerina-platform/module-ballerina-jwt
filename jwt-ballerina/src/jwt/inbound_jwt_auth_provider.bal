@@ -35,7 +35,7 @@ import ballerina/stringutils;
 # });
 # ```
 #
-public type InboundJwtAuthProvider object {
+public class InboundJwtAuthProvider {
 
     *auth:InboundAuthProvider;
 
@@ -58,13 +58,13 @@ public type InboundJwtAuthProvider object {
         }
     }
 
-# Authenticates provided JWT against `jwt:JwtValidatorConfig`.
-#```ballerina
-# boolean|auth:Error result = inboundJwtAuthProvider.authenticate("<credential>");
-# ```
-#
-# + credential - JWT to be authenticated
-# + return - `true` if authentication is successful, `false` otherwise or else an `auth:Error` if JWT validation failed
+    # Authenticates provided JWT against `jwt:JwtValidatorConfig`.
+    #```ballerina
+    # boolean|auth:Error result = inboundJwtAuthProvider.authenticate("<credential>");
+    # ```
+    #
+    # + credential - JWT to be authenticated
+    # + return - `true` if authentication is successful, `false` otherwise or else an `auth:Error` if JWT validation failed
     public function authenticate(string credential) returns @tainted (boolean|auth:Error) {
         string[] jwtComponents = stringutils:split(credential, "\\.");
         if (jwtComponents.length() != 3) {
@@ -79,7 +79,7 @@ public type InboundJwtAuthProvider object {
             return prepareAuthError("JWT validation failed.", validationResult);
         }
     }
-};
+}
 
 function preloadJwksToCache(JwksConfig jwksConfig) returns @tainted Error? {
     cache:Cache jwksCache = <cache:Cache>jwksConfig?.jwksCache;
