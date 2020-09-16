@@ -71,7 +71,7 @@ public function issueJwt(JwtHeader header, JwtPayload payload, JwtKeyStoreConfig
         NONE => {
             return jwtAssertion;
         }
-        _ => {
+        RS256 | RS384 | RS512 => {
             if (config is ()) {
                 return prepareError("Signing JWT requires JwtKeyStoreConfig with keystore information.");
             }
@@ -110,10 +110,10 @@ public function issueJwt(JwtHeader header, JwtPayload payload, JwtKeyStoreConfig
                         return prepareError("Private key signing failed for SHA512 algorithm.", signature);
                     }
                 }
-                _ => {
-                    return prepareError("Unsupported JWS algorithm.");
-                }
             }
+        }
+        _ => {
+            return prepareError("Unsupported JWS algorithm.");
         }
     }
 }
@@ -145,9 +145,11 @@ public function buildHeaderString(JwtHeader header) returns string|Error {
             NONE => {
                 headerJson[ALG] = "none";
             }
-            _ => {
-                return prepareError("Unsupported JWS algorithm.");
-            }
+            // TODO: Uncomment after https://github.com/ballerina-platform/ballerina-lang/issues/25832 get fixed.
+            // This is an extra validation to check if the const `JwtSigningAlgorithm` get updated.
+            //_ => {
+            //    return prepareError("Unsupported JWS algorithm.");
+            //}
         }
 
         string? typ = header?.typ;
