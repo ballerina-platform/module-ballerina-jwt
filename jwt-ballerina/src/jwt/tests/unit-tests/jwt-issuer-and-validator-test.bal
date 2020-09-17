@@ -23,8 +23,7 @@ import ballerina/stringutils;
 import ballerina/test;
 import ballerina/time;
 
-@test:Config {
-}
+@test:Config {}
 function testIssueJwt() {
     crypto:KeyStore keyStore = { path: KEYSTORE_PATH, password: "ballerina" };
     JwtKeyStoreConfig config = {
