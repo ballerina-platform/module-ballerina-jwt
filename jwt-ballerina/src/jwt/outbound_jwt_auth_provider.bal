@@ -43,7 +43,7 @@ public class OutboundJwtAuthProvider {
     # Provides authentication based on the provided JWT configuration.
     #
     # + jwtIssuerConfig - JWT issuer configurations
-    public function init(JwtIssuerConfig? jwtIssuerConfig = ()) {
+    public isolated function init(JwtIssuerConfig? jwtIssuerConfig = ()) {
         self.jwtIssuerConfig = jwtIssuerConfig;
     }
 
@@ -53,7 +53,7 @@ public class OutboundJwtAuthProvider {
     # ```
     #
     # + return - Generated token or else an `auth:Error` if token can't be generated
-    public function generateToken() returns string|auth:Error {
+    public isolated function generateToken() returns string|auth:Error {
         string authToken = "";
         JwtIssuerConfig? jwtIssuerConfig = self.jwtIssuerConfig;
         if (jwtIssuerConfig is JwtIssuerConfig) {
@@ -78,7 +78,7 @@ public class OutboundJwtAuthProvider {
     #
     # + data - Map of data, which is extracted from the HTTP response
     # + return - JWT as `string`, `()` if nothing to be returned or else an `auth:Error` if token can't be generated
-    public function inspect(map<anydata> data) returns string|auth:Error? {
+    public isolated function inspect(map<anydata> data) returns string|auth:Error? {
         return ();
     }
 }
@@ -87,7 +87,7 @@ public class OutboundJwtAuthProvider {
 #
 # + jwtIssuerConfig - JWT issuer configurations
 # + return - JWT or else a `jwt:Error` if an error occurred while issuing JWT
-function getJwtAuthToken(JwtIssuerConfig jwtIssuerConfig) returns string|Error {
+isolated function getJwtAuthToken(JwtIssuerConfig jwtIssuerConfig) returns string|Error {
     JwtHeader header = { alg: jwtIssuerConfig.signingAlg, typ: "JWT" };
     string username;
     string? configUsername = jwtIssuerConfig?.username;

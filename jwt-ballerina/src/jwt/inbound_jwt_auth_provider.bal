@@ -44,7 +44,7 @@ public class InboundJwtAuthProvider {
     # Provides authentication based on the provided JWT.
     #
     # + jwtValidatorConfig - JWT validator configurations
-    public function init(JwtValidatorConfig jwtValidatorConfig) {
+    public isolated function init(JwtValidatorConfig jwtValidatorConfig) {
         self.jwtValidatorConfig = jwtValidatorConfig;
         JwksConfig? jwksConfig = jwtValidatorConfig?.jwksConfig;
         if (jwksConfig is JwksConfig) {
@@ -65,7 +65,7 @@ public class InboundJwtAuthProvider {
     #
     # + credential - JWT to be authenticated
     # + return - `true` if authentication is successful, `false` otherwise or else an `auth:Error` if JWT validation failed
-    public function authenticate(string credential) returns @tainted (boolean|auth:Error) {
+    public isolated function authenticate(string credential) returns @tainted (boolean|auth:Error) {
         string[] jwtComponents = stringutils:split(credential, "\\.");
         if (jwtComponents.length() != 3) {
             return false;
@@ -81,7 +81,7 @@ public class InboundJwtAuthProvider {
     }
 }
 
-function preloadJwksToCache(JwksConfig jwksConfig) returns @tainted Error? {
+isolated function preloadJwksToCache(JwksConfig jwksConfig) returns @tainted Error? {
     cache:Cache jwksCache = <cache:Cache>jwksConfig?.jwksCache;
     http:Client jwksClient = new(jwksConfig.url, jwksConfig.clientConfig);
     http:Response|http:ClientError response = jwksClient->get("");
@@ -105,7 +105,7 @@ function preloadJwksToCache(JwksConfig jwksConfig) returns @tainted Error? {
 
 type StringArray string[];
 
-function setInvocationContext(string credential, JwtPayload jwtPayload) {
+isolated function setInvocationContext(string credential, JwtPayload jwtPayload) {
     string? sub = jwtPayload?.sub;
     // By default set sub as username.
     string username = (sub is () ? "" : sub);
