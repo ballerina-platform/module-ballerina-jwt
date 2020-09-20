@@ -1,4 +1,4 @@
-name: Ballerina JWT module build
+name: PR build
 
 on: [push, pull_request]
 
