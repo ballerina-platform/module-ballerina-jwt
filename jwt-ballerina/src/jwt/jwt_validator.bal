@@ -458,10 +458,8 @@ function verifySignature(JwtSigningAlgorithm alg, byte[] assertion, byte[] signa
                 return prepareError("SHA512 singature verification failed.", result);
             }
         }
-        _ => {
-            return prepareError("Unsupported JWS algorithm.");
-        }
     }
+    return prepareError("Unsupported JWS algorithm.");
 }
 
 function validateIssuer(JwtPayload jwtPayload, string issuerConfig) returns Error? {
