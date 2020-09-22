@@ -87,7 +87,7 @@ public class OutboundJwtAuthProvider {
 #
 # + jwtIssuerConfig - JWT issuer configurations
 # + return - JWT or else a `jwt:Error` if an error occurred while issuing JWT
-function getJwtAuthToken(JwtIssuerConfig jwtIssuerConfig) returns string|Error {
+isolated function getJwtAuthToken(JwtIssuerConfig jwtIssuerConfig) returns string|Error {
     JwtHeader header = { alg: jwtIssuerConfig.signingAlg, typ: "JWT" };
     string username;
     string? configUsername = jwtIssuerConfig?.username;
