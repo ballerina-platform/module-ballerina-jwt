@@ -57,7 +57,7 @@ public type JwtKeyStoreConfig record {|
 # + payload - JwtPayload object
 # + config - JWT key store config record
 # + return - JWT as a `string` or else a `jwt:Error` if token validation fails
-public function issueJwt(JwtHeader header, JwtPayload payload, JwtKeyStoreConfig? config) returns string|Error {
+public isolated function issueJwt(JwtHeader header, JwtPayload payload, JwtKeyStoreConfig? config) returns string|Error {
     string jwtHeader = check buildHeaderString(header);
     string jwtPayload = check buildPayloadString(payload);
     string jwtAssertion = jwtHeader + "." + jwtPayload;
@@ -125,7 +125,7 @@ public function issueJwt(JwtHeader header, JwtPayload payload, JwtKeyStoreConfig
 #
 # + header - JWT header record to be built as a string
 # + return - The header string or else a `jwt:Error` if building the string fails
-public function buildHeaderString(JwtHeader header) returns string|Error {
+public isolated function buildHeaderString(JwtHeader header) returns string|Error {
     map<json> headerJson = {};
     if (!validateMandatoryJwtHeaderFields(header)) {
         return prepareError("Mandatory field signing algorithm (alg) is empty.");
@@ -175,7 +175,7 @@ public function buildHeaderString(JwtHeader header) returns string|Error {
 #
 # + payload - JWT payload record to be built as a string
 # + return - The payload string or else a `jwt:Error` if building the string fails
-public function buildPayloadString(JwtPayload payload) returns string|Error {
+public isolated function buildPayloadString(JwtPayload payload) returns string|Error {
     map<json> payloadJson = {};
     string? sub = payload?.sub;
     if (sub is string) {
@@ -215,7 +215,7 @@ public function buildPayloadString(JwtPayload payload) returns string|Error {
     return encoding:encodeBase64Url(payloadInString.toBytes());
 }
 
-function appendToMap(map<json> fromMap, map<json> toMap) returns map<json> {
+isolated function appendToMap(map<json> fromMap, map<json> toMap) returns map<json> {
     foreach json key in fromMap.keys() {
         toMap[key] = fromMap[key];
     }

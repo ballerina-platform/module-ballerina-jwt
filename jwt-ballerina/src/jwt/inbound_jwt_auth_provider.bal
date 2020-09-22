@@ -105,7 +105,7 @@ function preloadJwksToCache(JwksConfig jwksConfig) returns @tainted Error? {
 
 type StringArray string[];
 
-function setInvocationContext(string credential, JwtPayload jwtPayload) {
+isolated function setInvocationContext(string credential, JwtPayload jwtPayload) {
     string? sub = jwtPayload?.sub;
     // By default set sub as username.
     string username = (sub is () ? "" : sub);

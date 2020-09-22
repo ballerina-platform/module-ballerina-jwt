@@ -83,7 +83,7 @@ public function validateJwt(string jwt, @tainted JwtValidatorConfig config) retu
     return payload;
 }
 
-function validateFromCache(cache:Cache jwtCache, string jwt) returns JwtPayload? {
+isolated function validateFromCache(cache:Cache jwtCache, string jwt) returns JwtPayload? {
     JwtPayload payload = <JwtPayload>jwtCache.get(jwt);
     int? expTime = payload?.exp;
     // convert to current time and check the expiry time
@@ -102,7 +102,7 @@ function validateFromCache(cache:Cache jwtCache, string jwt) returns JwtPayload?
     }
 }
 
-function addToCache(cache:Cache jwtCache, string jwt, JwtPayload payload) {
+isolated function addToCache(cache:Cache jwtCache, string jwt, JwtPayload payload) {
     cache:Error? result = jwtCache.put(jwt, payload);
     if (result is cache:Error) {
         log:printDebug(function() returns string {
@@ -129,7 +129,7 @@ public function decodeJwt(string jwt) returns @tainted ([JwtHeader, JwtPayload]|
     return [jwtHeader, jwtPayload];
 }
 
-function getJwtComponents(string jwt) returns string[]|Error {
+isolated function getJwtComponents(string jwt) returns string[]|Error {
     string[] jwtComponents = stringutils:split(jwt, "\\.");
     if (jwtComponents.length() < 2 || jwtComponents.length() > 3) {
         return prepareError("Invalid JWT.");
@@ -177,7 +177,7 @@ function getJwtPayload(string encodedPayload) returns @tainted JwtPayload|Error 
     }
 }
 
-function getJwtSignature(string encodedSignature) returns byte[]|Error {
+isolated function getJwtSignature(string encodedSignature) returns byte[]|Error {
     byte[]|encoding:Error signature = encoding:decodeBase64Url(encodedSignature);
     if (signature is encoding:Error) {
         return prepareError("Base64 url decode failed for JWT signature.", signature);
@@ -185,7 +185,7 @@ function getJwtSignature(string encodedSignature) returns byte[]|Error {
     return <byte[]>signature;
 }
 
-function parseHeader(map<json> jwtHeaderJson) returns JwtHeader {
+isolated function parseHeader(map<json> jwtHeaderJson) returns JwtHeader {
     JwtHeader jwtHeader = {};
     string[] keys = jwtHeaderJson.keys();
     foreach string key in keys {
@@ -213,7 +213,7 @@ function parseHeader(map<json> jwtHeaderJson) returns JwtHeader {
     return jwtHeader;
 }
 
-function parsePayload(map<json> jwtPayloadJson) returns JwtPayload|Error {
+isolated function parsePayload(map<json> jwtPayloadJson) returns JwtPayload|Error {
     JwtPayload jwtPayload = {};
     map<json> customClaims = {};
     string[] keys = jwtPayloadJson.keys();
@@ -322,12 +322,12 @@ function validateJwtRecords(string jwt, JwtHeader jwtHeader, JwtPayload jwtPaylo
     return ();
 }
 
-function validateMandatoryJwtHeaderFields(JwtHeader jwtHeader) returns boolean {
+isolated function validateMandatoryJwtHeaderFields(JwtHeader jwtHeader) returns boolean {
     JwtSigningAlgorithm? alg = jwtHeader?.alg;
     return alg is JwtSigningAlgorithm;
 }
 
-function validateCertificate(crypto:PublicKey publicKey) returns boolean|Error {
+isolated function validateCertificate(crypto:PublicKey publicKey) returns boolean|Error {
     time:Time|error result = time:toTimeZone(time:currentTime(), "GMT");
     if (result is error) {
         return prepareError(result.message(), result);
@@ -347,8 +347,8 @@ function validateCertificate(crypto:PublicKey publicKey) returns boolean|Error {
     return false;
 }
 
-function validateSignatureByTrustStore(string jwt, JwtSigningAlgorithm alg, JwtTrustStoreConfig trustStoreConfig)
-                                       returns Error? {
+isolated function validateSignatureByTrustStore(string jwt, JwtSigningAlgorithm alg,
+                                                JwtTrustStoreConfig trustStoreConfig) returns Error? {
     crypto:PublicKey|crypto:Error publicKey = crypto:decodePublicKey(trustStoreConfig.trustStore,
                                                                      trustStoreConfig.certificateAlias);
     if (publicKey is crypto:Error) {
@@ -377,7 +377,7 @@ function validateSignatureByJwks(string jwt, string kid, JwtSigningAlgorithm alg
     _ = check validateSignature(jwt, alg, <crypto:PublicKey>publicKey);
 }
 
-function validateSignature(string jwt, JwtSigningAlgorithm alg, crypto:PublicKey publicKey) returns Error? {
+isolated function validateSignature(string jwt, JwtSigningAlgorithm alg, crypto:PublicKey publicKey) returns Error? {
     match (alg) {
         NONE => {
             return prepareError("Not a valid JWS. Signature algorithm is NONE.");
@@ -431,8 +431,8 @@ function getJwk(string kid, JwksConfig jwksConfig) returns @tainted (json|Error)
     }
 }
 
-function verifySignature(JwtSigningAlgorithm alg, byte[] assertion, byte[] signaturePart, crypto:PublicKey publicKey)
-                         returns boolean|Error {
+isolated function verifySignature(JwtSigningAlgorithm alg, byte[] assertion, byte[] signaturePart,
+                                  crypto:PublicKey publicKey) returns boolean|Error {
     match (alg) {
         RS256 => {
             boolean|crypto:Error result = crypto:verifyRsaSha256Signature(assertion, signaturePart, publicKey);
@@ -462,7 +462,7 @@ function verifySignature(JwtSigningAlgorithm alg, byte[] assertion, byte[] signa
     return prepareError("Unsupported JWS algorithm.");
 }
 
-function validateIssuer(JwtPayload jwtPayload, string issuerConfig) returns Error? {
+isolated function validateIssuer(JwtPayload jwtPayload, string issuerConfig) returns Error? {
     string? issuePayload = jwtPayload?.iss;
     if (issuePayload is string) {
         if (issuePayload != issuerConfig) {
@@ -473,7 +473,7 @@ function validateIssuer(JwtPayload jwtPayload, string issuerConfig) returns Erro
     }
 }
 
-function validateAudience(JwtPayload jwtPayload, string|string[] audienceConfig) returns Error? {
+isolated function validateAudience(JwtPayload jwtPayload, string|string[] audienceConfig) returns Error? {
     string|string[]? audiencePayload = jwtPayload?.aud;
     if (audiencePayload is string) {
         if (audienceConfig is string) {
@@ -510,7 +510,7 @@ function validateAudience(JwtPayload jwtPayload, string|string[] audienceConfig)
     }
 }
 
-function validateExpirationTime(int expTime, int clockSkew) returns boolean {
+isolated function validateExpirationTime(int expTime, int clockSkew) returns boolean {
     //Convert current time which is in milliseconds to seconds.
     if (clockSkew > 0) {
         return expTime + clockSkew > time:currentTime().time / 1000;
@@ -519,11 +519,11 @@ function validateExpirationTime(int expTime, int clockSkew) returns boolean {
     }
 }
 
-function validateNotBeforeTime(int nbf) returns boolean {
+isolated function validateNotBeforeTime(int nbf) returns boolean {
     return time:currentTime().time > nbf;
 }
 
-function convertToStringArray(json jsonData) returns string[]|Error {
+isolated function convertToStringArray(json jsonData) returns string[]|Error {
     if (jsonData is json[]) {
         string[] values = [];
         int i = 0;
