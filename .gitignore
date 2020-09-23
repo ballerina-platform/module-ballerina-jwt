@@ -22,22 +22,18 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
-# Ballerina
-Ballerina.lock
-
-# IntelliJ IDEA
+build
+.gradle/
+target
+# IDEA Files
 .idea/
 *.iml
 *.ipr
 *.iws
 
-# Generated files
-target/
-.ballerina/
+# MacOS
+*.DS_Store
 
-# Gradle
-.gradle/
-build/
-
-# Mac
-.DS_Store
+# Ballerina
+velocity.log*
+*Ballerina.lock
