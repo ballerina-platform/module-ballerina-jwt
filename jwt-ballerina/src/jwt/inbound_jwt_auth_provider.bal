@@ -84,7 +84,7 @@ public class InboundJwtAuthProvider {
 function preloadJwksToCache(JwksConfig jwksConfig) returns @tainted Error? {
     cache:Cache jwksCache = <cache:Cache>jwksConfig?.jwksCache;
     http:Client jwksClient = new(jwksConfig.url, jwksConfig.clientConfig);
-    http:Response|http:ClientError response = jwksClient->get("");
+    var response = jwksClient->get("");
     if (response is http:Response) {
         json|http:ClientError result = response.getJsonPayload();
         if (result is http:ClientError) {
@@ -99,7 +99,7 @@ function preloadJwksToCache(JwksConfig jwksConfig) returns @tainted Error? {
             }
         }
     } else {
-        return prepareError("Failed to call JWKs endpoint to preload JWKs to the cache.", response);
+        return prepareError("Failed to call JWKs endpoint to preload JWKs to the cache.", <http:ClientError>response);
     }
 }
 

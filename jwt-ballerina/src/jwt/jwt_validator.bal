@@ -413,7 +413,7 @@ function getJwk(string kid, JwksConfig jwksConfig) returns @tainted (json|Error)
         }
     }
     http:Client jwksClient = new(jwksConfig.url, jwksConfig.clientConfig);
-    http:Response|http:ClientError response = jwksClient->get("");
+    var response = jwksClient->get("");
     if (response is http:Response) {
         json|http:ClientError result = response.getJsonPayload();
         if (result is http:ClientError) {
@@ -427,7 +427,7 @@ function getJwk(string kid, JwksConfig jwksConfig) returns @tainted (json|Error)
             }
         }
     } else {
-        return prepareError("Failed to call JWKs endpoint.", response);
+        return prepareError("Failed to call JWKs endpoint.", <http:ClientError>response);
     }
 }
 
