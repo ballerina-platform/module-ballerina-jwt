@@ -49,7 +49,7 @@ Execute the commands below to build from the source.
 
 As an open source project, Ballerina welcomes contributions from the community. 
 
-You can also check for [open issues](https://github.com/ballerina-platform/module-ballerina-jwt/issues) that interest you. We look forward to receiving your contributions.
+You can also check for [open issues](https://github.com/ballerina-platform/ballerina-standard-library/issues?q=is%3Aopen+is%3Aissue+label%3A%22module%2Fjwt%22) that interest you. We look forward to receiving your contributions.
 
 For more information, go to the [contribution guidelines](https://github.com/ballerina-platform/ballerina-lang/blob/master/CONTRIBUTING.md).
 
