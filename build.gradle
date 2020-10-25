@@ -45,6 +45,7 @@ allprojects {
     version = project.version
 
     apply plugin: 'jacoco'
+    apply plugin: 'maven-publish'
 
     repositories {
         mavenLocal()
@@ -200,7 +201,6 @@ allprojects {
 
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'maven-publish'
 
     configurations {
         ballerinaStdLibs
