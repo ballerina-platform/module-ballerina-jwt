@@ -19,3 +19,13 @@ version = "@toml.version@"
 "ballerina/file" = "@stdlib.file.version@"
 "ballerina/mime" = "@stdlib.mime.version@"
 "ballerina/runtime" = "@stdlib.runtime.version@"
+
+[platform]
+target = "java11"
+
+    [[platform.libraries]]
+    artifactId = "jwt"
+    version = "@project.version@"
+    path = "../jwt-native/build/libs/jwt-native-@project.version@.jar"
+    groupId = "ballerina"
+    modules = ["jwt"]
