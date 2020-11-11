@@ -34,7 +34,7 @@ import java.net.http.HttpResponse;
  */
 public class JwksClient {
 
-    public static Object getJwks(BString url) {
+    public static Object getJwksResponse(BString url) {
         HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url.getValue())).build();
         try {

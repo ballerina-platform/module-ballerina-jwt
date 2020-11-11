@@ -17,8 +17,8 @@
 import ballerina/cache;
 import ballerina/crypto;
 import ballerina/encoding;
-import ballerina/http;
 import ballerina/io;
+import ballerina/java;
 import ballerina/lang.'int as langint;
 import ballerina/lang.'string as strings;
 import ballerina/log;
@@ -45,11 +45,9 @@ public type JwtValidatorConfig record {|
 # Represents the JWKs endpoint configurations.
 #
 # + url - URL of the JWKs endpoint
-# + clientConfig - HTTP client configurations which calls the JWKs endpoint
 # + jwksCache - Cache used to store preloaded JWKs information
 public type JwksConfig record {|
     string url;
-    http:ClientConfiguration clientConfig = {};
     cache:Cache jwksCache?;
 |};
 
@@ -276,8 +274,8 @@ isolated function parsePayload(map<json> jwtPayloadJson) returns JwtPayload|Erro
     return jwtPayload;
 }
 
-function validateJwtRecords(string jwt, JwtHeader jwtHeader, JwtPayload jwtPayload, JwtValidatorConfig config)
-                            returns @tainted Error? {
+isolated function validateJwtRecords(string jwt, JwtHeader jwtHeader, JwtPayload jwtPayload, JwtValidatorConfig config)
+                                     returns @tainted Error? {
     if (!validateMandatoryJwtHeaderFields(jwtHeader)) {
         return prepareError("Mandatory field signing algorithm (alg) is not provided in JOSE header.");
     }
@@ -362,8 +360,8 @@ isolated function validateSignatureByTrustStore(string jwt, JwtSigningAlgorithm 
     _ = check validateSignature(jwt, alg, <crypto:PublicKey>publicKey);
 }
 
-function validateSignatureByJwks(string jwt, string kid, JwtSigningAlgorithm alg, JwksConfig jwksConfig)
-                                 returns @tainted Error? {
+isolated function validateSignatureByJwks(string jwt, string kid, JwtSigningAlgorithm alg, JwksConfig jwksConfig)
+                                          returns @tainted Error? {
     json jwk = check getJwk(kid, jwksConfig);
     if (jwk is ()) {
         return prepareError("No JWK found for kid: " + kid);
@@ -398,7 +396,7 @@ isolated function validateSignature(string jwt, JwtSigningAlgorithm alg, crypto:
     }
 }
 
-function getJwk(string kid, JwksConfig jwksConfig) returns @tainted (json|Error) {
+isolated function getJwk(string kid, JwksConfig jwksConfig) returns @tainted (json|Error) {
     cache:Cache? jwksCache = jwksConfig?.jwksCache;
     if (jwksCache is cache:Cache) {
         if (jwksCache.hasKey(kid)) {
@@ -412,24 +410,31 @@ function getJwk(string kid, JwksConfig jwksConfig) returns @tainted (json|Error)
             }
         }
     }
-    http:Client jwksClient = new(jwksConfig.url, jwksConfig.clientConfig);
-    var response = jwksClient->get("");
-    if (response is http:Response) {
-        json|http:ClientError result = response.getJsonPayload();
-        if (result is http:ClientError) {
-            return prepareError(result.message(), result);
+    string|Error stringResponse = getJwksResponse(jwksConfig.url);
+    if (stringResponse is Error) {
+        return prepareError("Failed to call JWKs endpoint.", stringResponse);
+    }
+    json[] jwksArray = check getJwksArray(<string>stringResponse);
+    foreach json jwk in jwksArray {
+        if (jwk.kid == kid) {
+            return jwk;
         }
-        json payload = <json>result;
-        json[] jwks = <json[]>payload.keys;
-        foreach json jwk in jwks {
-            if (jwk.kid == kid) {
-                return jwk;
-            }
-        }
-    } else {
-        return prepareError("Failed to call JWKs endpoint.", <http:ClientError>response);
     }
 }
+
+isolated function getJwksArray(string stringResponse) returns json[]|Error {
+    json|error jsonResponse = (<string>stringResponse).fromJsonString();
+    if (jsonResponse is error) {
+        return prepareError(jsonResponse.message(), jsonResponse);
+    }
+    json payload = <json>jsonResponse;
+    json[] jwks = <json[]>(payload.keys);
+    return jwks;
+}
+
+isolated function getJwksResponse(string url) returns string|Error = @java:Method {
+    'class: "org.ballerinalang.stdlib.jwt.JwksClient"
+} external;
 
 isolated function verifySignature(JwtSigningAlgorithm alg, byte[] assertion, byte[] signaturePart,
                                   crypto:PublicKey publicKey) returns boolean|Error {

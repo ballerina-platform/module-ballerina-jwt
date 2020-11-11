@@ -16,7 +16,6 @@
 
 import ballerina/auth;
 import ballerina/cache;
-import ballerina/http;
 import ballerina/stringutils;
 
 # Represents the inbound JWT auth provider, which authenticates by validating a JWT.
@@ -81,25 +80,18 @@ public class InboundJwtAuthProvider {
     }
 }
 
-function preloadJwksToCache(JwksConfig jwksConfig) returns @tainted Error? {
+isolated function preloadJwksToCache(JwksConfig jwksConfig) returns @tainted Error? {
     cache:Cache jwksCache = <cache:Cache>jwksConfig?.jwksCache;
-    http:Client jwksClient = new(jwksConfig.url, jwksConfig.clientConfig);
-    var response = jwksClient->get("");
-    if (response is http:Response) {
-        json|http:ClientError result = response.getJsonPayload();
-        if (result is http:ClientError) {
-            return prepareError(result.message(), result);
+    string|Error stringResponse = getJwksResponse(jwksConfig.url);
+    if (stringResponse is Error) {
+        return prepareError("Failed to call JWKs endpoint to preload JWKs to the cache.", stringResponse);
+    }
+    json[] jwksArray = check getJwksArray(<string>stringResponse);
+    foreach json jwk in jwksArray {
+        cache:Error? cachedResult = jwksCache.put(<string>jwk.kid, jwk);
+        if (cachedResult is cache:Error) {
+            return prepareError("Failed to put JWK for the kid: " + <string>jwk.kid + " to the cache.", cachedResult);
         }
-        json payload = <json>result;
-        json[] jwks = <json[]>payload.keys;
-        foreach json jwk in jwks {
-            cache:Error? cachedResult = jwksCache.put(<string>jwk.kid, jwk);
-            if (cachedResult is cache:Error) {
-                return prepareError("Failed to put JWK for the kid: " + <string>jwk.kid + " to the cache.", cachedResult);
-            }
-        }
-    } else {
-        return prepareError("Failed to call JWKs endpoint to preload JWKs to the cache.", <http:ClientError>response);
     }
 }
 
