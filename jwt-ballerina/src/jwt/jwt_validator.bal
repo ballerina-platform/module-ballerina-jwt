@@ -46,6 +46,7 @@ public type JwtValidatorConfig record {|
 #
 # + url - URL of the JWKs endpoint
 # + jwksCache - Cache used to store preloaded JWKs information
+# + clientConfig - HTTP client configurations which calls the JWKs endpoint
 public type JwksConfig record {|
     string url;
     cache:Cache jwksCache?;
