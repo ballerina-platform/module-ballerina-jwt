@@ -16,6 +16,10 @@
  * under the License.
  */
 
+plugins {
+    id 'java'
+}
+
 import org.apache.tools.ant.taskdefs.condition.Os
 
 description = 'Ballerina - JWT Ballerina Generator'
@@ -107,7 +111,6 @@ task updateTomlVersions {
     doLast {
         def stdlibDependentAuthVersion = project.stdlibAuthVersion.split("-")[0]
         def stdlibDependentCacheVersion = project.stdlibCacheVersion.split("-")[0]
-        def stdlibDependentHttpVersion = project.stdlibHttpVersion.split("-")[0]
         def stdlibDependentStringUtilsVersion = project.stdlibStringUtilsVersion.split("-")[0]
         def stdlibDependentLogVersion = project.stdlibLogVersion.split("-")[0]
         def stdlibDependentCryptoVersion = project.stdlibCryptoVersion.split("-")[0]
@@ -117,16 +120,11 @@ task updateTomlVersions {
         def stdlibDependentSystemVersion = project.stdlibSystemVersion.split("-")[0]
         def stdlibDependentConfigVersion = project.stdlibConfigVersion.split("-")[0]
         def stdlibDependentTaskVersion = project.stdlibTaskVersion.split("-")[0]
-        def stdlibDependentReflectVersion = project.stdlibReflectVersion.split("-")[0]
-        def stdlibDependentFileVersion = project.stdlibFileVersion.split("-")[0]
-        def stdlibDependentMimeVersion = project.stdlibMimeVersion.split("-")[0]
-        def stdlibDependentRuntimeVersion = project.stdlibRuntimeVersion.split("-")[0]
 
         def newConfig = ballerinaConfigFile.text.replace("@project.version@", project.version)
         newConfig = newConfig.replace("@toml.version@", tomlVersion)
         newConfig = newConfig.replace("@stdlib.auth.version@", stdlibDependentAuthVersion)
         newConfig = newConfig.replace("@stdlib.cache.version@", stdlibDependentCacheVersion)
-        newConfig = newConfig.replace("@stdlib.http.version@", stdlibDependentHttpVersion)
         newConfig = newConfig.replace("@stdlib.stringutils.version@", stdlibDependentStringUtilsVersion)
         newConfig = newConfig.replace("@stdlib.log.version@", stdlibDependentLogVersion)
         newConfig = newConfig.replace("@stdlib.crypto.version@", stdlibDependentCryptoVersion)
@@ -136,10 +134,6 @@ task updateTomlVersions {
         newConfig = newConfig.replace("@stdlib.system.version@", stdlibDependentSystemVersion)
         newConfig = newConfig.replace("@stdlib.config.version@", stdlibDependentConfigVersion)
         newConfig = newConfig.replace("@stdlib.task.version@", stdlibDependentTaskVersion)
-        newConfig = newConfig.replace("@stdlib.reflect.version@", stdlibDependentReflectVersion)
-        newConfig = newConfig.replace("@stdlib.file.version@", stdlibDependentFileVersion)
-        newConfig = newConfig.replace("@stdlib.mime.version@", stdlibDependentMimeVersion)
-        newConfig = newConfig.replace("@stdlib.runtime.version@", stdlibDependentRuntimeVersion)
         ballerinaConfigFile.text = newConfig
     }
 }
