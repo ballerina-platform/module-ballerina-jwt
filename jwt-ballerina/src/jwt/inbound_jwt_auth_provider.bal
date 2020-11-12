@@ -82,7 +82,7 @@ public class InboundJwtAuthProvider {
 
 isolated function preloadJwksToCache(JwksConfig jwksConfig) returns @tainted Error? {
     cache:Cache jwksCache = <cache:Cache>jwksConfig?.jwksCache;
-    string|Error stringResponse = getJwksResponse(jwksConfig.url);
+    string|Error stringResponse = getJwksResponse(jwksConfig.url, jwksConfig.clientConfig);
     if (stringResponse is Error) {
         return prepareError("Failed to call JWKs endpoint to preload JWKs to the cache.", stringResponse);
     }

@@ -49,6 +49,31 @@ public type JwtValidatorConfig record {|
 public type JwksConfig record {|
     string url;
     cache:Cache jwksCache?;
+    ClientConfiguration clientConfig = {};
+|};
+
+# Represents the configurations of the client used to call the JWKs endpoint.
+#
+# + httpVersion - The HTTP version of the client
+# + secureSocket - SSL/TLS related configurations
+public type ClientConfiguration record {|
+    HttpVersion httpVersion = HTTP_1_1;
+    SecureSocket secureSocket?;
+|};
+
+# Represents HTTP versions.
+public enum HttpVersion {
+    HTTP_1_1,
+    HTTP_2
+}
+
+# Represents the SSL/TLS configurations.
+#
+# + disable - Disable SSL validation
+# + trustStore - Configurations associated with TrustStore
+public type SecureSocket record {|
+    boolean disable = false;
+    crypto:TrustStore trustStore?;
 |};
 
 # Represents JWT trust store configurations.
@@ -410,7 +435,7 @@ isolated function getJwk(string kid, JwksConfig jwksConfig) returns @tainted (js
             }
         }
     }
-    string|Error stringResponse = getJwksResponse(jwksConfig.url);
+    string|Error stringResponse = getJwksResponse(jwksConfig.url, jwksConfig.clientConfig);
     if (stringResponse is Error) {
         return prepareError("Failed to call JWKs endpoint.", stringResponse);
     }
@@ -432,7 +457,7 @@ isolated function getJwksArray(string stringResponse) returns json[]|Error {
     return jwks;
 }
 
-isolated function getJwksResponse(string url) returns string|Error = @java:Method {
+isolated function getJwksResponse(string url, ClientConfiguration clientConfig) returns string|Error = @java:Method {
     'class: "org.ballerinalang.stdlib.jwt.JwksClient"
 } external;
 
