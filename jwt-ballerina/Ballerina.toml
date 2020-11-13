@@ -14,6 +14,7 @@ version = "@toml.version@"
 "ballerina/system" = "@stdlib.system.version@"
 "ballerina/config" = "@stdlib.config.version@"
 "ballerina/task" = "@stdlib.task.version@"
+"ballerina/runtime" = "@stdlib.runtime.version@"
 
 [platform]
 target = "java11"
