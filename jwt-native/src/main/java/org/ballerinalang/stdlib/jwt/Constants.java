@@ -29,4 +29,15 @@ public class Constants {
     public static final String PACKAGE_NAME = "jwt";
     public static final Module JWT_PACKAGE_ID = new Module(BALLERINA_BUILTIN_PKG_PREFIX, PACKAGE_NAME, "1.0.4");
     public static final String JWT_ERROR_TYPE = "JwtError";
+
+    public static final String HTTP_VERSION = "httpVersion";
+    public static final String DISABLE = "disable";
+    public static final String SECURE_SOCKET = "secureSocket";
+    public static final String TRUSTSTORE = "trustStore";
+    public static final String PATH = "path";
+    public static final String PASSWORD = "password";
+
+    public static final String TLS = "TLS";
+    public static final String PKCS12 = "PKCS12";
+    public static final String HTTP_2 = "HTTP_2";
 }
