@@ -44,15 +44,14 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
 /**
- * Extern function to call JWKs endpoint and get the response.
+ * Extern function to call JWKs endpoint using the JDK11 HttpClient and return the payload of the HTTP response.
  */
 public class JwksClient {
 
     public static Object getJwksResponse(BString url, BMap<BString, Object> clientConfig) {
         String httpVersion = clientConfig.getStringValue(StringUtils.fromString(Constants.HTTP_VERSION)).getValue();
-        BMap<BString, Object> secureSocket = clientConfig.containsKey(StringUtils.fromString(Constants.SECURE_SOCKET)) ?
-                (BMap<BString, Object>) clientConfig.getMapValue(StringUtils.fromString(Constants.SECURE_SOCKET)) :
-                null;
+        BMap<BString, Object> secureSocket =
+                (BMap<BString, Object>) getMapValueIfPresent(clientConfig, Constants.SECURE_SOCKET);
         if (secureSocket != null) {
             boolean disable = secureSocket.getBooleanValue(StringUtils.fromString(Constants.DISABLE));
             if (disable) {
@@ -64,9 +63,8 @@ public class JwksClient {
                     return createError("Failed to init SSL context. " + e.getMessage());
                 }
             }
-            BMap<BString, Object> trustStore = secureSocket.containsKey(StringUtils.fromString(Constants.TRUSTSTORE)) ?
-                    (BMap<BString, Object>) secureSocket.getMapValue(StringUtils.fromString(Constants.TRUSTSTORE)) :
-                    null;
+            BMap<BString, BString> trustStore =
+                    (BMap<BString, BString>) getMapValueIfPresent(secureSocket, Constants.TRUSTSTORE);
             if (trustStore != null) {
                 try {
                     SSLContext sslContext = initSslContext(trustStore);
@@ -107,7 +105,7 @@ public class JwksClient {
         return sslContext;
     }
 
-    private static SSLContext initSslContext(BMap<BString, Object> trustStore) throws Exception {
+    private static SSLContext initSslContext(BMap<BString, BString> trustStore) throws Exception {
         String path = trustStore.getStringValue(StringUtils.fromString(Constants.PATH)).getValue();
         String password = trustStore.getStringValue(StringUtils.fromString(Constants.PASSWORD)).getValue();
         InputStream is = new FileInputStream(new File(path));
@@ -123,16 +121,23 @@ public class JwksClient {
         return sslContext;
     }
 
-    private static HttpClient buildHttpClient(String httpVersion, SSLContext sslContext) {
-        return HttpClient.newBuilder().version(getHttpVersion(httpVersion)).sslContext(sslContext).build();
+    private static HttpClient buildHttpClient(String httpVersion) {
+        return HttpClient.newBuilder()
+                .version(getHttpVersion(httpVersion))
+                .build();
     }
 
-    private static HttpClient buildHttpClient(String httpVersion) {
-        return HttpClient.newBuilder().version(getHttpVersion(httpVersion)).build();
+    private static HttpClient buildHttpClient(String httpVersion, SSLContext sslContext) {
+        return HttpClient.newBuilder()
+                .version(getHttpVersion(httpVersion))
+                .sslContext(sslContext)
+                .build();
     }
 
     private static Object callJwksEndpoint(HttpClient client, String url) {
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .build();
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
@@ -143,6 +148,11 @@ public class JwksClient {
         } catch (IOException | InterruptedException e) {
             return createError("Failed to send the request to JWKs endpoint. " + e.getMessage());
         }
+    }
+
+    private static BMap<?, ?> getMapValueIfPresent(BMap<BString, Object> config, String key) {
+        return config.containsKey(StringUtils.fromString(key)) ?
+                config.getMapValue(StringUtils.fromString(Constants.SECURE_SOCKET)) : null;
     }
 
     private static BError createError(String errMsg) {
