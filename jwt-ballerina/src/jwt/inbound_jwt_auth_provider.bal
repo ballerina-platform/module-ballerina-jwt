@@ -80,7 +80,7 @@ public class InboundJwtAuthProvider {
     }
 }
 
-isolated function preloadJwksToCache(JwksConfig jwksConfig) returns @tainted Error? {
+isolated function preloadJwksToCache(JwksConfig jwksConfig) returns Error? {
     cache:Cache jwksCache = <cache:Cache>jwksConfig?.jwksCache;
     string|Error stringResponse = getJwksResponse(jwksConfig.url, jwksConfig.clientConfig);
     if (stringResponse is Error) {

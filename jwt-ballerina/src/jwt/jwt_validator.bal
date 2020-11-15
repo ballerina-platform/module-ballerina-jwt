@@ -94,7 +94,7 @@ public type JwtTrustStoreConfig record {|
 # + jwt - JWT that needs to be validated
 # + config - JWT validator config record
 # + return - JWT payload or else a `jwt:Error` if token validation fails
-public function validateJwt(string jwt, @tainted JwtValidatorConfig config) returns @tainted (JwtPayload|Error) {
+public function validateJwt(string jwt, JwtValidatorConfig config) returns @tainted (JwtPayload|Error) {
     if (config.jwtCache.hasKey(jwt)) {
         JwtPayload? payload = validateFromCache(config.jwtCache, jwt);
         if (payload is JwtPayload) {
@@ -303,7 +303,7 @@ isolated function parsePayload(map<json> jwtPayloadJson) returns JwtPayload|Erro
 }
 
 isolated function validateJwtRecords(string jwt, JwtHeader jwtHeader, JwtPayload jwtPayload, JwtValidatorConfig config)
-                                     returns @tainted Error? {
+                                     returns Error? {
     if (!validateMandatoryJwtHeaderFields(jwtHeader)) {
         return prepareError("Mandatory field signing algorithm (alg) is not provided in JOSE header.");
     }
@@ -389,7 +389,7 @@ isolated function validateSignatureByTrustStore(string jwt, JwtSigningAlgorithm 
 }
 
 isolated function validateSignatureByJwks(string jwt, string kid, JwtSigningAlgorithm alg, JwksConfig jwksConfig)
-                                          returns @tainted Error? {
+                                          returns Error? {
     json jwk = check getJwk(kid, jwksConfig);
     if (jwk is ()) {
         return prepareError("No JWK found for kid: " + kid);
@@ -424,7 +424,7 @@ isolated function validateSignature(string jwt, JwtSigningAlgorithm alg, crypto:
     }
 }
 
-isolated function getJwk(string kid, JwksConfig jwksConfig) returns @tainted (json|Error) {
+isolated function getJwk(string kid, JwksConfig jwksConfig) returns json|Error {
     cache:Cache? jwksCache = jwksConfig?.jwksCache;
     if (jwksCache is cache:Cache) {
         if (jwksCache.hasKey(kid)) {

@@ -152,7 +152,7 @@ public class JwksClient {
 
     private static BMap<?, ?> getMapValueIfPresent(BMap<BString, Object> config, String key) {
         return config.containsKey(StringUtils.fromString(key)) ?
-                config.getMapValue(StringUtils.fromString(Constants.SECURE_SOCKET)) : null;
+                config.getMapValue(StringUtils.fromString(key)) : null;
     }
 
     private static BError createError(String errMsg) {
