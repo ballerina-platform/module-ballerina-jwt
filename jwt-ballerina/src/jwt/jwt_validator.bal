@@ -110,35 +110,25 @@ public function validateJwt(string jwt, JwtValidatorConfig config) returns @tain
 isolated function validateFromCache(cache:Cache jwtCache, string jwt) returns JwtPayload? {
     JwtPayload payload = <JwtPayload>jwtCache.get(jwt);
     int? expTime = payload?.exp;
-    final string jwtPayload = payload.toString();
     // convert to current time and check the expiry time
     if (expTime is () || expTime > (time:currentTime().time / 1000)) {
-        log:printDebug(isolated function() returns string {
-            return "JWT validated from the cache. JWT payload: " + jwtPayload;
-        });
+        log:printDebug("JWT validated from the cache. JWT payload: " + payload.toString());
         return payload;
     } else {
         cache:Error? result = jwtCache.invalidate(jwt);
         if (result is cache:Error) {
-            log:printDebug(isolated function() returns string {
-                return "Failed to invalidate JWT from the cache. JWT payload: " + jwtPayload;
-            });
+            log:printDebug("Failed to invalidate JWT from the cache. JWT payload: " + payload.toString());
         }
     }
 }
 
 isolated function addToCache(cache:Cache jwtCache, string jwt, JwtPayload payload) {
     cache:Error? result = jwtCache.put(jwt, payload);
-    final string jwtPayload = payload.toString();
     if (result is cache:Error) {
-        log:printDebug(isolated function() returns string {
-            return "Failed to add JWT to the cache. JWT payload: " + jwtPayload;
-        });
+        log:printDebug("Failed to add JWT to the cache. JWT payload: " + payload.toString());
         return;
     }
-    log:printDebug(isolated function() returns string {
-        return "JWT added to the cache. JWT payload: " + jwtPayload;
-    });
+    log:printDebug("JWT added to the cache. JWT payload: " + payload.toString());
 }
 
 # Decodes the given JWT string.
@@ -432,10 +422,7 @@ isolated function getJwk(string kid, JwksConfig jwksConfig) returns json|Error {
             if (jwk is json) {
                 return jwk;
             } else {
-                final string kidValue = kid;
-                log:printDebug(isolated function() returns string {
-                    return "Failed to retrieve JWK for the kid: " + kidValue + " from the cache";
-                });
+                log:printDebug("Failed to retrieve JWK for the kid: " + kid + " from the cache");
             }
         }
     }
