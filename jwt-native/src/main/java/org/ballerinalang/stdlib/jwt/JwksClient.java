@@ -112,12 +112,10 @@ public class JwksClient {
         char[] passphrase = password.toCharArray();
         KeyStore ks = KeyStore.getInstance(Constants.PKCS12);
         ks.load(is, passphrase);
-        KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-        kmf.init(ks, passphrase);
         TrustManagerFactory tmf = TrustManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
         tmf.init(ks);
         SSLContext sslContext = SSLContext.getInstance(Constants.TLS);
-        sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), new SecureRandom());
+        sslContext.init(null, tmf.getTrustManagers(), new SecureRandom());
         return sslContext;
     }
 
@@ -144,7 +142,7 @@ public class JwksClient {
                 return StringUtils.fromString(response.body());
             }
             return createError("Failed to get a success response from JWKs endpoint. Response Code: " +
-                                       response.statusCode());
+                                       response.statusCode() + ". Response Body: " + response.body());
         } catch (IOException | InterruptedException e) {
             return createError("Failed to send the request to JWKs endpoint. " + e.getMessage());
         }
