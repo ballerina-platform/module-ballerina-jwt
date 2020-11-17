@@ -17,7 +17,6 @@
 import ballerina/cache;
 import ballerina/crypto;
 import ballerina/encoding;
-import ballerina/io;
 import ballerina/java;
 import ballerina/lang.'int as langint;
 import ballerina/lang.'string as strings;
@@ -94,7 +93,7 @@ public type JwtTrustStoreConfig record {|
 # + jwt - JWT that needs to be validated
 # + config - JWT validator config record
 # + return - JWT payload or else a `jwt:Error` if token validation fails
-public function validateJwt(string jwt, JwtValidatorConfig config) returns @tainted (JwtPayload|Error) {
+public isolated function validateJwt(string jwt, JwtValidatorConfig config) returns JwtPayload|Error {
     if (config.jwtCache.hasKey(jwt)) {
         JwtPayload? payload = validateFromCache(config.jwtCache, jwt);
         if (payload is JwtPayload) {
@@ -138,7 +137,7 @@ isolated function addToCache(cache:Cache jwtCache, string jwt, JwtPayload payloa
 #
 # + jwt - JWT that needs to be decoded
 # + return - The JWT header and payload tuple or else a `jwt:Error` if token decoding fails
-public function decodeJwt(string jwt) returns @tainted ([JwtHeader, JwtPayload]|Error) {
+public isolated function decodeJwt(string jwt) returns [JwtHeader, JwtPayload]|Error {
     string[] encodedJwtComponents = check getJwtComponents(jwt);
     JwtHeader jwtHeader = check getJwtHeader(encodedJwtComponents[0]);
     JwtPayload jwtPayload = check getJwtPayload(encodedJwtComponents[1]);
@@ -153,7 +152,7 @@ isolated function getJwtComponents(string jwt) returns string[]|Error {
     return jwtComponents;
 }
 
-function getJwtHeader(string encodedHeader) returns @tainted JwtHeader|Error {
+isolated function getJwtHeader(string encodedHeader) returns JwtHeader|Error {
     byte[]|error header = encoding:decodeBase64Url(encodedHeader);
     if (header is byte[]) {
         string|error result = strings:fromBytes(header);
@@ -161,10 +160,8 @@ function getJwtHeader(string encodedHeader) returns @tainted JwtHeader|Error {
             return prepareError(result.message(), result);
         }
         string jwtHeader = <string>result;
-
-        io:StringReader reader = new(jwtHeader);
-        json|io:Error jsonHeader = reader.readJson();
-        if (jsonHeader is io:Error) {
+        json|error jsonHeader = jwtHeader.fromJsonString();
+        if (jsonHeader is error) {
             return prepareError("String to JSON conversion failed for JWT header.", jsonHeader);
         }
         return parseHeader(<map<json>>jsonHeader);
@@ -173,7 +170,7 @@ function getJwtHeader(string encodedHeader) returns @tainted JwtHeader|Error {
     }
 }
 
-function getJwtPayload(string encodedPayload) returns @tainted JwtPayload|Error {
+isolated function getJwtPayload(string encodedPayload) returns JwtPayload|Error {
     byte[]|error payload = encoding:decodeBase64Url(encodedPayload);
     if (payload is byte[]) {
         string|error result = strings:fromBytes(payload);
@@ -181,10 +178,8 @@ function getJwtPayload(string encodedPayload) returns @tainted JwtPayload|Error 
             return prepareError(result.message(), result);
         }
         string jwtPayload = <string>result;
-
-        io:StringReader reader = new(jwtPayload);
-        json|io:Error jsonPayload = reader.readJson();
-        if (jsonPayload is io:Error) {
+        json|error jsonPayload = jwtPayload.fromJsonString();
+        if (jsonPayload is error) {
             return prepareError("String to JSON conversion failed for JWT paylaod.", jsonPayload);
         }
         return parsePayload(<map<json>>jsonPayload);
