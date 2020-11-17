@@ -5,7 +5,6 @@ version = "@toml.version@"
 [dependencies]
 "ballerina/auth" = "@stdlib.auth.version@"
 "ballerina/cache" = "@stdlib.cache.version@"
-"ballerina/http" = "@stdlib.http.version@"
 "ballerina/stringutils" = "@stdlib.stringutils.version@"
 "ballerina/log" = "@stdlib.log.version@"
 "ballerina/crypto" = "@stdlib.crypto.version@"
@@ -15,7 +14,14 @@ version = "@toml.version@"
 "ballerina/system" = "@stdlib.system.version@"
 "ballerina/config" = "@stdlib.config.version@"
 "ballerina/task" = "@stdlib.task.version@"
-"ballerina/reflect" = "@stdlib.reflect.version@"
-"ballerina/file" = "@stdlib.file.version@"
-"ballerina/mime" = "@stdlib.mime.version@"
 "ballerina/runtime" = "@stdlib.runtime.version@"
+
+[platform]
+target = "java11"
+
+    [[platform.libraries]]
+    artifactId = "jwt"
+    version = "@project.version@"
+    path = "../jwt-native/build/libs/jwt-native-@project.version@.jar"
+    groupId = "ballerina"
+    modules = ["jwt"]

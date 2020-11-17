@@ -17,8 +17,8 @@
 import ballerina/cache;
 import ballerina/crypto;
 import ballerina/encoding;
-import ballerina/http;
 import ballerina/io;
+import ballerina/java;
 import ballerina/lang.'int as langint;
 import ballerina/lang.'string as strings;
 import ballerina/log;
@@ -45,12 +45,36 @@ public type JwtValidatorConfig record {|
 # Represents the JWKs endpoint configurations.
 #
 # + url - URL of the JWKs endpoint
-# + clientConfig - HTTP client configurations which calls the JWKs endpoint
 # + jwksCache - Cache used to store preloaded JWKs information
+# + clientConfig - HTTP client configurations which calls the JWKs endpoint
 public type JwksConfig record {|
     string url;
-    http:ClientConfiguration clientConfig = {};
     cache:Cache jwksCache?;
+    ClientConfiguration clientConfig = {};
+|};
+
+# Represents the configurations of the client used to call the JWKs endpoint.
+#
+# + httpVersion - The HTTP version of the client
+# + secureSocket - SSL/TLS related configurations
+public type ClientConfiguration record {|
+    HttpVersion httpVersion = HTTP_1_1;
+    SecureSocket secureSocket?;
+|};
+
+# Represents HTTP versions.
+public enum HttpVersion {
+    HTTP_1_1,
+    HTTP_2
+}
+
+# Represents the SSL/TLS configurations.
+#
+# + disable - Disable SSL validation
+# + trustStore - Configurations associated with TrustStore
+public type SecureSocket record {|
+    boolean disable = false;
+    crypto:TrustStore trustStore?;
 |};
 
 # Represents JWT trust store configurations.
@@ -70,7 +94,7 @@ public type JwtTrustStoreConfig record {|
 # + jwt - JWT that needs to be validated
 # + config - JWT validator config record
 # + return - JWT payload or else a `jwt:Error` if token validation fails
-public function validateJwt(string jwt, @tainted JwtValidatorConfig config) returns @tainted (JwtPayload|Error) {
+public function validateJwt(string jwt, JwtValidatorConfig config) returns @tainted (JwtPayload|Error) {
     if (config.jwtCache.hasKey(jwt)) {
         JwtPayload? payload = validateFromCache(config.jwtCache, jwt);
         if (payload is JwtPayload) {
@@ -88,16 +112,12 @@ isolated function validateFromCache(cache:Cache jwtCache, string jwt) returns Jw
     int? expTime = payload?.exp;
     // convert to current time and check the expiry time
     if (expTime is () || expTime > (time:currentTime().time / 1000)) {
-        log:printDebug(function() returns string {
-            return "JWT validated from the cache. JWT payload: " + payload.toString();
-        });
+        log:printDebug("JWT validated from the cache. JWT payload: " + payload.toString());
         return payload;
     } else {
         cache:Error? result = jwtCache.invalidate(jwt);
         if (result is cache:Error) {
-            log:printDebug(function() returns string {
-                return "Failed to invalidate JWT from the cache. JWT payload: " + payload.toString();
-            });
+            log:printDebug("Failed to invalidate JWT from the cache. JWT payload: " + payload.toString());
         }
     }
 }
@@ -105,14 +125,10 @@ isolated function validateFromCache(cache:Cache jwtCache, string jwt) returns Jw
 isolated function addToCache(cache:Cache jwtCache, string jwt, JwtPayload payload) {
     cache:Error? result = jwtCache.put(jwt, payload);
     if (result is cache:Error) {
-        log:printDebug(function() returns string {
-            return "Failed to add JWT to the cache. JWT payload: " + payload.toString();
-        });
+        log:printDebug("Failed to add JWT to the cache. JWT payload: " + payload.toString());
         return;
     }
-    log:printDebug(function() returns string {
-        return "JWT added to the cache. JWT payload: " + payload.toString();
-    });
+    log:printDebug("JWT added to the cache. JWT payload: " + payload.toString());
 }
 
 # Decodes the given JWT string.
@@ -276,8 +292,8 @@ isolated function parsePayload(map<json> jwtPayloadJson) returns JwtPayload|Erro
     return jwtPayload;
 }
 
-function validateJwtRecords(string jwt, JwtHeader jwtHeader, JwtPayload jwtPayload, JwtValidatorConfig config)
-                            returns @tainted Error? {
+isolated function validateJwtRecords(string jwt, JwtHeader jwtHeader, JwtPayload jwtPayload, JwtValidatorConfig config)
+                                     returns Error? {
     if (!validateMandatoryJwtHeaderFields(jwtHeader)) {
         return prepareError("Mandatory field signing algorithm (alg) is not provided in JOSE header.");
     }
@@ -362,8 +378,8 @@ isolated function validateSignatureByTrustStore(string jwt, JwtSigningAlgorithm 
     _ = check validateSignature(jwt, alg, <crypto:PublicKey>publicKey);
 }
 
-function validateSignatureByJwks(string jwt, string kid, JwtSigningAlgorithm alg, JwksConfig jwksConfig)
-                                 returns @tainted Error? {
+isolated function validateSignatureByJwks(string jwt, string kid, JwtSigningAlgorithm alg, JwksConfig jwksConfig)
+                                          returns Error? {
     json jwk = check getJwk(kid, jwksConfig);
     if (jwk is ()) {
         return prepareError("No JWK found for kid: " + kid);
@@ -398,7 +414,7 @@ isolated function validateSignature(string jwt, JwtSigningAlgorithm alg, crypto:
     }
 }
 
-function getJwk(string kid, JwksConfig jwksConfig) returns @tainted (json|Error) {
+isolated function getJwk(string kid, JwksConfig jwksConfig) returns json|Error {
     cache:Cache? jwksCache = jwksConfig?.jwksCache;
     if (jwksCache is cache:Cache) {
         if (jwksCache.hasKey(kid)) {
@@ -406,30 +422,35 @@ function getJwk(string kid, JwksConfig jwksConfig) returns @tainted (json|Error)
             if (jwk is json) {
                 return jwk;
             } else {
-                log:printDebug(function() returns string {
-                    return "Failed to retrieve JWK for the kid: " + kid + " from the cache";
-                });
+                log:printDebug("Failed to retrieve JWK for the kid: " + kid + " from the cache");
             }
         }
     }
-    http:Client jwksClient = new(jwksConfig.url, jwksConfig.clientConfig);
-    var response = jwksClient->get("");
-    if (response is http:Response) {
-        json|http:ClientError result = response.getJsonPayload();
-        if (result is http:ClientError) {
-            return prepareError(result.message(), result);
+    string|Error stringResponse = getJwksResponse(jwksConfig.url, jwksConfig.clientConfig);
+    if (stringResponse is Error) {
+        return prepareError("Failed to call JWKs endpoint.", stringResponse);
+    }
+    json[] jwksArray = check getJwksArray(<string>stringResponse);
+    foreach json jwk in jwksArray {
+        if (jwk.kid == kid) {
+            return jwk;
         }
-        json payload = <json>result;
-        json[] jwks = <json[]>payload.keys;
-        foreach json jwk in jwks {
-            if (jwk.kid == kid) {
-                return jwk;
-            }
-        }
-    } else {
-        return prepareError("Failed to call JWKs endpoint.", <http:ClientError>response);
     }
 }
+
+isolated function getJwksArray(string stringResponse) returns json[]|Error {
+    json|error jsonResponse = (<string>stringResponse).fromJsonString();
+    if (jsonResponse is error) {
+        return prepareError(jsonResponse.message(), jsonResponse);
+    }
+    json payload = <json>jsonResponse;
+    json[] jwks = <json[]>(payload.keys);
+    return jwks;
+}
+
+isolated function getJwksResponse(string url, ClientConfiguration clientConfig) returns string|Error = @java:Method {
+    'class: "org.ballerinalang.stdlib.jwt.JwksClient"
+} external;
 
 isolated function verifySignature(JwtSigningAlgorithm alg, byte[] assertion, byte[] signaturePart,
                                   crypto:PublicKey publicKey) returns boolean|Error {

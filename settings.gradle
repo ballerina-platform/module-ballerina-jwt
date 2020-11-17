@@ -13,7 +13,7 @@ plugins {
 
 rootProject.name = 'jwt'
 include(':build-config:checkstyle')
-include ':jwt-ballerina'
+include ':jwt-native', ':jwt-ballerina'
 
 gradleEnterprise {
     buildScan {

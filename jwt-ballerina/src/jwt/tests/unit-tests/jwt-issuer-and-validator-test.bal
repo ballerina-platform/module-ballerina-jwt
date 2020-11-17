@@ -474,3 +474,89 @@ function testValidateJwtWithInvalidSignature() {
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT");
     }
 }
+
+@test:Config {
+    dependsOn: ["testValidateJwtWithInvalidSignature"]
+}
+function testValidateJwtSignatureWithJwk() {
+    string jwt = "eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QiLCAia2lkIjoiTlRBeFptTXhORE15WkRnM01UVTFaR00wTXpFek9ESmhaV0k0Tk" +
+                 "RObFpEVTFPR0ZrTmpGaU1RIn0.eyJzdWIiOiJhZG1pbiIsICJpc3MiOiJiYWxsZXJpbmEiLCAiZXhwIjoxOTA3NjY1NzQ2LCAi" +
+                 "anRpIjoiMTAwMDc4MjM0YmEyMyIsICJhdWQiOlsidkV3emJjYXNKVlFtMWpWWUhVSENqaHhaNHRZYSJdfQ.E8E7VO18V6MG7Ns" +
+                 "87Y314Dqg8RYOMe0WWYlSYFhSv0mHkJQ8bSSyBJzFG0Se_7UsTWFBwzIALw6wUiP7UGraosilf8k6HGJWbTjWtLXfniJXx5Ncz" +
+                 "ikzciG8ADddksm-0AMi5uPsgAQdg7FNaH9f4vAL6SPMEYp2gN6GDnWTH7M1vnknwjOwTbQpGrPu_w2V1tbsBwSzof3Fk_cYrnt" +
+                 "u8D_pfsBu3eqFiJZD7AXUq8EYbgIxpSwvdi6_Rvw2_TAi46drouxXK2Jglz_HvheUVCERT15Y8JNJONJPJ52MsN6t297hyFV9A" +
+                 "myNPzwHxxmi753TclbapDqDnVPI1tpc-Q";
+    JwtValidatorConfig config = {
+        issuer: "ballerina",
+        audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
+        jwksConfig: {
+            url: "https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks"
+        }
+    };
+    var result = validateJwt(jwt, config);
+    if !(result is JwtPayload) {
+        string? errMsg = result.message();
+        test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT");
+    }
+}
+
+@test:Config {
+    dependsOn: ["testValidateJwtSignatureWithJwk"]
+}
+function testValidateJwtSignatureWithInvalidJwk() {
+    // There is a JWK with the same `kid`, but the `modulus` of the public key does not match.
+    string jwt = "eyJ4NXQiOiJOVEF4Wm1NeE5ETXlaRGczTVRVMVpHTTBNekV6T0RKaFpXSTRORE5sWkRVMU9HRmtOakZpTVEiLCJraWQiO" +
+             "iJOVEF4Wm1NeE5ETXlaRGczTVRVMVpHTTBNekV6T0RKaFpXSTRORE5sWkRVMU9HRmtOakZpTVEiLCJhbGciOiJSUzI1NiJ9.ey" +
+             "JzdWIiOiJhZG1pbkBjYXJib24uc3VwZXIiLCJhdWQiOiJ2RXd6YmNhc0pWUW0xalZZSFVIQ2poeFo0dFlhIiwibmJmIjoxNTg3" +
+             "NDc1Njk0LCJhenAiOiJ2RXd6YmNhc0pWUW0xalZZSFVIQ2poeFo0dFlhIiwiaXNzIjoiaHR0cHM6XC9cL2xvY2FsaG9zdDo5ND" +
+             "QzXC9vYXV0aDJcL3Rva2VuIiwiZXhwIjoxNTg3NDc1NzA0LCJpYXQiOjE1ODc0NzU2OTQsImp0aSI6ImZmMTk3NmI0LTU0MmYt" +
+             "NDgxNC1iOGNlLTg0ODNhNGYxZWE5ZiJ9.VHXgtU72omIibSfwuggIXhykivfAncUFF5-mCCrrVwRBNWpd2KEVBqizGU_onCdNo" +
+             "SsJOc608d-2Tq77ZzJkq7RXPRTxdim4lHkL9PgJpuJzbbk7-c9z3Zd10Kd7n_BuiiUCqJxQQTvfwAShjl6pHd-Z6bqBTdIPDBg" +
+             "hJnTmGgEydWDBzvl8zsUPZJAUFHLlKUBIW8Qy0tC7NpUnPWyYoXdFf0hpkQi0h58fTG9iMr-30mlFJgBRjsanbBQEemWXokZ6T" +
+             "uam1DQAQB9-Tsxk1TQ5GRyMKcsD2gWt-aJsyRLtXSwmgsUxTyA6VCLlF9oJuMxg-hQKxiDS1RSXHReczw";
+    JwtValidatorConfig config = {
+        issuer: "ballerina",
+        audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
+        jwksConfig: {
+            url: "https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks"
+        }
+    };
+    var result = validateJwt(jwt, config);
+    if !(result is Error) {
+        test:assertFail(msg = "Error in validating JWT with invalid JWK");
+    }
+}
+
+@test:Config {
+    dependsOn: ["testValidateJwtSignatureWithInvalidJwk"]
+}
+function testValidateJwtSignatureWithJwkWithClientConfig() {
+    string jwt = "eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QiLCAia2lkIjoiTlRBeFptTXhORE15WkRnM01UVTFaR00wTXpFek9ESmhaV0k0Tk" +
+                 "RObFpEVTFPR0ZrTmpGaU1RIn0.eyJzdWIiOiJhZG1pbiIsICJpc3MiOiJiYWxsZXJpbmEiLCAiZXhwIjoxOTA3NjY1NzQ2LCAi" +
+                 "anRpIjoiMTAwMDc4MjM0YmEyMyIsICJhdWQiOlsidkV3emJjYXNKVlFtMWpWWUhVSENqaHhaNHRZYSJdfQ.E8E7VO18V6MG7Ns" +
+                 "87Y314Dqg8RYOMe0WWYlSYFhSv0mHkJQ8bSSyBJzFG0Se_7UsTWFBwzIALw6wUiP7UGraosilf8k6HGJWbTjWtLXfniJXx5Ncz" +
+                 "ikzciG8ADddksm-0AMi5uPsgAQdg7FNaH9f4vAL6SPMEYp2gN6GDnWTH7M1vnknwjOwTbQpGrPu_w2V1tbsBwSzof3Fk_cYrnt" +
+                 "u8D_pfsBu3eqFiJZD7AXUq8EYbgIxpSwvdi6_Rvw2_TAi46drouxXK2Jglz_HvheUVCERT15Y8JNJONJPJ52MsN6t297hyFV9A" +
+                 "myNPzwHxxmi753TclbapDqDnVPI1tpc-Q";
+    JwtValidatorConfig config = {
+        issuer: "ballerina",
+        audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
+        jwksConfig: {
+            url: "https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks",
+            clientConfig: {
+                httpVersion: HTTP_2,
+                secureSocket: {
+                    trustStore: {
+                        path: TRUSTSTORE_PATH,
+                        password: "ballerina"
+                    }
+                }
+            }
+        }
+    };
+    var result = validateJwt(jwt, config);
+    if !(result is JwtPayload) {
+        string? errMsg = result.message();
+        test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT with client configurations");
+    }
+}
