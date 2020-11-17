@@ -23,8 +23,9 @@ import ballerina/stringutils;
 import ballerina/test;
 import ballerina/time;
 
-@test:Config {
-}
+string jwt = "";
+
+@test:Config {}
 function testIssueJwt() {
     crypto:KeyStore keyStore = { path: KEYSTORE_PATH, password: "ballerina" };
     JwtKeyStoreConfig config = {
@@ -44,17 +45,18 @@ function testIssueJwt() {
     payload.aud = ["ballerina", "ballerinaSamples"];
     payload.exp = time:currentTime().time/1000 + 600;
 
-    var results = issueJwt(jwtHeader, payload, config);
-    if (results is string) {
-        jwt2 = results;
-        string[] parts = stringutils:split(results, "\\.");
+    var result = issueJwt(jwtHeader, payload, config);
+    if (result is string) {
+        jwt = result;
+        test:assertTrue(result.startsWith("eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QifQ."));
+        string[] parts = stringutils:split(result, "\\.");
 
         // check header
-        var headerDecodedResults = encoding:decodeBase64Url(parts[0]);
-        if (headerDecodedResults is byte[]) {
-            var resultsHeader = str:fromBytes(headerDecodedResults);
-            if (resultsHeader is string) {
-                test:assertEquals("{\"alg\":\"RS256\", \"typ\":\"JWT\"}", resultsHeader, msg = "Found unexpected header");
+        var headerDecodedResult = encoding:decodeBase64Url(parts[0]);
+        if (headerDecodedResult is byte[]) {
+            var resultHeader = str:fromBytes(headerDecodedResult);
+            if (resultHeader is string) {
+                test:assertEquals("{\"alg\":\"RS256\", \"typ\":\"JWT\"}", resultHeader, msg = "Found unexpected header");
             } else {
                 test:assertFail(msg = "Expected string, but found error");
             }
@@ -63,12 +65,12 @@ function testIssueJwt() {
         }
 
         // check payload
-        var payloadDecodedResults = encoding:decodeBase64Url(parts[1]);
-        if (payloadDecodedResults is byte[]) {
-            var resultsPayload = str:fromBytes(payloadDecodedResults);
-            if (resultsPayload is string) {
-                test:assertTrue(resultsPayload.startsWith("{\"sub\":\"John\", \"iss\":\"wso2\", \""));
-                test:assertTrue(resultsPayload.endsWith("\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]}"));
+        var payloadDecodedResult = encoding:decodeBase64Url(parts[1]);
+        if (payloadDecodedResult is byte[]) {
+            var resultPayload = str:fromBytes(payloadDecodedResult);
+            if (resultPayload is string) {
+                test:assertTrue(resultPayload.startsWith("{\"sub\":\"John\", \"iss\":\"wso2\", \""));
+                test:assertTrue(resultPayload.endsWith("\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]}"));
             } else {
                 test:assertFail(msg = "Expected string, but found error");
             }
@@ -76,14 +78,12 @@ function testIssueJwt() {
             test:assertFail(msg = "Expected byte[], but found error");
         }
     } else {
-        string? errMsg = results.message();
+        string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT");
     }
 }
 
-@test:Config {
-    dependsOn: ["testIssueJwt"]
-}
+@test:Config {}
 function testIssueJwtWithSingleAud() {
     crypto:KeyStore keyStore = { path: KEYSTORE_PATH, password: "ballerina" };
     JwtKeyStoreConfig config = {
@@ -103,16 +103,16 @@ function testIssueJwtWithSingleAud() {
     payload.aud = "ballerina";
     payload.exp = time:currentTime().time/1000 + 600;
 
-    var results = issueJwt(jwtHeader, payload, config);
-    if (results is string) {
-        string[] parts = stringutils:split(results, "\\.");
+    var result = issueJwt(jwtHeader, payload, config);
+    if (result is string) {
+        string[] parts = stringutils:split(result, "\\.");
 
         // check header
-        var headerDecodedResults = encoding:decodeBase64Url(parts[0]);
-        if (headerDecodedResults is byte[]) {
-            var resultsHeader = str:fromBytes(headerDecodedResults);
-            if (resultsHeader is string) {
-                test:assertEquals("{\"alg\":\"RS256\", \"typ\":\"JWT\"}", resultsHeader, msg = "Found unexpected header");
+        var headerDecodedResult = encoding:decodeBase64Url(parts[0]);
+        if (headerDecodedResult is byte[]) {
+            var resultHeader = str:fromBytes(headerDecodedResult);
+            if (resultHeader is string) {
+                test:assertEquals("{\"alg\":\"RS256\", \"typ\":\"JWT\"}", resultHeader, msg = "Found unexpected header");
             } else {
                 test:assertFail(msg = "Expected string, but found error");
             }
@@ -121,12 +121,12 @@ function testIssueJwtWithSingleAud() {
         }
 
         // check payload
-        var payloadDecodedResults = encoding:decodeBase64Url(parts[1]);
-        if (payloadDecodedResults is byte[]) {
-            var resultsPayload = str:fromBytes(payloadDecodedResults);
-            if (resultsPayload is string) {
-                test:assertTrue(resultsPayload.startsWith("{\"sub\":\"John\", \"iss\":\"wso2\", \""));
-                test:assertTrue(resultsPayload.endsWith("\", \"aud\":\"ballerina\"}"));
+        var payloadDecodedResult = encoding:decodeBase64Url(parts[1]);
+        if (payloadDecodedResult is byte[]) {
+            var resultPayload = str:fromBytes(payloadDecodedResult);
+            if (resultPayload is string) {
+                test:assertTrue(resultPayload.startsWith("{\"sub\":\"John\", \"iss\":\"wso2\", \""));
+                test:assertTrue(resultPayload.endsWith("\", \"aud\":\"ballerina\"}"));
             } else {
                 test:assertFail(msg = "Expected string, but found error");
             }
@@ -134,14 +134,12 @@ function testIssueJwtWithSingleAud() {
             test:assertFail(msg = "Expected byte[], but found error");
         }
     } else {
-        string? errMsg = results.message();
+        string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT");
     }
 }
 
-@test:Config {
-    dependsOn: ["testIssueJwtWithSingleAud"]
-}
+@test:Config {}
 function testIssueJwtWithSingleAudAndAudAsArray() {
     crypto:KeyStore keyStore = { path: KEYSTORE_PATH, password: "ballerina" };
     JwtKeyStoreConfig config = {
@@ -161,16 +159,16 @@ function testIssueJwtWithSingleAudAndAudAsArray() {
     payload.aud = ["ballerina"];
     payload.exp = time:currentTime().time/1000 + 600;
 
-    var results = issueJwt(jwtHeader, payload, config);
-    if (results is string) {
-        string[] parts = stringutils:split(results, "\\.");
+    var result = issueJwt(jwtHeader, payload, config);
+    if (result is string) {
+        string[] parts = stringutils:split(result, "\\.");
 
         // check header
-        var headerDecodedResults = encoding:decodeBase64Url(parts[0]);
-        if (headerDecodedResults is byte[]) {
-            var resultsHeader = str:fromBytes(headerDecodedResults);
-            if (resultsHeader is string) {
-                test:assertEquals("{\"alg\":\"RS256\", \"typ\":\"JWT\"}", resultsHeader, msg = "Found unexpected header");
+        var headerDecodedResult = encoding:decodeBase64Url(parts[0]);
+        if (headerDecodedResult is byte[]) {
+            var resultHeader = str:fromBytes(headerDecodedResult);
+            if (resultHeader is string) {
+                test:assertEquals("{\"alg\":\"RS256\", \"typ\":\"JWT\"}", resultHeader, msg = "Found unexpected header");
             } else {
                 test:assertFail(msg = "Expected string, but found error");
             }
@@ -179,12 +177,12 @@ function testIssueJwtWithSingleAudAndAudAsArray() {
         }
 
         // check payload
-        var payloadDecodedResults = encoding:decodeBase64Url(parts[1]);
-        if (payloadDecodedResults is byte[]) {
-            var resultsPayload = str:fromBytes(payloadDecodedResults);
-            if (resultsPayload is string) {
-                test:assertTrue(resultsPayload.startsWith("{\"sub\":\"John\", \"iss\":\"wso2\", \""));
-                test:assertTrue(resultsPayload.endsWith("\", \"aud\":[\"ballerina\"]}"));
+        var payloadDecodedResult = encoding:decodeBase64Url(parts[1]);
+        if (payloadDecodedResult is byte[]) {
+            var resultPayload = str:fromBytes(payloadDecodedResult);
+            if (resultPayload is string) {
+                test:assertTrue(resultPayload.startsWith("{\"sub\":\"John\", \"iss\":\"wso2\", \""));
+                test:assertTrue(resultPayload.endsWith("\", \"aud\":[\"ballerina\"]}"));
             } else {
                 test:assertFail(msg = "Expected string, but found error");
             }
@@ -192,14 +190,12 @@ function testIssueJwtWithSingleAudAndAudAsArray() {
             test:assertFail(msg = "Expected byte[], but found error");
         }
     } else {
-        string? errMsg = results.message();
+        string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT");
     }
 }
 
-@test:Config {
-    dependsOn: ["testIssueJwtWithSingleAudAndAudAsArray"]
-}
+@test:Config {}
 function testIssueJwtWithNoIssOrSub() {
     crypto:KeyStore keyStore = { path: KEYSTORE_PATH, password: "ballerina" };
     JwtKeyStoreConfig config = {
@@ -217,16 +213,16 @@ function testIssueJwtWithNoIssOrSub() {
     payload.aud = ["ballerina", "ballerinaSamples"];
     payload.exp = time:currentTime().time/1000 + 600;
 
-    var results = issueJwt(jwtHeader, payload, config);
-    if (results is string) {
-        string[] parts = stringutils:split(results, "\\.");
+    var result = issueJwt(jwtHeader, payload, config);
+    if (result is string) {
+        string[] parts = stringutils:split(result, "\\.");
 
         // check header
-        var headerDecodedResults = encoding:decodeBase64Url(parts[0]);
-        if (headerDecodedResults is byte[]) {
-            var resultsHeader = str:fromBytes(headerDecodedResults);
-            if (resultsHeader is string) {
-                test:assertEquals("{\"alg\":\"RS256\", \"typ\":\"JWT\"}", resultsHeader, msg = "Found unexpected header");
+        var headerDecodedResult = encoding:decodeBase64Url(parts[0]);
+        if (headerDecodedResult is byte[]) {
+            var resultHeader = str:fromBytes(headerDecodedResult);
+            if (resultHeader is string) {
+                test:assertEquals("{\"alg\":\"RS256\", \"typ\":\"JWT\"}", resultHeader, msg = "Found unexpected header");
             } else {
                 test:assertFail(msg = "Expected string, but found error");
             }
@@ -235,12 +231,12 @@ function testIssueJwtWithNoIssOrSub() {
         }
 
         // check payload
-        var payloadDecodedResults = encoding:decodeBase64Url(parts[1]);
-        if (payloadDecodedResults is byte[]) {
-            var resultsPayload = str:fromBytes(payloadDecodedResults);
-            if (resultsPayload is string) {
-                test:assertTrue(resultsPayload.startsWith("{\"exp\":"));
-                test:assertTrue(resultsPayload.endsWith("\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]}"));
+        var payloadDecodedResult = encoding:decodeBase64Url(parts[1]);
+        if (payloadDecodedResult is byte[]) {
+            var resultPayload = str:fromBytes(payloadDecodedResult);
+            if (resultPayload is string) {
+                test:assertTrue(resultPayload.startsWith("{\"exp\":"));
+                test:assertTrue(resultPayload.endsWith("\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]}"));
             } else {
                 test:assertFail(msg = "Expected string, but found error");
             }
@@ -248,14 +244,12 @@ function testIssueJwtWithNoIssOrSub() {
             test:assertFail(msg = "Expected byte[], but found error");
         }
     } else {
-        string? errMsg = results.message();
+        string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT");
     }
 }
 
-@test:Config {
-    dependsOn: ["testIssueJwtWithNoIssOrSub"]
-}
+@test:Config {}
 function testIssueJwtWithNoAudOrSub() {
     crypto:KeyStore keyStore = { path: KEYSTORE_PATH, password: "ballerina" };
     JwtKeyStoreConfig config = {
@@ -274,16 +268,16 @@ function testIssueJwtWithNoAudOrSub() {
     payload.jti = "100078234ba23";
     payload.exp = time:currentTime().time/1000 + 600;
 
-    var results = issueJwt(jwtHeader, payload, config);
-    if (results is string) {
-        string[] parts = stringutils:split(results, "\\.");
+    var result = issueJwt(jwtHeader, payload, config);
+    if (result is string) {
+        string[] parts = stringutils:split(result, "\\.");
 
         // check header
-        var headerDecodedResults = encoding:decodeBase64Url(parts[0]);
-        if (headerDecodedResults is byte[]) {
-            var resultsHeader = str:fromBytes(headerDecodedResults);
-            if (resultsHeader is string) {
-                test:assertEquals("{\"alg\":\"RS256\", \"typ\":\"JWT\"}", resultsHeader, msg = "Found unexpected header");
+        var headerDecodedResult = encoding:decodeBase64Url(parts[0]);
+        if (headerDecodedResult is byte[]) {
+            var resultHeader = str:fromBytes(headerDecodedResult);
+            if (resultHeader is string) {
+                test:assertEquals("{\"alg\":\"RS256\", \"typ\":\"JWT\"}", resultHeader, msg = "Found unexpected header");
             } else {
                 test:assertFail(msg = "Expected string, but found error");
             }
@@ -292,12 +286,12 @@ function testIssueJwtWithNoAudOrSub() {
         }
 
         // check payload
-        var payloadDecodedResults = encoding:decodeBase64Url(parts[1]);
-        if (payloadDecodedResults is byte[]) {
-            var resultsPayload = str:fromBytes(payloadDecodedResults);
-            if (resultsPayload is string) {
-                test:assertTrue(resultsPayload.startsWith("{\"sub\":\"John\", \"iss\":\"wso2\", \"exp\":"));
-                test:assertTrue(resultsPayload.endsWith("\"}"));
+        var payloadDecodedResult = encoding:decodeBase64Url(parts[1]);
+        if (payloadDecodedResult is byte[]) {
+            var resultPayload = str:fromBytes(payloadDecodedResult);
+            if (resultPayload is string) {
+                test:assertTrue(resultPayload.startsWith("{\"sub\":\"John\", \"iss\":\"wso2\", \"exp\":"));
+                test:assertTrue(resultPayload.endsWith("\"}"));
             } else {
                 test:assertFail(msg = "Expected string, but found error");
             }
@@ -305,14 +299,12 @@ function testIssueJwtWithNoAudOrSub() {
             test:assertFail(msg = "Expected byte[], but found error");
         }
     } else {
-        string? errMsg = results.message();
+        string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT");
     }
 }
 
-@test:Config {
-    dependsOn: ["testIssueJwtWithNoAudOrSub"]
-}
+@test:Config {}
 function testIssueJwtWithCustomClaims() {
     crypto:KeyStore keyStore = { path: KEYSTORE_PATH, password: "ballerina" };
     JwtKeyStoreConfig config = {
@@ -333,16 +325,16 @@ function testIssueJwtWithCustomClaims() {
     payload.exp = time:currentTime().time/1000 + 600;
     payload.customClaims = { "scope": "test-scope" };
 
-    var results = issueJwt(jwtHeader, payload, config);
-    if (results is string) {
-        string[] parts = stringutils:split(results, "\\.");
+    var result = issueJwt(jwtHeader, payload, config);
+    if (result is string) {
+        string[] parts = stringutils:split(result, "\\.");
 
         // check header
-        var headerDecodedResults = encoding:decodeBase64Url(parts[0]);
-        if (headerDecodedResults is byte[]) {
-            var resultsHeader = str:fromBytes(headerDecodedResults);
-            if (resultsHeader is string) {
-                test:assertEquals("{\"alg\":\"RS256\", \"typ\":\"JWT\"}", resultsHeader, msg = "Found unexpected header");
+        var headerDecodedResult = encoding:decodeBase64Url(parts[0]);
+        if (headerDecodedResult is byte[]) {
+            var resultHeader = str:fromBytes(headerDecodedResult);
+            if (resultHeader is string) {
+                test:assertEquals("{\"alg\":\"RS256\", \"typ\":\"JWT\"}", resultHeader, msg = "Found unexpected header");
             } else {
                 test:assertFail(msg = "Expected string, but found error");
             }
@@ -351,12 +343,12 @@ function testIssueJwtWithCustomClaims() {
         }
 
         // check payload
-        var payloadDecodedResults = encoding:decodeBase64Url(parts[1]);
-        if (payloadDecodedResults is byte[]) {
-            var resultsPayload = str:fromBytes(payloadDecodedResults);
-            if (resultsPayload is string) {
-                test:assertTrue(resultsPayload.startsWith("{\"sub\":\"John\", \"iss\":\"wso2\", \""));
-                test:assertTrue(resultsPayload.endsWith("\", \"aud\":[\"ballerina\", \"ballerinaSamples\"], \"scope\":\"test-scope\"}"));
+        var payloadDecodedResult = encoding:decodeBase64Url(parts[1]);
+        if (payloadDecodedResult is byte[]) {
+            var resultPayload = str:fromBytes(payloadDecodedResult);
+            if (resultPayload is string) {
+                test:assertTrue(resultPayload.startsWith("{\"sub\":\"John\", \"iss\":\"wso2\", \""));
+                test:assertTrue(resultPayload.endsWith("\", \"aud\":[\"ballerina\", \"ballerinaSamples\"], \"scope\":\"test-scope\"}"));
             } else {
                 test:assertFail(msg = "Expected string, but found error");
             }
@@ -364,13 +356,13 @@ function testIssueJwtWithCustomClaims() {
             test:assertFail(msg = "Expected byte[], but found error");
         }
     } else {
-        string? errMsg = results.message();
+        string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT");
     }
 }
 
 @test:Config {
-    dependsOn: ["testIssueJwtWithCustomClaims"]
+    dependsOn: ["testIssueJwt"]
 }
 function testValidateJwt() {
     crypto:TrustStore trustStore = { path: TRUSTSTORE_PATH, password: "ballerina" };
@@ -384,7 +376,7 @@ function testValidateJwt() {
         }
     };
 
-    var result = validateJwt(jwt2, config);
+    var result = validateJwt(jwt, config);
     if !(result is JwtPayload) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT");
@@ -392,7 +384,7 @@ function testValidateJwt() {
 }
 
 @test:Config {
-    dependsOn: ["testValidateJwt"]
+    dependsOn: ["testIssueJwt"]
 }
 function testValidateJwtWithSingleAud() {
     crypto:TrustStore trustStore = { path: TRUSTSTORE_PATH, password: "ballerina" };
@@ -406,7 +398,7 @@ function testValidateJwtWithSingleAud() {
         }
     };
 
-    var result = validateJwt(jwt2, config);
+    var result = validateJwt(jwt, config);
     if !(result is JwtPayload) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT");
@@ -414,7 +406,7 @@ function testValidateJwtWithSingleAud() {
 }
 
 @test:Config {
-    dependsOn: ["testValidateJwtWithSingleAud"]
+    dependsOn: ["testIssueJwt"]
 }
 function testValidateJwtWithSingleAudAndAudAsArray() {
     crypto:TrustStore trustStore = { path: TRUSTSTORE_PATH, password: "ballerina" };
@@ -428,7 +420,7 @@ function testValidateJwtWithSingleAudAndAudAsArray() {
         }
     };
 
-    var result = validateJwt(jwt2, config);
+    var result = validateJwt(jwt, config);
     if !(result is JwtPayload) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT");
@@ -436,7 +428,7 @@ function testValidateJwtWithSingleAudAndAudAsArray() {
 }
 
 @test:Config {
-    dependsOn: ["testValidateJwtWithSingleAudAndAudAsArray"]
+    dependsOn: ["testIssueJwt"]
 }
 function testValidateJwtWithNoIssOrSub() {
     crypto:TrustStore trustStore = { path: TRUSTSTORE_PATH, password: "ballerina" };
@@ -449,7 +441,7 @@ function testValidateJwtWithNoIssOrSub() {
         }
     };
 
-    var result = validateJwt(jwt2, config);
+    var result = validateJwt(jwt, config);
     if !(result is JwtPayload) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT");
@@ -457,7 +449,7 @@ function testValidateJwtWithNoIssOrSub() {
 }
 
 @test:Config {
-    dependsOn: ["testValidateJwtWithNoIssOrSub"]
+    dependsOn: ["testIssueJwt"]
 }
 function testValidateJwtWithInvalidSignature() {
     crypto:TrustStore trustStore = { path: TRUSTSTORE_PATH, password: "ballerina" };
@@ -468,16 +460,14 @@ function testValidateJwtWithInvalidSignature() {
         }
     };
 
-    var result = validateJwt(jwt2, config);
+    var result = validateJwt(jwt, config);
     if !(result is JwtPayload) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT");
     }
 }
 
-@test:Config {
-    dependsOn: ["testValidateJwtWithInvalidSignature"]
-}
+@test:Config {}
 function testValidateJwtSignatureWithJwk() {
     string jwt = "eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QiLCAia2lkIjoiTlRBeFptTXhORE15WkRnM01UVTFaR00wTXpFek9ESmhaV0k0Tk" +
                  "RObFpEVTFPR0ZrTmpGaU1RIn0.eyJzdWIiOiJhZG1pbiIsICJpc3MiOiJiYWxsZXJpbmEiLCAiZXhwIjoxOTA3NjY1NzQ2LCAi" +
@@ -500,9 +490,7 @@ function testValidateJwtSignatureWithJwk() {
     }
 }
 
-@test:Config {
-    dependsOn: ["testValidateJwtSignatureWithJwk"]
-}
+@test:Config {}
 function testValidateJwtSignatureWithInvalidJwk() {
     // There is a JWK with the same `kid`, but the `modulus` of the public key does not match.
     string jwt = "eyJ4NXQiOiJOVEF4Wm1NeE5ETXlaRGczTVRVMVpHTTBNekV6T0RKaFpXSTRORE5sWkRVMU9HRmtOakZpTVEiLCJraWQiO" +
@@ -527,9 +515,7 @@ function testValidateJwtSignatureWithInvalidJwk() {
     }
 }
 
-@test:Config {
-    dependsOn: ["testValidateJwtSignatureWithInvalidJwk"]
-}
+@test:Config {}
 function testValidateJwtSignatureWithJwkWithClientConfig() {
     string jwt = "eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QiLCAia2lkIjoiTlRBeFptTXhORE15WkRnM01UVTFaR00wTXpFek9ESmhaV0k0Tk" +
                  "RObFpEVTFPR0ZrTmpGaU1RIn0.eyJzdWIiOiJhZG1pbiIsICJpc3MiOiJiYWxsZXJpbmEiLCAiZXhwIjoxOTA3NjY1NzQ2LCAi" +

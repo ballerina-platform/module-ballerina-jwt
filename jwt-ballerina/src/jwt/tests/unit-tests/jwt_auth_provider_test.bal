@@ -16,65 +16,17 @@
 
 // NOTE: All the tokens/credentials used in this test are dummy tokens/credentials and used only for testing purposes.
 
+import ballerina/auth;
 import ballerina/crypto;
 import ballerina/test;
 
-string jwt1 = "";
-string jwt2 = "";
-
 @test:Config {}
-function testGenerateJwt() {
-    JwtHeader header = {
-        alg: "RS256",
-        typ: "JWT"
-    };
-    JwtPayload payload = {
-        iss: "wso2",
-        sub: "John",
-        aud: "ballerina",
-        exp: 32475251189000
-    };
-    crypto:KeyStore keyStore = { path: KEYSTORE_PATH, password: "ballerina" };
-    JwtKeyStoreConfig keyStoreConfig = {
-        keyStore: keyStore,
-        keyAlias: "ballerina",
-        keyPassword: "ballerina"
-    };
-    var results = issueJwt(header, payload, keyStoreConfig);
-    if (results is string) {
-        jwt1 = results;
-        test:assertTrue(results.startsWith("eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QifQ.eyJzdWIiOiJKb2huIiwgImlzcyI6IndzbzIiLCAiZXhwIjozMjQ3NTI1MTE4OTAwMCwgImF1ZCI6ImJhbGxlcmluYSJ9."));
-    } else {
-        string? errMsg = results.message();
-        test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT");
-    }
-}
-
-@test:Config {
-    dependsOn: ["testGenerateJwt"]
-}
-function testVerifyJwt() {
-    crypto:TrustStore trustStore = { path: TRUSTSTORE_PATH, password: "ballerina" };
-    JwtValidatorConfig validatorConfig = {
-        issuer: "wso2",
-        audience: "ballerina",
-        clockSkewInSeconds: 0,
-        trustStoreConfig: {
-            trustStore: trustStore,
-            certificateAlias: "ballerina"
-        }
-    };
-    var results = validateJwt(jwt1, validatorConfig);
-    if !(results is JwtPayload) {
-        string? errMsg = results.message();
-        test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT");
-    }
-}
-
-@test:Config {
-    dependsOn: ["testGenerateJwt"]
-}
 function testJwtAuthProviderAuthenticationSuccess() {
+    string jwt = "eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QifQ.eyJzdWIiOiJKb2huIiwgImlzcyI6IndzbzIiLCAiZXhwIjoxOTIwOTQ0OTE" +
+                 "yLCAiYXVkIjoiYmFsbGVyaW5hIn0.f22pKKF8kVbUq0UhCo3iqfAW_k9lTp5YolQGOHWmc9gmmbcmHEYs69jpujKAZy_41gkHD" +
+                 "J4Qknu_jPNm1oZRAat8bXZ9Zynv_wFPbfVvm-im-B_waej_rtrIhGGRaaF43BLsb_9yLU897VhNNFJqJqr3KbI7pQiQFt2nJHN" +
+                 "teAqTQFU3s4Iw7C2ZwGH0knP_4LgLIicR6ex3iN37dVqazgq-jb266gENSuLXDRKRcTh219dSbFRaCE9f4Ae4jbQ5w4vNUbunY" +
+                 "qxJfnnJCOv95s2dR61Li08hdCFEZhwHJMKxYfUAAsR7G2mq0aOBsq1zIRo1aYgzLOCPmdLXliLCRw";
     crypto:TrustStore trustStore = { path: TRUSTSTORE_PATH, password: "ballerina" };
     JwtValidatorConfig jwtConfig = {
         issuer: "wso2",
@@ -85,11 +37,36 @@ function testJwtAuthProviderAuthenticationSuccess() {
         }
     };
     InboundJwtAuthProvider jwtAuthProvider = new(jwtConfig);
-    var results = jwtAuthProvider.authenticate(jwt1);
-    if (results is boolean) {
-        test:assertTrue(results);
+    var result = jwtAuthProvider.authenticate(jwt);
+    if (result is boolean) {
+        test:assertTrue(result);
     } else {
-        string? errMsg = results.message();
+        string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in JWT authentication");
+    }
+}
+
+@test:Config {}
+function testJwtAuthProviderAuthenticationFailure() {
+    string jwt = "eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QifQ.eyJzdWIiOiJKb2huIiwgImlzcyI6IndzbzIiLCAiZXhwIjoxOTIwOTQ0OTE" +
+                 "yLCAiYXVkIjoiYmFsbGVyaW5hIn0.f22pKKF8kVbUq0UhCo3iqfAW_k9lTp5YolQGOHWmc9gmmbcmHEYs69jpujKAZy_41gkHD" +
+                 "J4Qknu_jPNm1oZRAat8bXZ9Zynv_wFPbfVvm-im-B_waej_rtrIhGGRaaF43BLsb_9yLU897VhNNFJqJqr3KbI7pQiQFt2nJHN" +
+                 "teAqTQFU3s4Iw7C2ZwGH0knP_4LgLIicR6ex3iN37dVqazgq-jb266gENSuLXDRKRcTh219dSbFRaCE9f4Ae4jbQ5w4vNUbunY" +
+                 "qxJfnnJCOv95s2dR61Li08hdCFEZhwHJMKxYfUAAsR7G2mq0aOBsq1zIRo1aYgzLOCPmdLXliLCRw";
+    crypto:TrustStore trustStore = { path: TRUSTSTORE_PATH, password: "ballerina" };
+    JwtValidatorConfig jwtConfig = {
+        issuer: "invalid",
+        audience: "ballerina",
+        trustStoreConfig: {
+            trustStore: trustStore,
+            certificateAlias: "ballerina"
+        }
+    };
+    InboundJwtAuthProvider jwtAuthProvider = new(jwtConfig);
+    var result = jwtAuthProvider.authenticate(jwt);
+    if (result is auth:Error) {
+        test:assertEquals(result.message(), "JWT validation failed.");
+    } else {
+        test:assertFail("Error in JWT authentication");
     }
 }
