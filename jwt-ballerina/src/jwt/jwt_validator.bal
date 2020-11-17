@@ -18,8 +18,8 @@ import ballerina/cache;
 import ballerina/crypto;
 import ballerina/encoding;
 import ballerina/java;
-import ballerina/lang.'int as langint;
-import ballerina/lang.'string as strings;
+import ballerina/lang.'int;
+import ballerina/lang.'string;
 import ballerina/log;
 import ballerina/stringutils;
 import ballerina/time;
@@ -155,7 +155,7 @@ isolated function getJwtComponents(string jwt) returns string[]|Error {
 isolated function getJwtHeader(string encodedHeader) returns JwtHeader|Error {
     byte[]|error header = encoding:decodeBase64Url(encodedHeader);
     if (header is byte[]) {
-        string|error result = strings:fromBytes(header);
+        string|error result = 'string:fromBytes(header);
         if (result is error) {
             return prepareError(result.message(), result);
         }
@@ -173,7 +173,7 @@ isolated function getJwtHeader(string encodedHeader) returns JwtHeader|Error {
 isolated function getJwtPayload(string encodedPayload) returns JwtPayload|Error {
     byte[]|error payload = encoding:decodeBase64Url(encodedPayload);
     if (payload is byte[]) {
-        string|error result = strings:fromBytes(payload);
+        string|error result = 'string:fromBytes(payload);
         if (result is error) {
             return prepareError(result.message(), result);
         }
@@ -249,7 +249,7 @@ isolated function parsePayload(map<json> jwtPayloadJson) returns JwtPayload|Erro
             EXP => {
                 string exp = jwtPayloadJson[key].toJsonString();
                 customClaims[EXP] = exp;
-                int|error value = langint:fromString(exp);
+                int|error value = 'int:fromString(exp);
                 if (value is int) {
                     jwtPayload.exp = value;
                 } else {
@@ -259,7 +259,7 @@ isolated function parsePayload(map<json> jwtPayloadJson) returns JwtPayload|Erro
             NBF => {
                 string nbf = jwtPayloadJson[key].toJsonString();
                 customClaims[NBF] = nbf;
-                int|error value = langint:fromString(nbf);
+                int|error value = 'int:fromString(nbf);
                 if (value is int) {
                     jwtPayload.nbf = value;
                 } else {
@@ -269,7 +269,7 @@ isolated function parsePayload(map<json> jwtPayloadJson) returns JwtPayload|Erro
             IAT => {
                 string iat = jwtPayloadJson[key].toJsonString();
                 customClaims[IAT] = iat;
-                int|error value = langint:fromString(iat);
+                int|error value = 'int:fromString(iat);
                 if (value is int) {
                     jwtPayload.iat = value;
                 } else {

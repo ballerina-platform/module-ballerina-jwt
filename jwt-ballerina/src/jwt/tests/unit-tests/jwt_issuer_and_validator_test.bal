@@ -18,7 +18,7 @@
 
 import ballerina/crypto;
 import ballerina/encoding;
-import ballerina/lang.'string as str;
+import ballerina/lang.'string;
 import ballerina/stringutils;
 import ballerina/test;
 import ballerina/time;
@@ -77,7 +77,7 @@ isolated function testIssueJwt() {
         // check header
         var headerDecodedResult = encoding:decodeBase64Url(parts[0]);
         if (headerDecodedResult is byte[]) {
-            var resultHeader = str:fromBytes(headerDecodedResult);
+            var resultHeader = 'string:fromBytes(headerDecodedResult);
             if (resultHeader is string) {
                 test:assertEquals("{\"alg\":\"RS256\", \"typ\":\"JWT\"}", resultHeader, msg = "Found unexpected header");
             } else {
@@ -90,7 +90,7 @@ isolated function testIssueJwt() {
         // check payload
         var payloadDecodedResult = encoding:decodeBase64Url(parts[1]);
         if (payloadDecodedResult is byte[]) {
-            var resultPayload = str:fromBytes(payloadDecodedResult);
+            var resultPayload = 'string:fromBytes(payloadDecodedResult);
             if (resultPayload is string) {
                 test:assertTrue(resultPayload.startsWith("{\"sub\":\"John\", \"iss\":\"wso2\", \""));
                 test:assertTrue(resultPayload.endsWith("\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]}"));
@@ -133,7 +133,7 @@ isolated function testIssueJwtWithSingleAud() {
         // check header
         var headerDecodedResult = encoding:decodeBase64Url(parts[0]);
         if (headerDecodedResult is byte[]) {
-            var resultHeader = str:fromBytes(headerDecodedResult);
+            var resultHeader = 'string:fromBytes(headerDecodedResult);
             if (resultHeader is string) {
                 test:assertEquals("{\"alg\":\"RS256\", \"typ\":\"JWT\"}", resultHeader, msg = "Found unexpected header");
             } else {
@@ -146,7 +146,7 @@ isolated function testIssueJwtWithSingleAud() {
         // check payload
         var payloadDecodedResult = encoding:decodeBase64Url(parts[1]);
         if (payloadDecodedResult is byte[]) {
-            var resultPayload = str:fromBytes(payloadDecodedResult);
+            var resultPayload = 'string:fromBytes(payloadDecodedResult);
             if (resultPayload is string) {
                 test:assertTrue(resultPayload.startsWith("{\"sub\":\"John\", \"iss\":\"wso2\", \""));
                 test:assertTrue(resultPayload.endsWith("\", \"aud\":\"ballerina\"}"));
@@ -189,7 +189,7 @@ isolated function testIssueJwtWithSingleAudAndAudAsArray() {
         // check header
         var headerDecodedResult = encoding:decodeBase64Url(parts[0]);
         if (headerDecodedResult is byte[]) {
-            var resultHeader = str:fromBytes(headerDecodedResult);
+            var resultHeader = 'string:fromBytes(headerDecodedResult);
             if (resultHeader is string) {
                 test:assertEquals("{\"alg\":\"RS256\", \"typ\":\"JWT\"}", resultHeader, msg = "Found unexpected header");
             } else {
@@ -202,7 +202,7 @@ isolated function testIssueJwtWithSingleAudAndAudAsArray() {
         // check payload
         var payloadDecodedResult = encoding:decodeBase64Url(parts[1]);
         if (payloadDecodedResult is byte[]) {
-            var resultPayload = str:fromBytes(payloadDecodedResult);
+            var resultPayload = 'string:fromBytes(payloadDecodedResult);
             if (resultPayload is string) {
                 test:assertTrue(resultPayload.startsWith("{\"sub\":\"John\", \"iss\":\"wso2\", \""));
                 test:assertTrue(resultPayload.endsWith("\", \"aud\":[\"ballerina\"]}"));
@@ -243,7 +243,7 @@ isolated function testIssueJwtWithNoIssOrSub() {
         // check header
         var headerDecodedResult = encoding:decodeBase64Url(parts[0]);
         if (headerDecodedResult is byte[]) {
-            var resultHeader = str:fromBytes(headerDecodedResult);
+            var resultHeader = 'string:fromBytes(headerDecodedResult);
             if (resultHeader is string) {
                 test:assertEquals("{\"alg\":\"RS256\", \"typ\":\"JWT\"}", resultHeader, msg = "Found unexpected header");
             } else {
@@ -256,7 +256,7 @@ isolated function testIssueJwtWithNoIssOrSub() {
         // check payload
         var payloadDecodedResult = encoding:decodeBase64Url(parts[1]);
         if (payloadDecodedResult is byte[]) {
-            var resultPayload = str:fromBytes(payloadDecodedResult);
+            var resultPayload = 'string:fromBytes(payloadDecodedResult);
             if (resultPayload is string) {
                 test:assertTrue(resultPayload.startsWith("{\"exp\":"));
                 test:assertTrue(resultPayload.endsWith("\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]}"));
@@ -298,7 +298,7 @@ isolated function testIssueJwtWithNoAudOrSub() {
         // check header
         var headerDecodedResult = encoding:decodeBase64Url(parts[0]);
         if (headerDecodedResult is byte[]) {
-            var resultHeader = str:fromBytes(headerDecodedResult);
+            var resultHeader = 'string:fromBytes(headerDecodedResult);
             if (resultHeader is string) {
                 test:assertEquals("{\"alg\":\"RS256\", \"typ\":\"JWT\"}", resultHeader, msg = "Found unexpected header");
             } else {
@@ -311,7 +311,7 @@ isolated function testIssueJwtWithNoAudOrSub() {
         // check payload
         var payloadDecodedResult = encoding:decodeBase64Url(parts[1]);
         if (payloadDecodedResult is byte[]) {
-            var resultPayload = str:fromBytes(payloadDecodedResult);
+            var resultPayload = 'string:fromBytes(payloadDecodedResult);
             if (resultPayload is string) {
                 test:assertTrue(resultPayload.startsWith("{\"sub\":\"John\", \"iss\":\"wso2\", \"exp\":"));
                 test:assertTrue(resultPayload.endsWith("\"}"));
@@ -355,7 +355,7 @@ isolated function testIssueJwtWithCustomClaims() {
         // check header
         var headerDecodedResult = encoding:decodeBase64Url(parts[0]);
         if (headerDecodedResult is byte[]) {
-            var resultHeader = str:fromBytes(headerDecodedResult);
+            var resultHeader = 'string:fromBytes(headerDecodedResult);
             if (resultHeader is string) {
                 test:assertEquals("{\"alg\":\"RS256\", \"typ\":\"JWT\"}", resultHeader, msg = "Found unexpected header");
             } else {
@@ -368,7 +368,7 @@ isolated function testIssueJwtWithCustomClaims() {
         // check payload
         var payloadDecodedResult = encoding:decodeBase64Url(parts[1]);
         if (payloadDecodedResult is byte[]) {
-            var resultPayload = str:fromBytes(payloadDecodedResult);
+            var resultPayload = 'string:fromBytes(payloadDecodedResult);
             if (resultPayload is string) {
                 test:assertTrue(resultPayload.startsWith("{\"sub\":\"John\", \"iss\":\"wso2\", \""));
                 test:assertTrue(resultPayload.endsWith("\", \"aud\":[\"ballerina\", \"ballerinaSamples\"], \"scope\":\"test-scope\"}"));
