@@ -14,5 +14,5 @@
 // specific language governing permissions and limitations
 // under the License.
 
-const string KEYSTORE_PATH = "src/jwt/tests/resources/keystore/ballerinaKeystore.p12";
-const string TRUSTSTORE_PATH = "src/jwt/tests/resources/keystore/ballerinaTruststore.p12";
+const string KEYSTORE_PATH = "tests/resources/keystore/ballerinaKeystore.p12";
+const string TRUSTSTORE_PATH = "tests/resources/keystore/ballerinaTruststore.p12";
