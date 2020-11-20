@@ -96,23 +96,23 @@ task updateTomlVersions {
     doLast {
         def stdlibDependentAuthVersion = project.stdlibAuthVersion.split("-")[0]
         def stdlibDependentCacheVersion = project.stdlibCacheVersion.split("-")[0]
-        def stdlibDependentStringUtilsVersion = project.stdlibStringUtilsVersion.split("-")[0]
-        def stdlibDependentLogVersion = project.stdlibLogVersion.split("-")[0]
         def stdlibDependentCryptoVersion = project.stdlibCryptoVersion.split("-")[0]
         def stdlibDependentEncodingVersion = project.stdlibEncodingVersion.split("-")[0]
-        def stdlibDependentTimeVersion = project.stdlibTimeVersion.split("-")[0]
+        def stdlibDependentLogVersion = project.stdlibLogVersion.split("-")[0]
+        def stdlibDependentStringUtilsVersion = project.stdlibStringUtilsVersion.split("-")[0]
         def stdlibDependentSystemVersion = project.stdlibSystemVersion.split("-")[0]
+        def stdlibDependentTimeVersion = project.stdlibTimeVersion.split("-")[0]
 
         def newConfig = ballerinaConfigFile.text.replace("@project.version@", project.version)
         newConfig = newConfig.replace("@toml.version@", tomlVersion)
         newConfig = newConfig.replace("@stdlib.auth.version@", stdlibDependentAuthVersion)
         newConfig = newConfig.replace("@stdlib.cache.version@", stdlibDependentCacheVersion)
-        newConfig = newConfig.replace("@stdlib.stringutils.version@", stdlibDependentStringUtilsVersion)
-        newConfig = newConfig.replace("@stdlib.log.version@", stdlibDependentLogVersion)
         newConfig = newConfig.replace("@stdlib.crypto.version@", stdlibDependentCryptoVersion)
         newConfig = newConfig.replace("@stdlib.encoding.version@", stdlibDependentEncodingVersion)
-        newConfig = newConfig.replace("@stdlib.time.version@", stdlibDependentTimeVersion)
+        newConfig = newConfig.replace("@stdlib.log.version@", stdlibDependentLogVersion)
+        newConfig = newConfig.replace("@stdlib.stringutils.version@", stdlibDependentStringUtilsVersion)
         newConfig = newConfig.replace("@stdlib.system.version@", stdlibDependentSystemVersion)
+        newConfig = newConfig.replace("@stdlib.time.version@", stdlibDependentTimeVersion)
         ballerinaConfigFile.text = newConfig
     }
 }
@@ -125,14 +125,18 @@ task revertTomlFile {
 
 //TODO: remove this once loading dependencies from bir cache is fixed
 task deleteCache(type: Delete) {
+    delete "${buildDir}/target/extracted-distributions/jballerina-tools-zip/jballerina-tools-${ballerinaLangVersion}/repo/cache/ballerina/auth"
     delete "${buildDir}/target/extracted-distributions/jballerina-tools-zip/jballerina-tools-${ballerinaLangVersion}/repo/cache/ballerina/cache"
-    delete "${buildDir}/target/extracted-distributions/jballerina-tools-zip/jballerina-tools-${ballerinaLangVersion}/repo/cache/ballerina/config"
     delete "${buildDir}/target/extracted-distributions/jballerina-tools-zip/jballerina-tools-${ballerinaLangVersion}/repo/cache/ballerina/crypto"
-    delete "${buildDir}/target/extracted-distributions/jballerina-tools-zip/jballerina-tools-${ballerinaLangVersion}/repo/cache/ballerina/io"
+    delete "${buildDir}/target/extracted-distributions/jballerina-tools-zip/jballerina-tools-${ballerinaLangVersion}/repo/cache/ballerina/encoding"
+    delete "${buildDir}/target/extracted-distributions/jballerina-tools-zip/jballerina-tools-${ballerinaLangVersion}/repo/cache/ballerina/log"
     delete "${buildDir}/target/extracted-distributions/jballerina-tools-zip/jballerina-tools-${ballerinaLangVersion}/repo/cache/ballerina/stringutils"
     delete "${buildDir}/target/extracted-distributions/jballerina-tools-zip/jballerina-tools-${ballerinaLangVersion}/repo/cache/ballerina/system"
-    delete "${buildDir}/target/extracted-distributions/jballerina-tools-zip/jballerina-tools-${ballerinaLangVersion}/repo/cache/ballerina/task"
     delete "${buildDir}/target/extracted-distributions/jballerina-tools-zip/jballerina-tools-${ballerinaLangVersion}/repo/cache/ballerina/time"
+    delete "${buildDir}/target/extracted-distributions/jballerina-tools-zip/jballerina-tools-${ballerinaLangVersion}/repo/cache/ballerina/config"
+    delete "${buildDir}/target/extracted-distributions/jballerina-tools-zip/jballerina-tools-${ballerinaLangVersion}/repo/cache/ballerina/io"
+    delete "${buildDir}/target/extracted-distributions/jballerina-tools-zip/jballerina-tools-${ballerinaLangVersion}/repo/cache/ballerina/runtime"
+    delete "${buildDir}/target/extracted-distributions/jballerina-tools-zip/jballerina-tools-${ballerinaLangVersion}/repo/cache/ballerina/task"
 }
 
 task ballerinaTest {
