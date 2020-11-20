@@ -15,16 +15,6 @@ version = "@stdlib.cache.version@"
 
 [[dependency]]
 org = "ballerina"
-name = "stringutils"
-version = "@stdlib.stringutils.version@"
-
-[[dependency]]
-org = "ballerina"
-name = "log"
-version = "@stdlib.log.version@"
-
-[[dependency]]
-org = "ballerina"
 name = "crypto"
 version = "@stdlib.crypto.version@"
 
@@ -35,13 +25,13 @@ version = "@stdlib.encoding.version@"
 
 [[dependency]]
 org = "ballerina"
-name = "io"
-version = "@stdlib.io.version@"
+name = "log"
+version = "@stdlib.log.version@"
 
 [[dependency]]
 org = "ballerina"
-name = "time"
-version = "@stdlib.time.version@"
+name = "stringutils"
+version = "@stdlib.stringutils.version@"
 
 [[dependency]]
 org = "ballerina"
@@ -50,18 +40,8 @@ version = "@stdlib.system.version@"
 
 [[dependency]]
 org = "ballerina"
-name = "config"
-version = "@stdlib.config.version@"
-
-[[dependency]]
-org = "ballerina"
-name = "task"
-version = "@stdlib.task.version@"
-
-[[dependency]]
-org = "ballerina"
-name = "runtime"
-version = "@stdlib.runtime.version@"
+name = "time"
+version = "@stdlib.time.version@"
 
 [[platform.java11.dependency]]
 path = "../jwt-native/build/libs/jwt-native-@project.version@.jar"
