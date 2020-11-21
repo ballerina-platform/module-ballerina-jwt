@@ -1,27 +1,50 @@
-[project]
-org-name = "ballerina"
+[package]
+org = "ballerina"
+name = "jwt"
 version = "@toml.version@"
 
-[dependencies]
-"ballerina/auth" = "@stdlib.auth.version@"
-"ballerina/cache" = "@stdlib.cache.version@"
-"ballerina/stringutils" = "@stdlib.stringutils.version@"
-"ballerina/log" = "@stdlib.log.version@"
-"ballerina/crypto" = "@stdlib.crypto.version@"
-"ballerina/encoding" = "@stdlib.encoding.version@"
-"ballerina/io" = "@stdlib.io.version@"
-"ballerina/time" = "@stdlib.time.version@"
-"ballerina/system" = "@stdlib.system.version@"
-"ballerina/config" = "@stdlib.config.version@"
-"ballerina/task" = "@stdlib.task.version@"
-"ballerina/runtime" = "@stdlib.runtime.version@"
+[[dependency]]
+org = "ballerina"
+name = "auth"
+version = "@stdlib.auth.version@"
 
-[platform]
-target = "java11"
+[[dependency]]
+org = "ballerina"
+name = "cache"
+version = "@stdlib.cache.version@"
 
-    [[platform.libraries]]
-    artifactId = "jwt"
-    version = "@project.version@"
-    path = "../jwt-native/build/libs/jwt-native-@project.version@.jar"
-    groupId = "ballerina"
-    modules = ["jwt"]
+[[dependency]]
+org = "ballerina"
+name = "crypto"
+version = "@stdlib.crypto.version@"
+
+[[dependency]]
+org = "ballerina"
+name = "encoding"
+version = "@stdlib.encoding.version@"
+
+[[dependency]]
+org = "ballerina"
+name = "log"
+version = "@stdlib.log.version@"
+
+[[dependency]]
+org = "ballerina"
+name = "stringutils"
+version = "@stdlib.stringutils.version@"
+
+[[dependency]]
+org = "ballerina"
+name = "system"
+version = "@stdlib.system.version@"
+
+[[dependency]]
+org = "ballerina"
+name = "time"
+version = "@stdlib.time.version@"
+
+[[platform.java11.dependency]]
+path = "../jwt-native/build/libs/jwt-native-@project.version@.jar"
+groupId = "ballerina"
+artifactId = "jwt"
+version = "@project.version@"
