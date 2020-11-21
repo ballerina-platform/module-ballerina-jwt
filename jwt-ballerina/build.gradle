@@ -194,6 +194,8 @@ task ballerinaBuild {
         }
         copy {
             from file("$project.projectDir/target/cache")
+            exclude '**/*-testable.jar'
+            exclude '**/tests_cache/'
             into file("$artifactCacheParent/cache/")
         }
 
