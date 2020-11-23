@@ -1,7 +1,6 @@
 name: Stdlib dependency update
 
 on:
-  workflow_dispatch:
   push:
     paths:
     - 'build.gradle'
