@@ -16,7 +16,6 @@
 
 // NOTE: All the tokens/credentials used in this test are dummy tokens/credentials and used only for testing purposes.
 
-import ballerina/crypto;
 import ballerina/encoding;
 import ballerina/lang.'string;
 import ballerina/stringutils;
@@ -24,9 +23,11 @@ import ballerina/test;
 import ballerina/time;
 
 isolated function jwtIssuer() returns string {
-    crypto:KeyStore keyStore = { path: KEYSTORE_PATH, password: "ballerina" };
     JwtKeyStoreConfig config = {
-        keyStore: keyStore,
+        keyStore: {
+            path: KEYSTORE_PATH,
+            password: "ballerina"
+        },
         keyAlias: "ballerina",
         keyPassword: "ballerina"
     };
@@ -51,9 +52,11 @@ isolated function jwtIssuer() returns string {
 
 @test:Config {}
 isolated function testIssueJwt() {
-    crypto:KeyStore keyStore = { path: KEYSTORE_PATH, password: "ballerina" };
     JwtKeyStoreConfig config = {
-        keyStore: keyStore,
+        keyStore: {
+            path: KEYSTORE_PATH,
+            password: "ballerina"
+        },
         keyAlias: "ballerina",
         keyPassword: "ballerina"
     };
@@ -108,9 +111,11 @@ isolated function testIssueJwt() {
 
 @test:Config {}
 isolated function testIssueJwtWithSingleAud() {
-    crypto:KeyStore keyStore = { path: KEYSTORE_PATH, password: "ballerina" };
     JwtKeyStoreConfig config = {
-        keyStore: keyStore,
+        keyStore: {
+            path: KEYSTORE_PATH,
+            password: "ballerina"
+        },
         keyAlias: "ballerina",
         keyPassword: "ballerina"
     };
@@ -164,9 +169,11 @@ isolated function testIssueJwtWithSingleAud() {
 
 @test:Config {}
 isolated function testIssueJwtWithSingleAudAndAudAsArray() {
-    crypto:KeyStore keyStore = { path: KEYSTORE_PATH, password: "ballerina" };
     JwtKeyStoreConfig config = {
-        keyStore: keyStore,
+        keyStore: {
+            path: KEYSTORE_PATH,
+            password: "ballerina"
+        },
         keyAlias: "ballerina",
         keyPassword: "ballerina"
     };
@@ -220,9 +227,11 @@ isolated function testIssueJwtWithSingleAudAndAudAsArray() {
 
 @test:Config {}
 isolated function testIssueJwtWithNoIssOrSub() {
-    crypto:KeyStore keyStore = { path: KEYSTORE_PATH, password: "ballerina" };
     JwtKeyStoreConfig config = {
-        keyStore: keyStore,
+        keyStore: {
+            path: KEYSTORE_PATH,
+            password: "ballerina"
+        },
         keyAlias: "ballerina",
         keyPassword: "ballerina"
     };
@@ -274,9 +283,11 @@ isolated function testIssueJwtWithNoIssOrSub() {
 
 @test:Config {}
 isolated function testIssueJwtWithNoAudOrSub() {
-    crypto:KeyStore keyStore = { path: KEYSTORE_PATH, password: "ballerina" };
     JwtKeyStoreConfig config = {
-        keyStore: keyStore,
+        keyStore: {
+            path: KEYSTORE_PATH,
+            password: "ballerina"
+        },
         keyAlias: "ballerina",
         keyPassword: "ballerina"
     };
@@ -329,9 +340,11 @@ isolated function testIssueJwtWithNoAudOrSub() {
 
 @test:Config {}
 isolated function testIssueJwtWithCustomClaims() {
-    crypto:KeyStore keyStore = { path: KEYSTORE_PATH, password: "ballerina" };
     JwtKeyStoreConfig config = {
-        keyStore: keyStore,
+        keyStore: {
+            path: KEYSTORE_PATH,
+            password: "ballerina"
+        },
         keyAlias: "ballerina",
         keyPassword: "ballerina"
     };
@@ -388,13 +401,15 @@ isolated function testIssueJwtWithCustomClaims() {
     dataProvider: "jwtIssuer"
 }
 isolated function testValidateJwt(string jwt) {
-    crypto:TrustStore trustStore = { path: TRUSTSTORE_PATH, password: "ballerina" };
     JwtValidatorConfig config = {
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
         clockSkewInSeconds: 60,
         trustStoreConfig: {
-            trustStore: trustStore,
+            trustStore: {
+                path: TRUSTSTORE_PATH,
+                password: "ballerina"
+            },
             certificateAlias: "ballerina"
         }
     };
@@ -410,13 +425,15 @@ isolated function testValidateJwt(string jwt) {
     dataProvider: "jwtIssuer"
 }
 isolated function testValidateJwtWithSingleAud(string jwt) {
-    crypto:TrustStore trustStore = { path: TRUSTSTORE_PATH, password: "ballerina" };
     JwtValidatorConfig config = {
         issuer: "wso2",
         audience: "ballerina",
         clockSkewInSeconds: 60,
         trustStoreConfig: {
-            trustStore: trustStore,
+            trustStore: {
+                path: TRUSTSTORE_PATH,
+                password: "ballerina"
+            },
             certificateAlias: "ballerina"
         }
     };
@@ -432,13 +449,15 @@ isolated function testValidateJwtWithSingleAud(string jwt) {
     dataProvider: "jwtIssuer"
 }
 isolated function testValidateJwtWithSingleAudAndAudAsArray(string jwt) {
-    crypto:TrustStore trustStore = { path: TRUSTSTORE_PATH, password: "ballerina" };
     JwtValidatorConfig config = {
         issuer: "wso2",
         audience: "ballerina",
         clockSkewInSeconds: 60,
         trustStoreConfig: {
-            trustStore: trustStore,
+            trustStore: {
+                path: TRUSTSTORE_PATH,
+                password: "ballerina"
+            },
             certificateAlias: "ballerina"
         }
     };
@@ -454,12 +473,14 @@ isolated function testValidateJwtWithSingleAudAndAudAsArray(string jwt) {
     dataProvider: "jwtIssuer"
 }
 isolated function testValidateJwtWithNoIssOrSub(string jwt) {
-    crypto:TrustStore trustStore = { path: TRUSTSTORE_PATH, password: "ballerina" };
     JwtValidatorConfig config = {
         audience: "ballerinaSamples",
         clockSkewInSeconds: 60,
         trustStoreConfig: {
-            trustStore: trustStore,
+            trustStore: {
+                path: TRUSTSTORE_PATH,
+                password: "ballerina"
+            },
             certificateAlias: "ballerina"
         }
     };
@@ -475,10 +496,12 @@ isolated function testValidateJwtWithNoIssOrSub(string jwt) {
     dataProvider: "jwtIssuer"
 }
 isolated function testValidateJwtWithInvalidSignature(string jwt) {
-    crypto:TrustStore trustStore = { path: TRUSTSTORE_PATH, password: "ballerina" };
     JwtValidatorConfig config = {
         trustStoreConfig: {
-            trustStore: trustStore,
+            trustStore: {
+                path: TRUSTSTORE_PATH,
+                password: "ballerina"
+            },
             certificateAlias: "ballerina"
         }
     };
