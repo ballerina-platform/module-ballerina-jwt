@@ -16,8 +16,6 @@
 
 // NOTE: All the tokens/credentials used in this test are dummy tokens/credentials and used only for testing purposes.
 
-import ballerina/auth;
-import ballerina/crypto;
 import ballerina/test;
 
 @test:Config {}
@@ -27,12 +25,14 @@ function testJwtAuthProviderAuthenticationSuccess() {
                  "J4Qknu_jPNm1oZRAat8bXZ9Zynv_wFPbfVvm-im-B_waej_rtrIhGGRaaF43BLsb_9yLU897VhNNFJqJqr3KbI7pQiQFt2nJHN" +
                  "teAqTQFU3s4Iw7C2ZwGH0knP_4LgLIicR6ex3iN37dVqazgq-jb266gENSuLXDRKRcTh219dSbFRaCE9f4Ae4jbQ5w4vNUbunY" +
                  "qxJfnnJCOv95s2dR61Li08hdCFEZhwHJMKxYfUAAsR7G2mq0aOBsq1zIRo1aYgzLOCPmdLXliLCRw";
-    crypto:TrustStore trustStore = { path: TRUSTSTORE_PATH, password: "ballerina" };
     JwtValidatorConfig jwtConfig = {
         issuer: "wso2",
         audience: "ballerina",
         trustStoreConfig: {
-            trustStore: trustStore,
+            trustStore: {
+                path: TRUSTSTORE_PATH,
+                password: "ballerina"
+            },
             certificateAlias: "ballerina"
         }
     };
@@ -53,18 +53,20 @@ function testJwtAuthProviderAuthenticationFailure() {
                  "J4Qknu_jPNm1oZRAat8bXZ9Zynv_wFPbfVvm-im-B_waej_rtrIhGGRaaF43BLsb_9yLU897VhNNFJqJqr3KbI7pQiQFt2nJHN" +
                  "teAqTQFU3s4Iw7C2ZwGH0knP_4LgLIicR6ex3iN37dVqazgq-jb266gENSuLXDRKRcTh219dSbFRaCE9f4Ae4jbQ5w4vNUbunY" +
                  "qxJfnnJCOv95s2dR61Li08hdCFEZhwHJMKxYfUAAsR7G2mq0aOBsq1zIRo1aYgzLOCPmdLXliLCRw";
-    crypto:TrustStore trustStore = { path: TRUSTSTORE_PATH, password: "ballerina" };
     JwtValidatorConfig jwtConfig = {
         issuer: "invalid",
         audience: "ballerina",
         trustStoreConfig: {
-            trustStore: trustStore,
+            trustStore: {
+                path: TRUSTSTORE_PATH,
+                password: "ballerina"
+            },
             certificateAlias: "ballerina"
         }
     };
     InboundJwtAuthProvider jwtAuthProvider = new(jwtConfig);
     var result = jwtAuthProvider.authenticate(jwt);
-    if (result is auth:Error) {
+    if (result is error) {
         test:assertEquals(result.message(), "JWT validation failed.");
     } else {
         test:assertFail("Error in JWT authentication");

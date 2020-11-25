@@ -41,8 +41,7 @@ clean {
 
 jar {
     manifest {
-        attributes('Implementation-Title': project.name,
-                'Implementation-Version': project.version)
+        attributes('Implementation-Title': project.name, 'Implementation-Version': project.version)
     }
 }
 
@@ -51,7 +50,6 @@ task unpackJballerinaTools(type: Copy) {
         from zipTree(artifact.getFile())
         into new File("${buildDir}/target/extracted-distributions", "jballerina-tools-zip")
     }
-
 }
 
 task unpackStdLibs() {
@@ -193,8 +191,8 @@ task ballerinaBuild {
                     commandLine 'sh', '-c', "$distributionBinPath/ballerina push"
                 }
             }
-
         }
+
         // Doc creation and packing
         exec {
             workingDir project.projectDir
