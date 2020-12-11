@@ -26,14 +26,14 @@ import ballerina/encoding;
 # + expTimeInSeconds - Expiry time in seconds
 # + keyStoreConfig - JWT key store configurations
 # + signingAlg - Signing algorithm
-public type JwtIssuerConfig record {|
-    string username?;
+public type IssuerConfig record {|
+    string username;
     string issuer;
     string[] audience;
     map<json> customClaims?;
     int expTimeInSeconds = 300;
-    JwtKeyStoreConfig keyStoreConfig;
-    JwtSigningAlgorithm signingAlg = RS256;
+    KeyStoreConfig keyStoreConfig;
+    SigningAlgorithm signingAlg = RS256;
 |};
 
 # Represents JWT key store configurations.
@@ -41,42 +41,42 @@ public type JwtIssuerConfig record {|
 # + keyStore - Keystore to be used in JWT signing
 # + keyAlias - Signing key alias
 # + keyPassword - Signing key password
-public type JwtKeyStoreConfig record {|
+public type KeyStoreConfig record {|
     crypto:KeyStore keyStore;
     string keyAlias;
     string keyPassword;
 |};
 
 # Issues a JWT based on the provided header and payload. JWT will be signed (JWS) if `crypto:KeyStore` information is
-# provided in the `jwt:JwtKeyStoreConfig` and the `alg` field of the `jwt:JwtHeader` is not `jwt:NONE`.
+# provided in the `jwt:KeyStoreConfig` and the `alg` field of the `jwt:Header` is not `jwt:NONE`.
 # ```ballerina
 # string|jwt:Error jwt = jwt:issueJwt(header, payload, keyStoreConfig);
 # ```
 #
-# + header - JwtHeader object
-# + payload - JwtPayload object
+# + header - JWT header object
+# + payload - JWT payload object
 # + config - JWT key store config record
 # + return - JWT as a `string` or else a `jwt:Error` if token validation fails
-public isolated function issueJwt(JwtHeader header, JwtPayload payload, JwtKeyStoreConfig? config) returns string|Error {
-    string jwtHeader = check buildHeaderString(header);
-    string jwtPayload = check buildPayloadString(payload);
-    string jwtAssertion = jwtHeader + "." + jwtPayload;
-    JwtSigningAlgorithm? alg = header?.alg;
+public isolated function issueJwt(Header header, Payload payload, KeyStoreConfig? config) returns string|Error {
+    string headerString = check buildHeaderString(header);
+    string payloadString = check buildPayloadString(payload);
+    string jwtAssertion = headerString + "." + payloadString;
+    SigningAlgorithm? alg = header?.alg;
     if (alg is ()) {
         return prepareError("Failed to issue JWT since signing algorithm is not specified.");
     }
 
-    JwtSigningAlgorithm algorithm = <JwtSigningAlgorithm>alg;
+    SigningAlgorithm algorithm = <SigningAlgorithm>alg;
     match (algorithm) {
         NONE => {
             return jwtAssertion;
         }
         _ => {
             if (config is ()) {
-                return prepareError("Signing JWT requires JwtKeyStoreConfig with keystore information.");
+                return prepareError("Signing JWT requires KeyStoreConfig with keystore information.");
             }
 
-            JwtKeyStoreConfig keyStoreConfig = <JwtKeyStoreConfig>config;
+            KeyStoreConfig keyStoreConfig = <KeyStoreConfig>config;
             crypto:KeyStore keyStore = keyStoreConfig.keyStore;
             string keyAlias = keyStoreConfig.keyAlias;
             string keyPassword = keyStoreConfig.keyPassword;
@@ -118,20 +118,20 @@ public isolated function issueJwt(JwtHeader header, JwtPayload payload, JwtKeySt
     }
 }
 
-# Builds the header string from the `jwt:JwtHeader` record.
+# Builds the header string from the `jwt:Header` record.
 # ```ballerina
-# string|jwt:Error jwtHeader = buildHeaderString(header);
+# string|jwt:Error header = buildHeaderString(header);
 # ```
 #
 # + header - JWT header record to be built as a string
 # + return - The header string or else a `jwt:Error` if building the string fails
-public isolated function buildHeaderString(JwtHeader header) returns string|Error {
+public isolated function buildHeaderString(Header header) returns string|Error {
     map<json> headerJson = {};
-    if (!validateMandatoryJwtHeaderFields(header)) {
+    if (!validateMandatoryHeaderFields(header)) {
         return prepareError("Mandatory field signing algorithm (alg) is empty.");
     }
-    JwtSigningAlgorithm? alg = header?.alg;
-    if (alg is JwtSigningAlgorithm) {
+    SigningAlgorithm? alg = header?.alg;
+    if (alg is SigningAlgorithm) {
         match (alg) {
             RS256 => {
                 headerJson[ALG] = "RS256";
@@ -168,14 +168,14 @@ public isolated function buildHeaderString(JwtHeader header) returns string|Erro
     return encodedPayload;
 }
 
-# Builds the payload string from the `jwt:JwtPayload` record.
+# Builds the payload string from the `jwt:Payload` record.
 # ```ballerina
-# string|jwt:Error jwtPayload = jwt:buildPayloadString(payload);
+# string|jwt:Error payload = jwt:buildPayloadString(payload);
 # ```
 #
 # + payload - JWT payload record to be built as a string
 # + return - The payload string or else a `jwt:Error` if building the string fails
-public isolated function buildPayloadString(JwtPayload payload) returns string|Error {
+public isolated function buildPayloadString(Payload payload) returns string|Error {
     map<json> payloadJson = {};
     string? sub = payload?.sub;
     if (sub is string) {

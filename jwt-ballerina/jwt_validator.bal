@@ -32,11 +32,11 @@ import ballerina/time;
 # + trustStoreConfig - JWT trust store configurations
 # + jwksConfig - JWKs configurations
 # + jwtCache - Cache used to store parsed JWT information
-public type JwtValidatorConfig record {|
+public type ValidatorConfig record {|
     string issuer?;
     string|string[] audience?;
     int clockSkewInSeconds = 0;
-    JwtTrustStoreConfig trustStoreConfig?;
+    TrustStoreConfig trustStoreConfig?;
     JwksConfig jwksConfig?;
     cache:Cache jwtCache = new;
 |};
@@ -80,34 +80,34 @@ public type SecureSocket record {|
 #
 # + trustStore - Trust store used for signature verification
 # + certificateAlias - Token signed public key certificate alias
-public type JwtTrustStoreConfig record {|
+public type TrustStoreConfig record {|
     crypto:TrustStore trustStore;
     string certificateAlias;
 |};
 
 # Validates the given JWT string.
 #```ballerina
-# jwt:JwtPayload|jwt:Error result = jwt:validateJwt(jwt, validatorConfig);
+# jwt:Payload|jwt:Error result = jwt:validateJwt(jwt, validatorConfig);
 # ```
 #
 # + jwt - JWT that needs to be validated
-# + config - JWT validator config record
+# + validatorConfig - JWT validator config record
 # + return - JWT payload or else a `jwt:Error` if token validation fails
-public isolated function validateJwt(string jwt, JwtValidatorConfig config) returns JwtPayload|Error {
-    if (config.jwtCache.hasKey(jwt)) {
-        JwtPayload? payload = validateFromCache(config.jwtCache, jwt);
-        if (payload is JwtPayload) {
+public isolated function validateJwt(string jwt, ValidatorConfig validatorConfig) returns Payload|Error {
+    if (validatorConfig.jwtCache.hasKey(jwt)) {
+        Payload? payload = validateFromCache(validatorConfig.jwtCache, jwt);
+        if (payload is Payload) {
             return payload;
         }
     }
-    [JwtHeader, JwtPayload] [header, payload] = check decodeJwt(jwt);
-    _ = check validateJwtRecords(jwt, header, payload, config);
-    addToCache(config.jwtCache, jwt, payload);
+    [Header, Payload] [header, payload] = check decodeJwt(jwt);
+    _ = check validateJwtRecords(jwt, header, payload, validatorConfig);
+    addToCache(validatorConfig.jwtCache, jwt, payload);
     return payload;
 }
 
-isolated function validateFromCache(cache:Cache jwtCache, string jwt) returns JwtPayload? {
-    JwtPayload payload = <JwtPayload>jwtCache.get(jwt);
+isolated function validateFromCache(cache:Cache jwtCache, string jwt) returns Payload? {
+    Payload payload = <Payload>jwtCache.get(jwt);
     int? expTime = payload?.exp;
     // convert to current time and check the expiry time
     if (expTime is () || expTime > (time:currentTime().time / 1000)) {
@@ -121,7 +121,7 @@ isolated function validateFromCache(cache:Cache jwtCache, string jwt) returns Jw
     }
 }
 
-isolated function addToCache(cache:Cache jwtCache, string jwt, JwtPayload payload) {
+isolated function addToCache(cache:Cache jwtCache, string jwt, Payload payload) {
     cache:Error? result = jwtCache.put(jwt, payload);
     if (result is cache:Error) {
         log:printDebug("Failed to add JWT to the cache. JWT payload: " + payload.toString());
@@ -132,16 +132,16 @@ isolated function addToCache(cache:Cache jwtCache, string jwt, JwtPayload payloa
 
 # Decodes the given JWT string.
 # ```ballerina
-# [jwt:JwtHeader, jwt:JwtPayload]|jwt:Error [header, payload] = jwt:decodeJwt(jwt);
+# [jwt:Header, jwt:Payload]|jwt:Error [header, payload] = jwt:decodeJwt(jwt);
 # ```
 #
 # + jwt - JWT that needs to be decoded
 # + return - The JWT header and payload tuple or else a `jwt:Error` if token decoding fails
-public isolated function decodeJwt(string jwt) returns [JwtHeader, JwtPayload]|Error {
+public isolated function decodeJwt(string jwt) returns [Header, Payload]|Error {
     string[] encodedJwtComponents = check getJwtComponents(jwt);
-    JwtHeader jwtHeader = check getJwtHeader(encodedJwtComponents[0]);
-    JwtPayload jwtPayload = check getJwtPayload(encodedJwtComponents[1]);
-    return [jwtHeader, jwtPayload];
+    Header header = check getHeader(encodedJwtComponents[0]);
+    Payload payload = check getPayload(encodedJwtComponents[1]);
+    return [header, payload];
 }
 
 isolated function getJwtComponents(string jwt) returns string[]|Error {
@@ -152,39 +152,39 @@ isolated function getJwtComponents(string jwt) returns string[]|Error {
     return jwtComponents;
 }
 
-isolated function getJwtHeader(string encodedHeader) returns JwtHeader|Error {
-    byte[]|error header = encoding:decodeBase64Url(encodedHeader);
-    if (header is byte[]) {
-        string|error result = 'string:fromBytes(header);
+isolated function getHeader(string encodedHeader) returns Header|Error {
+    byte[]|error decodedHeader = encoding:decodeBase64Url(encodedHeader);
+    if (decodedHeader is byte[]) {
+        string|error result = 'string:fromBytes(decodedHeader);
         if (result is error) {
             return prepareError(result.message(), result);
         }
-        string jwtHeader = <string>result;
-        json|error jsonHeader = jwtHeader.fromJsonString();
+        string header = <string>result;
+        json|error jsonHeader = header.fromJsonString();
         if (jsonHeader is error) {
             return prepareError("String to JSON conversion failed for JWT header.", jsonHeader);
         }
         return parseHeader(<map<json>>jsonHeader);
     } else {
-        return prepareError("Base64 url decode failed for JWT header.", header);
+        return prepareError("Base64 url decode failed for JWT header.", decodedHeader);
     }
 }
 
-isolated function getJwtPayload(string encodedPayload) returns JwtPayload|Error {
-    byte[]|error payload = encoding:decodeBase64Url(encodedPayload);
-    if (payload is byte[]) {
-        string|error result = 'string:fromBytes(payload);
+isolated function getPayload(string encodedPayload) returns Payload|Error {
+    byte[]|error decodedPayload = encoding:decodeBase64Url(encodedPayload);
+    if (decodedPayload is byte[]) {
+        string|error result = 'string:fromBytes(decodedPayload);
         if (result is error) {
             return prepareError(result.message(), result);
         }
-        string jwtPayload = <string>result;
-        json|error jsonPayload = jwtPayload.fromJsonString();
+        string payload = <string>result;
+        json|error jsonPayload = payload.fromJsonString();
         if (jsonPayload is error) {
             return prepareError("String to JSON conversion failed for JWT paylaod.", jsonPayload);
         }
         return parsePayload(<map<json>>jsonPayload);
     } else {
-        return prepareError("Base64 url decode failed for JWT payload.", payload);
+        return prepareError("Base64 url decode failed for JWT payload.", decodedPayload);
     }
 }
 
@@ -196,134 +196,127 @@ isolated function getJwtSignature(string encodedSignature) returns byte[]|Error 
     return <byte[]>signature;
 }
 
-isolated function parseHeader(map<json> jwtHeaderJson) returns JwtHeader {
-    JwtHeader jwtHeader = {};
-    string[] keys = jwtHeaderJson.keys();
+isolated function parseHeader(map<json> headerJson) returns Header {
+    Header header = {};
+    string[] keys = headerJson.keys();
     foreach string key in keys {
         match (key) {
             ALG => {
-                if (jwtHeaderJson[key].toJsonString() == "RS256") {
-                    jwtHeader.alg = RS256;
-                } else if (jwtHeaderJson[key].toJsonString() == "RS384") {
-                    jwtHeader.alg = RS384;
-                } else if (jwtHeaderJson[key].toJsonString() == "RS512") {
-                    jwtHeader.alg = RS512;
+                if (headerJson[key].toJsonString() == "RS256") {
+                    header.alg = RS256;
+                } else if (headerJson[key].toJsonString() == "RS384") {
+                    header.alg = RS384;
+                } else if (headerJson[key].toJsonString() == "RS512") {
+                    header.alg = RS512;
                 }
             }
             TYP => {
-                jwtHeader.typ = jwtHeaderJson[key].toJsonString();
+                header.typ = headerJson[key].toJsonString();
             }
             CTY => {
-                jwtHeader.cty = jwtHeaderJson[key].toJsonString();
+                header.cty = headerJson[key].toJsonString();
             }
             KID => {
-                jwtHeader.kid = jwtHeaderJson[key].toJsonString();
+                header.kid = headerJson[key].toJsonString();
             }
         }
     }
-    return jwtHeader;
+    return header;
 }
 
-isolated function parsePayload(map<json> jwtPayloadJson) returns JwtPayload|Error {
-    JwtPayload jwtPayload = {};
+isolated function parsePayload(map<json> payloadJson) returns Payload|Error {
+    Payload payload = {};
     map<json> customClaims = {};
-    string[] keys = jwtPayloadJson.keys();
+    string[] keys = payloadJson.keys();
     foreach string key in keys {
         match (key) {
             ISS => {
-                jwtPayload.iss = jwtPayloadJson[key].toJsonString();
-                customClaims[ISS] = jwtPayload?.iss;
+                payload.iss = payloadJson[key].toJsonString();
             }
             SUB => {
-                jwtPayload.sub = jwtPayloadJson[key].toJsonString();
-                customClaims[SUB] = jwtPayload?.sub;
+                payload.sub = payloadJson[key].toJsonString();
             }
             AUD => {
-                jwtPayload.aud = check convertToStringArray(jwtPayloadJson[key]);
-                customClaims[AUD] = jwtPayload?.aud;
+                payload.aud = payloadJson[key] is json[] ? check convertToStringArray(<json[]>payloadJson[key]) : payloadJson[key].toJsonString();
             }
             JTI => {
-                jwtPayload.jti = jwtPayloadJson[key].toJsonString();
-                customClaims[JTI] = jwtPayload?.jti;
+                payload.jti = payloadJson[key].toJsonString();
             }
             EXP => {
-                string exp = jwtPayloadJson[key].toJsonString();
-                customClaims[EXP] = exp;
+                string exp = payloadJson[key].toJsonString();
                 int|error value = 'int:fromString(exp);
                 if (value is int) {
-                    jwtPayload.exp = value;
+                    payload.exp = value;
                 } else {
-                    jwtPayload.exp = 0;
+                    payload.exp = 0;
                 }
             }
             NBF => {
-                string nbf = jwtPayloadJson[key].toJsonString();
-                customClaims[NBF] = nbf;
+                string nbf = payloadJson[key].toJsonString();
                 int|error value = 'int:fromString(nbf);
                 if (value is int) {
-                    jwtPayload.nbf = value;
+                    payload.nbf = value;
                 } else {
-                    jwtPayload.nbf = 0;
+                    payload.nbf = 0;
                 }
             }
             IAT => {
-                string iat = jwtPayloadJson[key].toJsonString();
-                customClaims[IAT] = iat;
+                string iat = payloadJson[key].toJsonString();
                 int|error value = 'int:fromString(iat);
                 if (value is int) {
-                    jwtPayload.iat = value;
+                    payload.iat = value;
                 } else {
-                    jwtPayload.iat = 0;
+                    payload.iat = 0;
                 }
             }
             _ => {
-                customClaims[key] = jwtPayloadJson[key];
+                customClaims[key] = payloadJson[key];
             }
         }
     }
     if (customClaims.length() > 0) {
-        jwtPayload.customClaims = customClaims;
+        payload.customClaims = customClaims;
     }
-    return jwtPayload;
+    return payload;
 }
 
-isolated function validateJwtRecords(string jwt, JwtHeader jwtHeader, JwtPayload jwtPayload, JwtValidatorConfig config)
+isolated function validateJwtRecords(string jwt, Header header, Payload payload, ValidatorConfig validatorConfig)
                                      returns Error? {
-    if (!validateMandatoryJwtHeaderFields(jwtHeader)) {
+    if (!validateMandatoryHeaderFields(header)) {
         return prepareError("Mandatory field signing algorithm (alg) is not provided in JOSE header.");
     }
 
-    JwtSigningAlgorithm alg = <JwtSigningAlgorithm>jwtHeader?.alg;  // The `()` value is already validated.
-    JwksConfig? jwksConfig = config?.jwksConfig;
-    JwtTrustStoreConfig? trustStoreConfig = config?.trustStoreConfig;
+    SigningAlgorithm alg = <SigningAlgorithm>header?.alg;  // The `()` value is already validated.
+    JwksConfig? jwksConfig = validatorConfig?.jwksConfig;
+    TrustStoreConfig? trustStoreConfig = validatorConfig?.trustStoreConfig;
     if (jwksConfig is JwksConfig) {
-        string? kid = jwtHeader?.kid;
+        string? kid = header?.kid;
         if (kid is string) {
             _ = check validateSignatureByJwks(jwt, kid, alg, jwksConfig);
-        } else if (trustStoreConfig is JwtTrustStoreConfig) {
+        } else if (trustStoreConfig is TrustStoreConfig) {
             _ = check validateSignatureByTrustStore(jwt, alg, trustStoreConfig);
         } else {
             return prepareError("Key ID (kid) is not provided in JOSE header.");
         }
-    } else if (trustStoreConfig is JwtTrustStoreConfig) {
+    } else if (trustStoreConfig is TrustStoreConfig) {
         _ = check validateSignatureByTrustStore(jwt, alg, trustStoreConfig);
     }
 
-    string? iss = config?.issuer;
+    string? iss = validatorConfig?.issuer;
     if (iss is string) {
-        _ = check validateIssuer(jwtPayload, iss);
+        _ = check validateIssuer(payload, iss);
     }
-    string|string[]? aud = config?.audience;
+    string|string[]? aud = validatorConfig?.audience;
     if (aud is string || aud is string[]) {
-        _ = check validateAudience(jwtPayload, aud);
+        _ = check validateAudience(payload, aud);
     }
-    int? exp = jwtPayload?.exp;
+    int? exp = payload?.exp;
     if (exp is int) {
-        if (!validateExpirationTime(exp, config.clockSkewInSeconds)) {
+        if (!validateExpirationTime(exp, validatorConfig.clockSkewInSeconds)) {
             return prepareError("JWT is expired.");
         }
     }
-    int? nbf = jwtPayload?.nbf;
+    int? nbf = payload?.nbf;
     if (nbf is int) {
         if (!validateNotBeforeTime(nbf)) {
             return prepareError("JWT is used before Not_Before_Time (nbf).");
@@ -333,9 +326,9 @@ isolated function validateJwtRecords(string jwt, JwtHeader jwtHeader, JwtPayload
     return ();
 }
 
-isolated function validateMandatoryJwtHeaderFields(JwtHeader jwtHeader) returns boolean {
-    JwtSigningAlgorithm? alg = jwtHeader?.alg;
-    return alg is JwtSigningAlgorithm;
+isolated function validateMandatoryHeaderFields(Header header) returns boolean {
+    SigningAlgorithm? alg = header?.alg;
+    return alg is SigningAlgorithm;
 }
 
 isolated function validateCertificate(crypto:PublicKey publicKey) returns boolean|Error {
@@ -358,8 +351,8 @@ isolated function validateCertificate(crypto:PublicKey publicKey) returns boolea
     return false;
 }
 
-isolated function validateSignatureByTrustStore(string jwt, JwtSigningAlgorithm alg,
-                                                JwtTrustStoreConfig trustStoreConfig) returns Error? {
+isolated function validateSignatureByTrustStore(string jwt, SigningAlgorithm alg,
+                                                TrustStoreConfig trustStoreConfig) returns Error? {
     crypto:PublicKey|crypto:Error publicKey = crypto:decodePublicKey(trustStoreConfig.trustStore,
                                                                      trustStoreConfig.certificateAlias);
     if (publicKey is crypto:Error) {
@@ -373,7 +366,7 @@ isolated function validateSignatureByTrustStore(string jwt, JwtSigningAlgorithm 
     _ = check validateSignature(jwt, alg, <crypto:PublicKey>publicKey);
 }
 
-isolated function validateSignatureByJwks(string jwt, string kid, JwtSigningAlgorithm alg, JwksConfig jwksConfig)
+isolated function validateSignatureByJwks(string jwt, string kid, SigningAlgorithm alg, JwksConfig jwksConfig)
                                           returns Error? {
     json jwk = check getJwk(kid, jwksConfig);
     if (jwk is ()) {
@@ -388,7 +381,7 @@ isolated function validateSignatureByJwks(string jwt, string kid, JwtSigningAlgo
     _ = check validateSignature(jwt, alg, <crypto:PublicKey>publicKey);
 }
 
-isolated function validateSignature(string jwt, JwtSigningAlgorithm alg, crypto:PublicKey publicKey) returns Error? {
+isolated function validateSignature(string jwt, SigningAlgorithm alg, crypto:PublicKey publicKey) returns Error? {
     match (alg) {
         NONE => {
             return prepareError("Not a valid JWS. Signature algorithm is NONE.");
@@ -399,8 +392,8 @@ isolated function validateSignature(string jwt, JwtSigningAlgorithm alg, crypto:
                 return prepareError("Not a valid JWS. Signature is required.");
             }
             byte[] signature = check getJwtSignature(encodedJwtComponents[2]);
-            string jwtHeaderPayloadPart = encodedJwtComponents[0] + "." + encodedJwtComponents[1];
-            byte[] assertion = jwtHeaderPayloadPart.toBytes();
+            string headerPayloadPart = encodedJwtComponents[0] + "." + encodedJwtComponents[1];
+            byte[] assertion = headerPayloadPart.toBytes();
             boolean signatureValidation = check verifySignature(alg, assertion, signature, publicKey);
             if (!signatureValidation) {
                return prepareError("JWT signature validation has failed.");
@@ -447,7 +440,7 @@ isolated function getJwksResponse(string url, ClientConfiguration clientConfig) 
     'class: "org.ballerinalang.stdlib.jwt.JwksClient"
 } external;
 
-isolated function verifySignature(JwtSigningAlgorithm alg, byte[] assertion, byte[] signaturePart,
+isolated function verifySignature(SigningAlgorithm alg, byte[] assertion, byte[] signaturePart,
                                   crypto:PublicKey publicKey) returns boolean|Error {
     match (alg) {
         RS256 => {
@@ -478,8 +471,8 @@ isolated function verifySignature(JwtSigningAlgorithm alg, byte[] assertion, byt
     return prepareError("Unsupported JWS algorithm.");
 }
 
-isolated function validateIssuer(JwtPayload jwtPayload, string issuerConfig) returns Error? {
-    string? issuePayload = jwtPayload?.iss;
+isolated function validateIssuer(Payload payload, string issuerConfig) returns Error? {
+    string? issuePayload = payload?.iss;
     if (issuePayload is string) {
         if (issuePayload != issuerConfig) {
             return prepareError("JWT contained invalid issuer name : " + issuePayload);
@@ -489,8 +482,8 @@ isolated function validateIssuer(JwtPayload jwtPayload, string issuerConfig) ret
     }
 }
 
-isolated function validateAudience(JwtPayload jwtPayload, string|string[] audienceConfig) returns Error? {
-    string|string[]? audiencePayload = jwtPayload?.aud;
+isolated function validateAudience(Payload payload, string|string[] audienceConfig) returns Error? {
+    string|string[]? audiencePayload = payload?.aud;
     if (audiencePayload is string) {
         if (audienceConfig is string) {
             if (audiencePayload == audienceConfig) {
@@ -539,16 +532,12 @@ isolated function validateNotBeforeTime(int nbf) returns boolean {
     return time:currentTime().time > nbf;
 }
 
-isolated function convertToStringArray(json jsonData) returns string[]|Error {
-    if (jsonData is json[]) {
-        string[] values = [];
-        int i = 0;
-        foreach json jsonVal in jsonData {
-            values[i] = jsonVal.toJsonString();
-            i = i + 1;
-        }
-        return values;
-    } else {
-        return [jsonData.toJsonString()];
+isolated function convertToStringArray(json[] jsonData) returns string[]|Error {
+    string[] values = [];
+    int i = 0;
+    foreach json jsonVal in jsonData {
+        values[i] = jsonVal.toJsonString();
+        i = i + 1;
     }
+    return values;
 }

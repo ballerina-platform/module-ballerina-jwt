@@ -14,7 +14,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/auth;
 import ballerina/cache;
 import ballerina/stringutils;
 
@@ -36,16 +35,14 @@ import ballerina/stringutils;
 #
 public class InboundJwtAuthProvider {
 
-    *auth:InboundAuthProvider;
-
-    JwtValidatorConfig jwtValidatorConfig;
+    ValidatorConfig validatorConfig;
 
     # Provides authentication based on the provided JWT.
     #
-    # + jwtValidatorConfig - JWT validator configurations
-    public function init(JwtValidatorConfig jwtValidatorConfig) {
-        self.jwtValidatorConfig = jwtValidatorConfig;
-        JwksConfig? jwksConfig = jwtValidatorConfig?.jwksConfig;
+    # + validatorConfig - JWT validator configurations
+    public isolated function init(ValidatorConfig validatorConfig) {
+        self.validatorConfig = validatorConfig;
+        JwksConfig? jwksConfig = validatorConfig?.jwksConfig;
         if (jwksConfig is JwksConfig) {
             cache:Cache? jwksCache = jwksConfig?.jwksCache;
             if (jwksCache is cache:Cache) {
@@ -57,25 +54,24 @@ public class InboundJwtAuthProvider {
         }
     }
 
-    # Authenticates provided JWT against `jwt:JwtValidatorConfig`.
+    # Authenticates provided JWT against `jwt:ValidatorConfig`.
     #```ballerina
     # boolean|auth:Error result = inboundJwtAuthProvider.authenticate("<credential>");
     # ```
     #
     # + credential - JWT to be authenticated
     # + return - `true` if authentication is successful, `false` otherwise or else an `auth:Error` if JWT validation failed
-    public function authenticate(string credential) returns boolean|auth:Error {
+    public isolated function authenticate(string credential) returns Payload|Error {
         string[] jwtComponents = stringutils:split(credential, "\\.");
         if (jwtComponents.length() != 3) {
-            return false;
+            return prepareError("Credential format does not match to JWT format.");
         }
 
-        JwtPayload|Error validationResult = validateJwt(credential, self.jwtValidatorConfig);
-        if (validationResult is JwtPayload) {
-            setInvocationContext(credential, validationResult);
-            return true;
+        Payload|Error validationResult = validateJwt(credential, self.validatorConfig);
+        if (validationResult is Payload) {
+            return validationResult;
         } else {
-            return prepareAuthError("JWT validation failed.", validationResult);
+            return prepareError("JWT validation failed.", validationResult);
         }
     }
 }
@@ -91,35 +87,6 @@ isolated function preloadJwksToCache(JwksConfig jwksConfig) returns Error? {
         cache:Error? cachedResult = jwksCache.put(<string>jwk.kid, jwk);
         if (cachedResult is cache:Error) {
             return prepareError("Failed to put JWK for the kid: " + <string>jwk.kid + " to the cache.", cachedResult);
-        }
-    }
-}
-
-type StringArray string[];
-
-isolated function setInvocationContext(string credential, JwtPayload jwtPayload) {
-    string? sub = jwtPayload?.sub;
-    // By default set sub as username.
-    string username = (sub is () ? "" : sub);
-    auth:setInvocationContext("jwt", credential, username);
-    map<json>? customClaims = jwtPayload?.customClaims;
-    if (customClaims is  ()) {
-        return;
-    }
-    map<json> claims = <map<json>>customClaims;
-    auth:setInvocationContext(claims = claims);
-    if (claims.hasKey("scope")) {
-        json scopeString = claims["scope"];
-        if (scopeString is string && scopeString != "") {
-            auth:setInvocationContext(scopes = stringutils:split(scopeString, " "));
-        }
-    } else if (claims.hasKey("scp")) {
-        json scopeString = claims["scp"];
-        if (scopeString is json[] && scopeString.length() > 0) {
-            string[]|error scopes = scopeString.cloneWithType(StringArray);
-            if (scopes is string[]) {
-                auth:setInvocationContext(scopes = scopes);
-            }
         }
     }
 }

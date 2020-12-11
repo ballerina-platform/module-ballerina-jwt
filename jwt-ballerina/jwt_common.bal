@@ -15,7 +15,7 @@
 // under the License.
 
 # The key algorithms supported by crypto module.
-public type JwtSigningAlgorithm RS256|RS384|RS512|NONE;
+public type SigningAlgorithm RS256|RS384|RS512|NONE;
 
 # The `RSA-SHA256` algorithm
 public const RS256 = "RS256";
@@ -50,8 +50,8 @@ const string IAT = "iat";
 # + typ - Media type of the JWT
 # + cty - Content type, convey structural information about the JWT
 # + kid - Key ID, hint indicating which key was used to secure the JWS
-public type JwtHeader record {|
-    JwtSigningAlgorithm alg?;
+public type Header record {|
+    SigningAlgorithm alg?;
     string typ?;
     string cty?;
     string kid?;
@@ -67,7 +67,7 @@ public type JwtHeader record {|
 # + nbf - Not before, identifies the time (seconds since the Epoch) before which the JWT must not be accepted
 # + iat - Issued at, identifies the time (seconds since the Epoch) at which the JWT was issued
 # + customClaims - Map of custom claims
-public type JwtPayload record {|
+public type Payload record {|
     string iss?;
     string sub?;
     string|string[] aud?;
