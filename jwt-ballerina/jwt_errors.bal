@@ -29,7 +29,7 @@ public type Error JwtError;
 # + err - An `error` instance
 # + return - Prepared `Error` instance
 isolated function prepareError(string message, error? err = ()) returns Error {
-    log:printError(message, err);
+    log:printError(message, err = err);
     Error jwtError;
     if (err is error) {
         jwtError = JwtError(message, err);

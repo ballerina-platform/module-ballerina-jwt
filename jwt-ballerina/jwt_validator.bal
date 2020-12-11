@@ -111,12 +111,11 @@ isolated function validateFromCache(cache:Cache jwtCache, string jwt) returns Pa
     int? expTime = payload?.exp;
     // convert to current time and check the expiry time
     if (expTime is () || expTime > (time:currentTime().time / 1000)) {
-        log:printDebug("JWT validated from the cache. JWT payload: " + payload.toString());
         return payload;
     } else {
         cache:Error? result = jwtCache.invalidate(jwt);
         if (result is cache:Error) {
-            log:printDebug("Failed to invalidate JWT from the cache. JWT payload: " + payload.toString());
+            log:printError("Failed to invalidate JWT from the cache. JWT payload: " + payload.toString());
         }
     }
 }
@@ -124,10 +123,9 @@ isolated function validateFromCache(cache:Cache jwtCache, string jwt) returns Pa
 isolated function addToCache(cache:Cache jwtCache, string jwt, Payload payload) {
     cache:Error? result = jwtCache.put(jwt, payload);
     if (result is cache:Error) {
-        log:printDebug("Failed to add JWT to the cache. JWT payload: " + payload.toString());
+        log:printError("Failed to add JWT to the cache. JWT payload: " + payload.toString());
         return;
     }
-    log:printDebug("JWT added to the cache. JWT payload: " + payload.toString());
 }
 
 # Decodes the given JWT string.
@@ -410,7 +408,7 @@ isolated function getJwk(string kid, JwksConfig jwksConfig) returns json|Error {
             if (jwk is json) {
                 return jwk;
             } else {
-                log:printDebug("Failed to retrieve JWK for the kid: " + kid + " from the cache");
+                log:print("Failed to retrieve JWK for the kid: " + kid + " from the cache.");
             }
         }
     }
