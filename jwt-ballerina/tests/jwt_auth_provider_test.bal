@@ -19,13 +19,13 @@
 import ballerina/test;
 
 @test:Config {}
-function testJwtAuthProviderAuthenticationSuccess() {
+isolated function testJwtAuthProviderAuthenticationSuccess() {
     string jwt = "eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QifQ.eyJzdWIiOiJKb2huIiwgImlzcyI6IndzbzIiLCAiZXhwIjoxOTIwOTQ0OTE" +
                  "yLCAiYXVkIjoiYmFsbGVyaW5hIn0.f22pKKF8kVbUq0UhCo3iqfAW_k9lTp5YolQGOHWmc9gmmbcmHEYs69jpujKAZy_41gkHD" +
                  "J4Qknu_jPNm1oZRAat8bXZ9Zynv_wFPbfVvm-im-B_waej_rtrIhGGRaaF43BLsb_9yLU897VhNNFJqJqr3KbI7pQiQFt2nJHN" +
                  "teAqTQFU3s4Iw7C2ZwGH0knP_4LgLIicR6ex3iN37dVqazgq-jb266gENSuLXDRKRcTh219dSbFRaCE9f4Ae4jbQ5w4vNUbunY" +
                  "qxJfnnJCOv95s2dR61Li08hdCFEZhwHJMKxYfUAAsR7G2mq0aOBsq1zIRo1aYgzLOCPmdLXliLCRw";
-    JwtValidatorConfig jwtConfig = {
+    ValidatorConfig jwtConfig = {
         issuer: "wso2",
         audience: "ballerina",
         trustStoreConfig: {
@@ -37,23 +37,24 @@ function testJwtAuthProviderAuthenticationSuccess() {
         }
     };
     InboundJwtAuthProvider jwtAuthProvider = new(jwtConfig);
-    var result = jwtAuthProvider.authenticate(jwt);
-    if (result is boolean) {
-        test:assertTrue(result);
+    Payload|Error result = jwtAuthProvider.authenticate(jwt);
+    if (result is Payload) {
+        test:assertEquals(result?.iss, "wso2");
+        test:assertEquals(result?.aud, "ballerina");
     } else {
         string? errMsg = result.message();
-        test:assertFail(msg = errMsg is string ? errMsg : "Error in JWT authentication");
+        test:assertFail(msg = errMsg is string ? errMsg : "Test Failed!");
     }
 }
 
 @test:Config {}
-function testJwtAuthProviderAuthenticationFailure() {
+isolated function testJwtAuthProviderAuthenticationFailure() {
     string jwt = "eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QifQ.eyJzdWIiOiJKb2huIiwgImlzcyI6IndzbzIiLCAiZXhwIjoxOTIwOTQ0OTE" +
                  "yLCAiYXVkIjoiYmFsbGVyaW5hIn0.f22pKKF8kVbUq0UhCo3iqfAW_k9lTp5YolQGOHWmc9gmmbcmHEYs69jpujKAZy_41gkHD" +
                  "J4Qknu_jPNm1oZRAat8bXZ9Zynv_wFPbfVvm-im-B_waej_rtrIhGGRaaF43BLsb_9yLU897VhNNFJqJqr3KbI7pQiQFt2nJHN" +
                  "teAqTQFU3s4Iw7C2ZwGH0knP_4LgLIicR6ex3iN37dVqazgq-jb266gENSuLXDRKRcTh219dSbFRaCE9f4Ae4jbQ5w4vNUbunY" +
                  "qxJfnnJCOv95s2dR61Li08hdCFEZhwHJMKxYfUAAsR7G2mq0aOBsq1zIRo1aYgzLOCPmdLXliLCRw";
-    JwtValidatorConfig jwtConfig = {
+    ValidatorConfig jwtConfig = {
         issuer: "invalid",
         audience: "ballerina",
         trustStoreConfig: {
@@ -65,10 +66,10 @@ function testJwtAuthProviderAuthenticationFailure() {
         }
     };
     InboundJwtAuthProvider jwtAuthProvider = new(jwtConfig);
-    var result = jwtAuthProvider.authenticate(jwt);
-    if (result is error) {
+    Payload|Error result = jwtAuthProvider.authenticate(jwt);
+    if (result is Error) {
         test:assertEquals(result.message(), "JWT validation failed.");
     } else {
-        test:assertFail("Error in JWT authentication");
+        test:assertFail("Test Failed!");
     }
 }
