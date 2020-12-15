@@ -43,7 +43,7 @@ isolated function jwtIssuer() returns string {
     payload.aud = ["ballerina", "ballerinaSamples"];
     payload.exp = time:currentTime().time/1000 + 600;
 
-    string|Error result = issueJwt(header, payload, config);
+    string|Error result = issue(header, payload, config);
     if (result is string) {
         return result;
     }
@@ -72,7 +72,7 @@ isolated function testIssueJwt() {
     payload.aud = ["ballerina", "ballerinaSamples"];
     payload.exp = time:currentTime().time/1000 + 600;
 
-    string|Error result = issueJwt(header, payload, config);
+    string|Error result = issue(header, payload, config);
     if (result is string) {
         test:assertTrue(result.startsWith("eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QifQ."));
         string[] parts = stringutils:split(result, "\\.");
@@ -131,7 +131,7 @@ isolated function testIssueJwtWithSingleAud() {
     payload.aud = "ballerina";
     payload.exp = time:currentTime().time/1000 + 600;
 
-    string|Error result = issueJwt(header, payload, config);
+    string|Error result = issue(header, payload, config);
     if (result is string) {
         string[] parts = stringutils:split(result, "\\.");
 
@@ -189,7 +189,7 @@ isolated function testIssueJwtWithSingleAudAndAudAsArray() {
     payload.aud = ["ballerina"];
     payload.exp = time:currentTime().time/1000 + 600;
 
-    string|Error result = issueJwt(header, payload, config);
+    string|Error result = issue(header, payload, config);
     if (result is string) {
         string[] parts = stringutils:split(result, "\\.");
 
@@ -245,7 +245,7 @@ isolated function testIssueJwtWithNoIssOrSub() {
     payload.aud = ["ballerina", "ballerinaSamples"];
     payload.exp = time:currentTime().time/1000 + 600;
 
-    string|Error result = issueJwt(header, payload, config);
+    string|Error result = issue(header, payload, config);
     if (result is string) {
         string[] parts = stringutils:split(result, "\\.");
 
@@ -302,7 +302,7 @@ isolated function testIssueJwtWithNoAudOrSub() {
     payload.jti = "100078234ba23";
     payload.exp = time:currentTime().time/1000 + 600;
 
-    string|Error result = issueJwt(header, payload, config);
+    string|Error result = issue(header, payload, config);
     if (result is string) {
         string[] parts = stringutils:split(result, "\\.");
 
@@ -361,7 +361,7 @@ isolated function testIssueJwtWithCustomClaims() {
     payload.exp = time:currentTime().time/1000 + 600;
     payload.customClaims = { "scope": "test-scope" };
 
-    string|Error result = issueJwt(header, payload, config);
+    string|Error result = issue(header, payload, config);
     if (result is string) {
         string[] parts = stringutils:split(result, "\\.");
 
@@ -413,7 +413,7 @@ isolated function testValidateJwt(string jwt) {
             certificateAlias: "ballerina"
         }
     };
-    Payload|Error result = validateJwt(jwt, config);
+    Payload|Error result = validate(jwt, config);
     if !(result is Payload) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT");
@@ -436,7 +436,7 @@ isolated function testValidateJwtWithSingleAud(string jwt) {
             certificateAlias: "ballerina"
         }
     };
-    Payload|Error result = validateJwt(jwt, config);
+    Payload|Error result = validate(jwt, config);
     if !(result is Payload) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT");
@@ -459,7 +459,7 @@ isolated function testValidateJwtWithSingleAudAndAudAsArray(string jwt) {
             certificateAlias: "ballerina"
         }
     };
-    Payload|Error result = validateJwt(jwt, config);
+    Payload|Error result = validate(jwt, config);
     if !(result is Payload) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT");
@@ -481,7 +481,7 @@ isolated function testValidateJwtWithNoIssOrSub(string jwt) {
             certificateAlias: "ballerina"
         }
     };
-    Payload|Error result = validateJwt(jwt, config);
+    Payload|Error result = validate(jwt, config);
     if !(result is Payload) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT");
@@ -501,7 +501,7 @@ isolated function testValidateJwtWithInvalidSignature(string jwt) {
             certificateAlias: "ballerina"
         }
     };
-    Payload|Error result = validateJwt(jwt, config);
+    Payload|Error result = validate(jwt, config);
     if !(result is Payload) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT");
@@ -524,7 +524,7 @@ isolated function testValidateJwtSignatureWithJwk() {
             url: "https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks"
         }
     };
-    Payload|Error result = validateJwt(jwt, config);
+    Payload|Error result = validate(jwt, config);
     if !(result is Payload) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT");
@@ -550,7 +550,7 @@ isolated function testValidateJwtSignatureWithInvalidJwk() {
             url: "https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks"
         }
     };
-    Payload|Error result = validateJwt(jwt, config);
+    Payload|Error result = validate(jwt, config);
     if !(result is Error) {
         test:assertFail(msg = "Error in validating JWT with invalid JWK");
     }
@@ -581,7 +581,7 @@ isolated function testValidateJwtSignatureWithJwkWithClientConfig() {
             }
         }
     };
-    Payload|Error result = validateJwt(jwt, config);
+    Payload|Error result = validate(jwt, config);
     if !(result is Payload) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT with client configurations");

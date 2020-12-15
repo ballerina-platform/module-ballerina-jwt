@@ -67,12 +67,11 @@ public class ListenerJwtAuthProvider {
             return prepareError("Credential format does not match to JWT format.");
         }
 
-        Payload|Error validationResult = validateJwt(credential, self.validatorConfig);
-        if (validationResult is Payload) {
-            return validationResult;
-        } else {
+        Payload|Error validationResult = validate(credential, self.validatorConfig);
+        if (validationResult is Error) {
             return prepareError("JWT validation failed.", validationResult);
         }
+        return <Payload>validationResult;
     }
 }
 

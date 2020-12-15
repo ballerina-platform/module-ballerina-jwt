@@ -91,16 +91,16 @@ public type TrustStoreConfig record {|
 # ```
 #
 # + jwt - JWT that needs to be validated
-# + validatorConfig - JWT validator config record
-# + return - JWT payload or else a `jwt:Error` if token validation fails
-public isolated function validateJwt(string jwt, ValidatorConfig validatorConfig) returns Payload|Error {
+# + validatorConfig - JWT validator configurations
+# + return - `jwt:Payload` or else a `jwt:Error` if token validation fails
+public isolated function validate(string jwt, ValidatorConfig validatorConfig) returns Payload|Error {
     if (validatorConfig.jwtCache.hasKey(jwt)) {
         Payload? payload = validateFromCache(validatorConfig.jwtCache, jwt);
         if (payload is Payload) {
             return payload;
         }
     }
-    [Header, Payload] [header, payload] = check decodeJwt(jwt);
+    [Header, Payload] [header, payload] = check decode(jwt);
     _ = check validateJwtRecords(jwt, header, payload, validatorConfig);
     addToCache(validatorConfig.jwtCache, jwt, payload);
     return payload;
@@ -135,7 +135,7 @@ isolated function addToCache(cache:Cache jwtCache, string jwt, Payload payload) 
 #
 # + jwt - JWT that needs to be decoded
 # + return - The JWT header and payload tuple or else a `jwt:Error` if token decoding fails
-public isolated function decodeJwt(string jwt) returns [Header, Payload]|Error {
+public isolated function decode(string jwt) returns [Header, Payload]|Error {
     string[] encodedJwtComponents = check getJwtComponents(jwt);
     Header header = check getHeader(encodedJwtComponents[0]);
     Payload payload = check getPayload(encodedJwtComponents[1]);
@@ -330,8 +330,8 @@ isolated function validateMandatoryHeaderFields(Header header) returns boolean {
 }
 
 isolated function validateCertificate(crypto:PublicKey publicKey) returns boolean|Error {
-    time:Time|error result = time:toTimeZone(time:currentTime(), "GMT");
-    if (result is error) {
+    time:Time|time:Error result = time:toTimeZone(time:currentTime(), "GMT");
+    if (result is time:Error) {
         return prepareError(result.message(), result);
     }
 

@@ -51,19 +51,15 @@ public class ClientSelfSignedJwtAuthProvider {
     #
     # + return - Generated token or else an `auth:Error` if token can't be generated
     public isolated function generateToken() returns string|Error {
-        string|Error result = getJwtAuthToken(self.issuerConfig);
-        if (result is error) {
-            return prepareError(result.message(), result);
+        string|Error result = prepareJwtAuthToken(self.issuerConfig);
+        if (result is Error) {
+            return prepareError("Failed to generate JWT.", result);
         }
         return <string>result;
     }
 }
 
-# Processes the auth token for JWT auth.
-#
-# + issuerConfig - JWT issuer configurations
-# + return - JWT or else a `jwt:Error` if an error occurred while issuing JWT
-isolated function getJwtAuthToken(IssuerConfig issuerConfig) returns string|Error {
+isolated function prepareJwtAuthToken(IssuerConfig issuerConfig) returns string|Error {
     Header header = { alg: issuerConfig.signingAlg, typ: "JWT" };
     Payload payload = {
         sub: issuerConfig.username,
@@ -81,5 +77,5 @@ isolated function getJwtAuthToken(IssuerConfig issuerConfig) returns string|Erro
     }
 
      // TODO: cache the token per-user per-client and reuse it
-    return issueJwt(header, payload, issuerConfig.keyStoreConfig);
+    return issue(header, payload, issuerConfig.keyStoreConfig);
 }

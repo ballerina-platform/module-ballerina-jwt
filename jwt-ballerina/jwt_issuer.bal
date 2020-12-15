@@ -56,8 +56,8 @@ public type KeyStoreConfig record {|
 # + header - JWT header object
 # + payload - JWT payload object
 # + config - JWT key store config record
-# + return - JWT as a `string` or else a `jwt:Error` if token validation fails
-public isolated function issueJwt(Header header, Payload payload, KeyStoreConfig? config) returns string|Error {
+# + return - JWT as a `string` or else a `jwt:Error` if token issuing fails
+public isolated function issue(Header header, Payload payload, KeyStoreConfig? config) returns string|Error {
     string headerString = check buildHeaderString(header);
     string payloadString = check buildPayloadString(payload);
     string jwtAssertion = headerString + "." + payloadString;
