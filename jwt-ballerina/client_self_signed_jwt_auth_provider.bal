@@ -17,10 +17,10 @@
 import ballerina/system;
 import ballerina/time;
 
-# Represents the outbound JWT auth provider, which is used to authenticate with an external endpoint by generating a JWT.
-# The `jwt:OutboundJwtAuthProvider` is another implementation of the `auth:OutboundAuthProvider` interface.
+# Represents the client JWT Auth provider, which is used to authenticate with an external endpoint by generating
+# a self signed JWT.
 # ```ballerina
-# jwt:OutboundJwtAuthProvider jwtAuthProvider = new({
+# jwt:ClientSelfSignedJwtAuthProvider provider = new({
 #     issuer: "example",
 #     audience: ["ballerina"],
 #     keyStoreConfig: {
@@ -44,9 +44,9 @@ public class ClientSelfSignedJwtAuthProvider {
         self.issuerConfig = issuerConfig;
     }
 
-    # Generates the token for JWT authentication.
+    # Generates the JWT for authentication.
     # ```ballerina
-    # string|auth:Error token = outboundJwtAuthProvider.generateToken();
+    # string|auth:Error token = provider.generateToken();
     # ```
     #
     # + return - Generated token or else an `auth:Error` if token can't be generated

@@ -17,10 +17,9 @@
 import ballerina/cache;
 import ballerina/stringutils;
 
-# Represents the inbound JWT auth provider, which authenticates by validating a JWT.
-# The `jwt:InboundJwtAuthProvider` is another implementation of the `auth:InboundAuthProvider` interface.
+# Represents the listener JWT Auth provider, which authenticates by validating a JWT.
 # ```ballerina
-# jwt:InboundJwtAuthProvider inboundJwtAuthProvider = new({
+# jwt:ListenerJwtAuthProvider provider = new({
 #     issuer: "example",
 #     audience: "ballerina",
 #     signatureConfig: {
@@ -56,11 +55,11 @@ public class ListenerJwtAuthProvider {
 
     # Authenticates provided JWT against `jwt:ValidatorConfig`.
     #```ballerina
-    # boolean|auth:Error result = inboundJwtAuthProvider.authenticate("<credential>");
+    # boolean|auth:Error result = provider.authenticate("<credential>");
     # ```
     #
     # + credential - JWT to be authenticated
-    # + return - `true` if authentication is successful, `false` otherwise or else an `auth:Error` if JWT validation failed
+    # + return - `jwt:Payload` if authentication is successful or else an `auth:Error` if JWT validation failed
     public isolated function authenticate(string credential) returns Payload|Error {
         string[] jwtComponents = stringutils:split(credential, "\\.");
         if (jwtComponents.length() != 3) {

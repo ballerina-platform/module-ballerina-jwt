@@ -85,9 +85,9 @@ public type TrustStoreConfig record {|
     string certificateAlias;
 |};
 
-# Validates the given JWT string.
+# Validates the provided JWT against the provided configurations.
 #```ballerina
-# jwt:Payload|jwt:Error result = jwt:validateJwt(jwt, validatorConfig);
+# jwt:Payload|jwt:Error result = jwt:validate(jwt, validatorConfig);
 # ```
 #
 # + jwt - JWT that needs to be validated
@@ -128,9 +128,9 @@ isolated function addToCache(cache:Cache jwtCache, string jwt, Payload payload) 
     }
 }
 
-# Decodes the given JWT string.
+# Decodes the provided JWT string.
 # ```ballerina
-# [jwt:Header, jwt:Payload]|jwt:Error [header, payload] = jwt:decodeJwt(jwt);
+# [jwt:Header, jwt:Payload]|jwt:Error [header, payload] = jwt:decode(jwt);
 # ```
 #
 # + jwt - JWT that needs to be decoded

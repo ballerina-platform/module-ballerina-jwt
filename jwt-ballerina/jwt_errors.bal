@@ -23,11 +23,11 @@ public type JwtError distinct error;
 # JWT or any operation related to JWT.
 public type Error JwtError;
 
-# Logs and prepares the `error` as an `Error`.
+# Logs and prepares the `error` as an `jwt:Error`.
 #
 # + message - Error message
 # + err - An `error` instance
-# + return - Prepared `Error` instance
+# + return - Prepared `jwt:Error` instance
 isolated function prepareError(string message, error? err = ()) returns Error {
     log:printError(message, err = err);
     Error jwtError;
