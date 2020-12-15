@@ -36,7 +36,7 @@ isolated function testJwtAuthProviderAuthenticationSuccess() {
             certificateAlias: "ballerina"
         }
     };
-    InboundJwtAuthProvider jwtAuthProvider = new(jwtConfig);
+    ListenerJwtAuthProvider jwtAuthProvider = new(jwtConfig);
     Payload|Error result = jwtAuthProvider.authenticate(jwt);
     if (result is Payload) {
         test:assertEquals(result?.iss, "wso2");
@@ -65,7 +65,7 @@ isolated function testJwtAuthProviderAuthenticationFailure() {
             certificateAlias: "ballerina"
         }
     };
-    InboundJwtAuthProvider jwtAuthProvider = new(jwtConfig);
+    ListenerJwtAuthProvider jwtAuthProvider = new(jwtConfig);
     Payload|Error result = jwtAuthProvider.authenticate(jwt);
     if (result is Error) {
         test:assertEquals(result.message(), "JWT validation failed.");

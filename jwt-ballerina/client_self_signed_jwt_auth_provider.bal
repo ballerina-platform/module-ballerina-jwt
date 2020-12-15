@@ -33,7 +33,7 @@ import ballerina/time;
 #     }
 # });
 # ```
-public class OutboundJwtAuthProvider {
+public class ClientSelfSignedJwtAuthProvider {
 
     IssuerConfig issuerConfig;
 

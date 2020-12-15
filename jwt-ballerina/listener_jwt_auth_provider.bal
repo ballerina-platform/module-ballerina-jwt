@@ -33,7 +33,7 @@ import ballerina/stringutils;
 # });
 # ```
 #
-public class InboundJwtAuthProvider {
+public class ListenerJwtAuthProvider {
 
     ValidatorConfig validatorConfig;
 
