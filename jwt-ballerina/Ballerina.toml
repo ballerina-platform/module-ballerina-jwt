@@ -5,11 +5,6 @@ version = "@toml.version@"
 
 [[dependency]]
 org = "ballerina"
-name = "auth"
-version = "@stdlib.auth.version@"
-
-[[dependency]]
-org = "ballerina"
 name = "cache"
 version = "@stdlib.cache.version@"
 
@@ -32,11 +27,6 @@ version = "@stdlib.log.version@"
 org = "ballerina"
 name = "stringutils"
 version = "@stdlib.stringutils.version@"
-
-[[dependency]]
-org = "ballerina"
-name = "system"
-version = "@stdlib.system.version@"
 
 [[dependency]]
 org = "ballerina"
