@@ -14,8 +14,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/system;
 import ballerina/time;
+import ballerina/uuid;
 
 # Represents the client JWT Auth provider, which is used to authenticate with an external endpoint by generating
 # a self signed JWT.
@@ -67,7 +67,7 @@ isolated function prepareJwtAuthToken(IssuerConfig issuerConfig) returns string|
         exp: time:currentTime().time / 1000 + issuerConfig.expTimeInSeconds,
         iat: time:currentTime().time / 1000,
         nbf: time:currentTime().time / 1000,
-        jti: system:uuid(),
+        jti: uuid:createType4AsString(),
         aud: issuerConfig.audience
     };
 

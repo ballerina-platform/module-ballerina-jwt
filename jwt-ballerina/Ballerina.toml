@@ -43,6 +43,11 @@ org = "ballerina"
 name = "time"
 version = "@stdlib.time.version@"
 
+[[dependency]]
+org = "ballerina"
+name = "uuid"
+version = "@stdlib.uuid.version@"
+
 [[platform.java11.dependency]]
 path = "../jwt-native/build/libs/jwt-native-@project.version@.jar"
 groupId = "ballerina"
