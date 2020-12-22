@@ -27,7 +27,7 @@ import static io.ballerina.runtime.api.constants.RuntimeConstants.BALLERINA_BUIL
  */
 public class Constants {
     public static final String PACKAGE_NAME = "jwt";
-    public static final Module JWT_PACKAGE_ID = new Module(BALLERINA_BUILTIN_PKG_PREFIX, PACKAGE_NAME, "1.0.6");
+    public static final Module JWT_PACKAGE_ID = new Module(BALLERINA_BUILTIN_PKG_PREFIX, PACKAGE_NAME, "1.0.7");
     public static final String JWT_ERROR_TYPE = "JwtError";
 
     public static final String HTTP_VERSION = "httpVersion";
