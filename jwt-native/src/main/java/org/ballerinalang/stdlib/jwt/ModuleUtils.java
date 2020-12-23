@@ -18,20 +18,25 @@
 
 package org.ballerinalang.stdlib.jwt;
 
+import io.ballerina.runtime.api.Environment;
+import io.ballerina.runtime.api.Module;
+
 /**
- * Constants related to Ballerina JWT stdlib.
+ * Utility functions relevant to module operations.
+ *
+ * @since 2.0.0
  */
-public class Constants {
-    public static final String JWT_ERROR_TYPE = "JwtError";
+public class ModuleUtils {
 
-    public static final String HTTP_VERSION = "httpVersion";
-    public static final String DISABLE = "disable";
-    public static final String SECURE_SOCKET = "secureSocket";
-    public static final String TRUSTSTORE = "trustStore";
-    public static final String PATH = "path";
-    public static final String PASSWORD = "password";
+    private static Module jwtModule;
 
-    public static final String TLS = "TLS";
-    public static final String PKCS12 = "PKCS12";
-    public static final String HTTP_2 = "HTTP_2";
+    private ModuleUtils() {}
+
+    public static void setModule(Environment env) {
+        jwtModule = env.getCurrentModule();
+    }
+
+    public static Module getModule() {
+        return jwtModule;
+    }
 }
