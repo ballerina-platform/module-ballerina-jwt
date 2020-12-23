@@ -154,7 +154,7 @@ public class JwksClient {
     }
 
     private static BError createError(String errMsg) {
-        return ErrorCreator.createDistinctError(Constants.JWT_ERROR_TYPE, Constants.JWT_PACKAGE_ID,
+        return ErrorCreator.createDistinctError(Constants.JWT_ERROR_TYPE, ModuleUtils.getModule(),
                                                 StringUtils.fromString(errMsg));
     }
 }
