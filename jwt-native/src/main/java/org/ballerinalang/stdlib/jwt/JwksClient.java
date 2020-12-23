@@ -49,11 +49,11 @@ import javax.net.ssl.X509TrustManager;
 public class JwksClient {
 
     public static Object getJwksResponse(BString url, BMap<BString, Object> clientConfig) {
-        String httpVersion = clientConfig.getStringValue(StringUtils.fromString(Constants.HTTP_VERSION)).getValue();
+        String httpVersion = clientConfig.getStringValue(StringUtils.fromString(JwtConstants.HTTP_VERSION)).getValue();
         BMap<BString, Object> secureSocket =
-                (BMap<BString, Object>) getMapValueIfPresent(clientConfig, Constants.SECURE_SOCKET);
+                (BMap<BString, Object>) getMapValueIfPresent(clientConfig, JwtConstants.SECURE_SOCKET);
         if (secureSocket != null) {
-            boolean disable = secureSocket.getBooleanValue(StringUtils.fromString(Constants.DISABLE));
+            boolean disable = secureSocket.getBooleanValue(StringUtils.fromString(JwtConstants.DISABLE));
             if (disable) {
                 try {
                     SSLContext sslContext = initSslContext();
@@ -64,7 +64,7 @@ public class JwksClient {
                 }
             }
             BMap<BString, BString> trustStore =
-                    (BMap<BString, BString>) getMapValueIfPresent(secureSocket, Constants.TRUSTSTORE);
+                    (BMap<BString, BString>) getMapValueIfPresent(secureSocket, JwtConstants.TRUSTSTORE);
             if (trustStore != null) {
                 try {
                     SSLContext sslContext = initSslContext(trustStore);
@@ -80,7 +80,7 @@ public class JwksClient {
     }
 
     private static HttpClient.Version getHttpVersion(String httpVersion) {
-        if (Constants.HTTP_2.equals(httpVersion)) {
+        if (JwtConstants.HTTP_2.equals(httpVersion)) {
             return HttpClient.Version.HTTP_2;
         }
         return HttpClient.Version.HTTP_1_1;
@@ -100,21 +100,21 @@ public class JwksClient {
                     }
                 }
         };
-        SSLContext sslContext = SSLContext.getInstance(Constants.TLS);
+        SSLContext sslContext = SSLContext.getInstance(JwtConstants.TLS);
         sslContext.init(null, trustAllCerts, new SecureRandom());
         return sslContext;
     }
 
     private static SSLContext initSslContext(BMap<BString, BString> trustStore) throws Exception {
-        String path = trustStore.getStringValue(StringUtils.fromString(Constants.PATH)).getValue();
-        String password = trustStore.getStringValue(StringUtils.fromString(Constants.PASSWORD)).getValue();
+        String path = trustStore.getStringValue(StringUtils.fromString(JwtConstants.PATH)).getValue();
+        String password = trustStore.getStringValue(StringUtils.fromString(JwtConstants.PASSWORD)).getValue();
         InputStream is = new FileInputStream(new File(path));
         char[] passphrase = password.toCharArray();
-        KeyStore ks = KeyStore.getInstance(Constants.PKCS12);
+        KeyStore ks = KeyStore.getInstance(JwtConstants.PKCS12);
         ks.load(is, passphrase);
         TrustManagerFactory tmf = TrustManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
         tmf.init(ks);
-        SSLContext sslContext = SSLContext.getInstance(Constants.TLS);
+        SSLContext sslContext = SSLContext.getInstance(JwtConstants.TLS);
         sslContext.init(null, tmf.getTrustManagers(), new SecureRandom());
         return sslContext;
     }
@@ -154,7 +154,7 @@ public class JwksClient {
     }
 
     private static BError createError(String errMsg) {
-        return ErrorCreator.createDistinctError(Constants.JWT_ERROR_TYPE, ModuleUtils.getModule(),
+        return ErrorCreator.createDistinctError(JwtConstants.JWT_ERROR_TYPE, ModuleUtils.getModule(),
                                                 StringUtils.fromString(errMsg));
     }
 }

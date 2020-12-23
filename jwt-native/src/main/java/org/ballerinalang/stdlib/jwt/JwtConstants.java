@@ -21,7 +21,7 @@ package org.ballerinalang.stdlib.jwt;
 /**
  * Constants related to Ballerina JWT stdlib.
  */
-public class Constants {
+public class JwtConstants {
     public static final String JWT_ERROR_TYPE = "JwtError";
 
     public static final String HTTP_VERSION = "httpVersion";
