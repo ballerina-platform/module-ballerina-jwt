@@ -14,7 +14,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/auth;
 import ballerina/log;
 
 # Represents the JWT distinct error
@@ -24,34 +23,11 @@ public type JwtError distinct error;
 # JWT or any operation related to JWT.
 public type Error JwtError;
 
-# Logs and prepares the `error` as an `Error`.
-#
-# + message - Error message
-# + err - An `error` instance
-# + return - Prepared `Error` instance
+// Logs and prepares the `error` as an `jwt:Error`.
 isolated function prepareError(string message, error? err = ()) returns Error {
     log:printError(message, err = err);
-    Error jwtError;
     if (err is error) {
-        jwtError = JwtError(message, err);
-    } else {
-        jwtError = JwtError(message);
+        return JwtError(message, err);
     }
-    return jwtError;
-}
-
-# Logs and prepares the `error` as an `auth:Error`.
-#
-# + message - Error message
-# + err - An `error` instance
-# + return - Prepared `auth:Error` instance
-isolated function prepareAuthError(string message, error? err = ()) returns auth:Error {
-    log:printError(message, err = err);
-    auth:Error authError;
-    if (err is error) {
-        authError = auth:AuthError(message, err);
-    } else {
-        authError = auth:AuthError(message);
-    }
-    return authError;
+    return JwtError(message);
 }
