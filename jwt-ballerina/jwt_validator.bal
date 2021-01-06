@@ -32,14 +32,14 @@ import ballerina/time;
 # + trustStoreConfig - JWT trust store configurations
 # + jwksConfig - JWKs configurations
 # + jwtCache - Cache used to store parsed JWT information
-public type ValidatorConfig record {|
+public type ValidatorConfig record {
     string issuer?;
     string|string[] audience?;
     int clockSkewInSeconds = 0;
     TrustStoreConfig trustStoreConfig?;
     JwksConfig jwksConfig?;
     cache:Cache jwtCache = new;
-|};
+};
 
 # Represents the JWKs endpoint configurations.
 #
@@ -224,7 +224,6 @@ isolated function parseHeader(map<json> headerJson) returns Header {
 
 isolated function parsePayload(map<json> payloadJson) returns Payload|Error {
     Payload payload = {};
-    map<json> customClaims = {};
     string[] keys = payloadJson.keys();
     foreach string key in keys {
         match (key) {
@@ -268,12 +267,9 @@ isolated function parsePayload(map<json> payloadJson) returns Payload|Error {
                 }
             }
             _ => {
-                customClaims[key] = payloadJson[key];
+                payload[key] = payloadJson[key].toJsonString();
             }
         }
-    }
-    if (customClaims.length() > 0) {
-        payload.customClaims = customClaims;
     }
     return payload;
 }

@@ -126,46 +126,10 @@ public isolated function issue(Header header, Payload payload, KeyStoreConfig? c
 # + header - JWT header record to be built as a string
 # + return - The header string or else a `jwt:Error` if building the string fails
 public isolated function buildHeaderString(Header header) returns string|Error {
-    map<json> headerJson = {};
     if (!validateMandatoryHeaderFields(header)) {
         return prepareError("Mandatory field signing algorithm (alg) is empty.");
     }
-    SigningAlgorithm? alg = header?.alg;
-    if (alg is SigningAlgorithm) {
-        match (alg) {
-            RS256 => {
-                headerJson[ALG] = "RS256";
-            }
-            RS384 => {
-                headerJson[ALG] = "RS384";
-            }
-            RS512 => {
-                headerJson[ALG] = "RS512";
-            }
-            NONE => {
-                headerJson[ALG] = "none";
-            }
-            _ => {
-                return prepareError("Unsupported JWS algorithm.");
-            }
-        }
-
-        string? typ = header?.typ;
-        if (typ is string) {
-            headerJson[TYP] = typ;
-        }
-        string? cty = header?.cty;
-        if (cty is string) {
-            headerJson[CTY] = cty;
-        }
-        string? kid = header?.kid;
-        if (kid is string) {
-            headerJson[KID] = kid;
-        }
-    }
-    string headerValInString = headerJson.toJsonString();
-    string encodedPayload = encoding:encodeBase64Url(headerValInString.toBytes());
-    return encodedPayload;
+    return encoding:encodeBase64Url(header.toJsonString().toBytes());
 }
 
 # Builds the payload string from the `jwt:Payload` record.
@@ -176,43 +140,7 @@ public isolated function buildHeaderString(Header header) returns string|Error {
 # + payload - JWT payload record to be built as a string
 # + return - The payload string or else a `jwt:Error` if building the string fails
 public isolated function buildPayloadString(Payload payload) returns string|Error {
-    map<json> payloadJson = {};
-    string? sub = payload?.sub;
-    if (sub is string) {
-        payloadJson[SUB] = sub;
-    }
-    string? iss = payload?.iss;
-    if (iss is string) {
-        payloadJson[ISS] = iss;
-    }
-    int? exp = payload?.exp;
-    if (exp is int) {
-        payloadJson[EXP] = exp;
-    }
-    int? iat = payload?.iat;
-    if (iat is int) {
-        payloadJson[IAT] = iat;
-    }
-    string? jti = payload?.jti;
-    if (jti is string) {
-        payloadJson[JTI] = jti;
-    }
-    string|string[]? aud = payload?.aud;
-    if (aud is string) {
-        payloadJson[AUD] = aud;
-    } else if (aud is string[]) {
-        payloadJson[AUD] = aud;
-    }
-    int? nbf = payload?.nbf;
-    if (nbf is int) {
-        payloadJson[NBF] = nbf;
-    }
-    map<json>? customClaims = payload?.customClaims;
-    if (customClaims is map<json> && customClaims.length() > 0) {
-        payloadJson = appendToMap(customClaims, payloadJson);
-    }
-    string payloadInString = payloadJson.toJsonString();
-    return encoding:encodeBase64Url(payloadInString.toBytes());
+    return encoding:encodeBase64Url(payload.toJsonString().toBytes());
 }
 
 isolated function appendToMap(map<json> fromMap, map<json> toMap) returns map<json> {
