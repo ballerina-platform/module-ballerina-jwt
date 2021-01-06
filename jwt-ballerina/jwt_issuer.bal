@@ -16,6 +16,8 @@
 
 import ballerina/crypto;
 import ballerina/encoding;
+import ballerina/time;
+import ballerina/uuid;
 
 # Represents JWT issuer configurations.
 #
@@ -24,16 +26,16 @@ import ballerina/encoding;
 # + audience - JWT audience
 # + customClaims - Map of custom claims
 # + expTimeInSeconds - Expiry time in seconds
+# + signingAlgorithm - Signing algorithm
 # + keyStoreConfig - JWT key store configurations
-# + signingAlg - Signing algorithm
 public type IssuerConfig record {|
-    string username;
-    string issuer;
-    string[] audience;
+    string username?;
+    string issuer?;
+    string|string[] audience?;
     map<json> customClaims?;
     int expTimeInSeconds = 300;
-    KeyStoreConfig keyStoreConfig;
-    SigningAlgorithm signingAlg = RS256;
+    SigningAlgorithm signingAlgorithm = RS256;
+    KeyStoreConfig keyStoreConfig?;
 |};
 
 # Represents JWT key store configurations.
@@ -50,96 +52,109 @@ public type KeyStoreConfig record {|
 # Issues a JWT based on the provided header and payload. JWT will be signed (JWS) if `crypto:KeyStore` information is
 # provided in the `jwt:KeyStoreConfig` and the `alg` field of the `jwt:Header` is not `jwt:NONE`.
 # ```ballerina
-# string|jwt:Error jwt = jwt:issue(header, payload, keyStoreConfig);
+# string|jwt:Error jwt = jwt:issue(issuerConfig);
 # ```
 #
-# + header - JWT header object
-# + payload - JWT payload object
-# + config - JWT key store config record
+# + issuerConfig - JWT issuer configurations
 # + return - JWT as a `string` or else a `jwt:Error` if token issuing fails
-public isolated function issue(Header header, Payload payload, KeyStoreConfig? config) returns string|Error {
+public isolated function issue(IssuerConfig issuerConfig) returns string|Error {
+    Header header = prepareHeader(issuerConfig);
+    Payload payload = preparePayload(issuerConfig);
     string headerString = check buildHeaderString(header);
     string payloadString = check buildPayloadString(payload);
     string jwtAssertion = headerString + "." + payloadString;
-    SigningAlgorithm? alg = header?.alg;
-    if (alg is ()) {
-        return prepareError("Failed to issue JWT since signing algorithm is not specified.");
-    }
 
-    SigningAlgorithm algorithm = <SigningAlgorithm>alg;
+    SigningAlgorithm algorithm = issuerConfig.signingAlgorithm;
+    KeyStoreConfig? keyStoreConfig = issuerConfig?.keyStoreConfig;
+    if (algorithm is NONE) {
+        return jwtAssertion;
+    }
+    if (keyStoreConfig is ()) {
+        return prepareError("Signing JWT requires KeyStoreConfig with keystore information.");
+    }
+    KeyStoreConfig ksc = <KeyStoreConfig>keyStoreConfig;
+    crypto:KeyStore keyStore = ksc.keyStore;
+    string keyAlias = ksc.keyAlias;
+    string keyPassword = ksc.keyPassword;
+    crypto:PrivateKey|crypto:Error decodedResults = crypto:decodePrivateKey(keyStore, keyAlias, keyPassword);
+    if (decodedResults is crypto:Error) {
+        return prepareError("Private key decoding failed.", decodedResults);
+    }
+    crypto:PrivateKey privateKey = <crypto:PrivateKey>decodedResults;
     match (algorithm) {
-        NONE => {
-            return jwtAssertion;
+        RS256 => {
+            byte[]|crypto:Error signature = crypto:signRsaSha256(jwtAssertion.toBytes(), privateKey);
+            if (signature is byte[]) {
+                return (jwtAssertion + "." + encoding:encodeBase64Url(signature));
+            } else {
+                return prepareError("Private key signing failed for SHA256 algorithm.", signature);
+            }
+        }
+        RS384 => {
+            byte[]|crypto:Error signature = crypto:signRsaSha384(jwtAssertion.toBytes(), privateKey);
+            if (signature is byte[]) {
+                return (jwtAssertion + "." + encoding:encodeBase64Url(signature));
+            } else {
+                return prepareError("Private key signing failed for SHA384 algorithm.", signature);
+            }
+        }
+        RS512 => {
+            byte[]|crypto:Error signature = crypto:signRsaSha512(jwtAssertion.toBytes(), privateKey);
+            if (signature is byte[]) {
+                return (jwtAssertion + "." + encoding:encodeBase64Url(signature));
+            } else {
+                return prepareError("Private key signing failed for SHA512 algorithm.", signature);
+            }
         }
         _ => {
-            if (config is ()) {
-                return prepareError("Signing JWT requires KeyStoreConfig with keystore information.");
-            }
-
-            KeyStoreConfig keyStoreConfig = <KeyStoreConfig>config;
-            crypto:KeyStore keyStore = keyStoreConfig.keyStore;
-            string keyAlias = keyStoreConfig.keyAlias;
-            string keyPassword = keyStoreConfig.keyPassword;
-            crypto:PrivateKey|crypto:Error decodedResults = crypto:decodePrivateKey(keyStore, keyAlias, keyPassword);
-            if (decodedResults is crypto:Error) {
-                return prepareError("Private key decoding failed.", decodedResults);
-            }
-            crypto:PrivateKey privateKey = <crypto:PrivateKey>decodedResults;
-            match (algorithm) {
-                RS256 => {
-                    byte[]|crypto:Error signature = crypto:signRsaSha256(jwtAssertion.toBytes(), privateKey);
-                    if (signature is byte[]) {
-                        return (jwtAssertion + "." + encoding:encodeBase64Url(signature));
-                    } else {
-                        return prepareError("Private key signing failed for SHA256 algorithm.", signature);
-                    }
-                }
-                RS384 => {
-                    byte[]|crypto:Error signature = crypto:signRsaSha384(jwtAssertion.toBytes(), privateKey);
-                    if (signature is byte[]) {
-                        return (jwtAssertion + "." + encoding:encodeBase64Url(signature));
-                    } else {
-                        return prepareError("Private key signing failed for SHA384 algorithm.", signature);
-                    }
-                }
-                RS512 => {
-                    byte[]|crypto:Error signature = crypto:signRsaSha512(jwtAssertion.toBytes(), privateKey);
-                    if (signature is byte[]) {
-                        return (jwtAssertion + "." + encoding:encodeBase64Url(signature));
-                    } else {
-                        return prepareError("Private key signing failed for SHA512 algorithm.", signature);
-                    }
-                }
-                _ => {
-                    return prepareError("Unsupported JWS algorithm.");
-                }
-            }
+            return prepareError("Unsupported JWS algorithm.");
         }
     }
 }
 
-# Builds the header string from the `jwt:Header` record.
-# ```ballerina
-# string|jwt:Error header = buildHeaderString(header);
-# ```
-#
-# + header - JWT header record to be built as a string
-# + return - The header string or else a `jwt:Error` if building the string fails
-public isolated function buildHeaderString(Header header) returns string|Error {
+isolated function prepareHeader(IssuerConfig issuerConfig) returns Header {
+    Header header = { alg: issuerConfig.signingAlgorithm, typ: "JWT" };
+    return header;
+}
+
+isolated function preparePayload(IssuerConfig issuerConfig) returns Payload {
+    Payload payload = {
+        exp: time:currentTime().time / 1000 + issuerConfig.expTimeInSeconds,
+        iat: time:currentTime().time / 1000,
+        nbf: time:currentTime().time / 1000,
+        jti: uuid:createType4AsString()
+    };
+
+    string? sub = issuerConfig?.username;
+    if (sub is string) {
+        payload.sub = sub;
+    }
+    string? iss = issuerConfig?.issuer;
+    if (iss is string) {
+        payload.iss = iss;
+    }
+    string|string[]? aud = issuerConfig?.audience;
+    if (aud is string || aud is string[]) {
+        payload.aud = aud;
+    }
+
+    map<json>? customClaims = issuerConfig?.customClaims;
+    if (customClaims is map<json>) {
+        foreach string key in customClaims.keys() {
+            payload[key] = customClaims[key].toJsonString();
+        }
+    }
+    return payload;
+}
+
+isolated function buildHeaderString(Header header) returns string|Error {
     if (!validateMandatoryHeaderFields(header)) {
         return prepareError("Mandatory field signing algorithm (alg) is empty.");
     }
     return encoding:encodeBase64Url(header.toJsonString().toBytes());
 }
 
-# Builds the payload string from the `jwt:Payload` record.
-# ```ballerina
-# string|jwt:Error payload = jwt:buildPayloadString(payload);
-# ```
-#
-# + payload - JWT payload record to be built as a string
-# + return - The payload string or else a `jwt:Error` if building the string fails
-public isolated function buildPayloadString(Payload payload) returns string|Error {
+isolated function buildPayloadString(Payload payload) returns string|Error {
     return encoding:encodeBase64Url(payload.toJsonString().toBytes());
 }
 

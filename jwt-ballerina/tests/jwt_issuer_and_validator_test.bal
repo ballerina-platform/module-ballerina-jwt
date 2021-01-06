@@ -20,30 +20,24 @@ import ballerina/encoding;
 import ballerina/lang.'string;
 import ballerina/stringutils;
 import ballerina/test;
-import ballerina/time;
 
 isolated function jwtIssuer() returns string {
-    KeyStoreConfig config = {
-        keyStore: {
-            path: KEYSTORE_PATH,
-            password: "ballerina"
-        },
-        keyAlias: "ballerina",
-        keyPassword: "ballerina"
+    IssuerConfig issuerConfig = {
+        username: "John",
+        issuer: "wso2",
+        audience: ["ballerina", "ballerinaSamples"],
+        expTimeInSeconds: 600,
+        keyStoreConfig: {
+            keyStore: {
+                path: KEYSTORE_PATH,
+                password: "ballerina"
+            },
+            keyAlias: "ballerina",
+            keyPassword: "ballerina"
+        }
     };
 
-    Header header = {};
-    header.alg = RS256;
-    header.typ = "JWT";
-
-    Payload payload = {};
-    payload.sub = "John";
-    payload.iss = "wso2";
-    payload.jti = "100078234ba23";
-    payload.aud = ["ballerina", "ballerinaSamples"];
-    payload.exp = time:currentTime().time/1000 + 600;
-
-    string|Error result = issue(header, payload, config);
+    string|Error result = issue(issuerConfig);
     if (result is string) {
         return result;
     }
@@ -52,27 +46,22 @@ isolated function jwtIssuer() returns string {
 
 @test:Config {}
 isolated function testIssueJwt() {
-    KeyStoreConfig config = {
-        keyStore: {
-            path: KEYSTORE_PATH,
-            password: "ballerina"
-        },
-        keyAlias: "ballerina",
-        keyPassword: "ballerina"
+    IssuerConfig issuerConfig = {
+        username: "John",
+        issuer: "wso2",
+        audience: ["ballerina", "ballerinaSamples"],
+        expTimeInSeconds: 600,
+        keyStoreConfig: {
+            keyStore: {
+                path: KEYSTORE_PATH,
+                password: "ballerina"
+            },
+            keyAlias: "ballerina",
+            keyPassword: "ballerina"
+        }
     };
 
-    Header header = {};
-    header.alg = RS256;
-    header.typ = "JWT";
-
-    Payload payload = {};
-    payload.sub = "John";
-    payload.iss = "wso2";
-    payload.jti = "100078234ba23";
-    payload.aud = ["ballerina", "ballerinaSamples"];
-    payload.exp = time:currentTime().time/1000 + 600;
-
-    string|Error result = issue(header, payload, config);
+    string|Error result = issue(issuerConfig);
     if (result is string) {
         test:assertTrue(result.startsWith("eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QifQ."));
         string[] parts = stringutils:split(result, "\\.");
@@ -96,7 +85,7 @@ isolated function testIssueJwt() {
             string|error resultPayload = 'string:fromBytes(payloadDecodedResult);
             if (resultPayload is string) {
                 test:assertTrue(resultPayload.startsWith("{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\"" +
-                                ", \"ballerinaSamples\"], \"jti\":\"100078234ba23\", \"exp\":"));
+                                ", \"ballerinaSamples\"]"));
             } else {
                 test:assertFail(msg = "Expected string, but found error");
             }
@@ -111,27 +100,22 @@ isolated function testIssueJwt() {
 
 @test:Config {}
 isolated function testIssueJwtWithSingleAud() {
-    KeyStoreConfig config = {
-        keyStore: {
-            path: KEYSTORE_PATH,
-            password: "ballerina"
-        },
-        keyAlias: "ballerina",
-        keyPassword: "ballerina"
+    IssuerConfig issuerConfig = {
+        username: "John",
+        issuer: "wso2",
+        audience: "ballerina",
+        expTimeInSeconds: 600,
+        keyStoreConfig: {
+            keyStore: {
+                path: KEYSTORE_PATH,
+                password: "ballerina"
+            },
+            keyAlias: "ballerina",
+            keyPassword: "ballerina"
+        }
     };
 
-    Header header = {};
-    header.alg = RS256;
-    header.typ = "JWT";
-
-    Payload payload = {};
-    payload.sub = "John";
-    payload.iss = "wso2";
-    payload.jti = "100078234ba23";
-    payload.aud = "ballerina";
-    payload.exp = time:currentTime().time/1000 + 600;
-
-    string|Error result = issue(header, payload, config);
+    string|Error result = issue(issuerConfig);
     if (result is string) {
         string[] parts = stringutils:split(result, "\\.");
 
@@ -153,8 +137,7 @@ isolated function testIssueJwtWithSingleAud() {
         if (payloadDecodedResult is byte[]) {
             string|error resultPayload = 'string:fromBytes(payloadDecodedResult);
             if (resultPayload is string) {
-                test:assertTrue(resultPayload.startsWith("{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":\"ballerina\"" +
-                                ", \"jti\":\"100078234ba23\", \"exp\":"));
+                test:assertTrue(resultPayload.startsWith("{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":\"ballerina\","));
             } else {
                 test:assertFail(msg = "Expected string, but found error");
             }
@@ -169,27 +152,22 @@ isolated function testIssueJwtWithSingleAud() {
 
 @test:Config {}
 isolated function testIssueJwtWithSingleAudAndAudAsArray() {
-    KeyStoreConfig config = {
-        keyStore: {
-            path: KEYSTORE_PATH,
-            password: "ballerina"
-        },
-        keyAlias: "ballerina",
-        keyPassword: "ballerina"
+    IssuerConfig issuerConfig = {
+        username: "John",
+        issuer: "wso2",
+        audience: ["ballerina"],
+        expTimeInSeconds: 600,
+        keyStoreConfig: {
+            keyStore: {
+                path: KEYSTORE_PATH,
+                password: "ballerina"
+            },
+            keyAlias: "ballerina",
+            keyPassword: "ballerina"
+        }
     };
 
-    Header header = {};
-    header.alg = RS256;
-    header.typ = "JWT";
-
-    Payload payload = {};
-    payload.sub = "John";
-    payload.iss = "wso2";
-    payload.jti = "100078234ba23";
-    payload.aud = ["ballerina"];
-    payload.exp = time:currentTime().time/1000 + 600;
-
-    string|Error result = issue(header, payload, config);
+    string|Error result = issue(issuerConfig);
     if (result is string) {
         string[] parts = stringutils:split(result, "\\.");
 
@@ -211,8 +189,7 @@ isolated function testIssueJwtWithSingleAudAndAudAsArray() {
         if (payloadDecodedResult is byte[]) {
             string|error resultPayload = 'string:fromBytes(payloadDecodedResult);
             if (resultPayload is string) {
-                test:assertTrue(resultPayload.startsWith("{\"iss\":\"wso2\", \"sub\":\"John\", " +
-                                "\"aud\":[\"ballerina\"], \"jti\":\"100078234ba23\", \"exp\":"));
+                test:assertTrue(resultPayload.startsWith("{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\"],"));
             } else {
                 test:assertFail(msg = "Expected string, but found error");
             }
@@ -227,25 +204,20 @@ isolated function testIssueJwtWithSingleAudAndAudAsArray() {
 
 @test:Config {}
 isolated function testIssueJwtWithNoIssOrSub() {
-    KeyStoreConfig config = {
-        keyStore: {
-            path: KEYSTORE_PATH,
-            password: "ballerina"
-        },
-        keyAlias: "ballerina",
-        keyPassword: "ballerina"
+    IssuerConfig issuerConfig = {
+        audience: ["ballerina", "ballerinaSamples"],
+        expTimeInSeconds: 600,
+        keyStoreConfig: {
+            keyStore: {
+                path: KEYSTORE_PATH,
+                password: "ballerina"
+            },
+            keyAlias: "ballerina",
+            keyPassword: "ballerina"
+        }
     };
 
-    Header header = {};
-    header.alg = RS256;
-    header.typ = "JWT";
-
-    Payload payload = {};
-    payload.jti = "100078234ba23";
-    payload.aud = ["ballerina", "ballerinaSamples"];
-    payload.exp = time:currentTime().time/1000 + 600;
-
-    string|Error result = issue(header, payload, config);
+    string|Error result = issue(issuerConfig);
     if (result is string) {
         string[] parts = stringutils:split(result, "\\.");
 
@@ -267,8 +239,7 @@ isolated function testIssueJwtWithNoIssOrSub() {
         if (payloadDecodedResult is byte[]) {
             string|error resultPayload = 'string:fromBytes(payloadDecodedResult);
             if (resultPayload is string) {
-                test:assertTrue(resultPayload.startsWith("{\"aud\":[\"ballerina\", \"ballerinaSamples\"], " +
-                                "\"jti\":\"100078234ba23\", \"exp\":"));
+                test:assertTrue(resultPayload.startsWith("{\"aud\":[\"ballerina\", \"ballerinaSamples\"],"));
             } else {
                 test:assertFail(msg = "Expected string, but found error");
             }
@@ -283,26 +254,21 @@ isolated function testIssueJwtWithNoIssOrSub() {
 
 @test:Config {}
 isolated function testIssueJwtWithNoAudOrSub() {
-    KeyStoreConfig config = {
-        keyStore: {
-            path: KEYSTORE_PATH,
-            password: "ballerina"
-        },
-        keyAlias: "ballerina",
-        keyPassword: "ballerina"
+    IssuerConfig issuerConfig = {
+        username: "John",
+        issuer: "wso2",
+        expTimeInSeconds: 600,
+        keyStoreConfig: {
+            keyStore: {
+                path: KEYSTORE_PATH,
+                password: "ballerina"
+            },
+            keyAlias: "ballerina",
+            keyPassword: "ballerina"
+        }
     };
 
-    Header header = {};
-    header.alg = RS256;
-    header.typ = "JWT";
-
-    Payload payload = {};
-    payload.sub = "John";
-    payload.iss = "wso2";
-    payload.jti = "100078234ba23";
-    payload.exp = time:currentTime().time/1000 + 600;
-
-    string|Error result = issue(header, payload, config);
+    string|Error result = issue(issuerConfig);
     if (result is string) {
         string[] parts = stringutils:split(result, "\\.");
 
@@ -324,8 +290,7 @@ isolated function testIssueJwtWithNoAudOrSub() {
         if (payloadDecodedResult is byte[]) {
             string|error resultPayload = 'string:fromBytes(payloadDecodedResult);
             if (resultPayload is string) {
-                test:assertTrue(resultPayload.startsWith("{\"iss\":\"wso2\", \"sub\":\"John\", " +
-                                "\"jti\":\"100078234ba23\", \"exp\":"));
+                test:assertTrue(resultPayload.startsWith("{\"iss\":\"wso2\", \"sub\":\"John\","));
             } else {
                 test:assertFail(msg = "Expected string, but found error");
             }
@@ -340,28 +305,23 @@ isolated function testIssueJwtWithNoAudOrSub() {
 
 @test:Config {}
 isolated function testIssueJwtWithCustomClaims() {
-    KeyStoreConfig config = {
-        keyStore: {
-            path: KEYSTORE_PATH,
-            password: "ballerina"
-        },
-        keyAlias: "ballerina",
-        keyPassword: "ballerina"
+    IssuerConfig issuerConfig = {
+        username: "John",
+        issuer: "wso2",
+        audience: ["ballerina", "ballerinaSamples"],
+        customClaims: { "scope": "test-scope" },
+        expTimeInSeconds: 600,
+        keyStoreConfig: {
+            keyStore: {
+                path: KEYSTORE_PATH,
+                password: "ballerina"
+            },
+            keyAlias: "ballerina",
+            keyPassword: "ballerina"
+        }
     };
 
-    Header header = {};
-    header.alg = RS256;
-    header.typ = "JWT";
-
-    Payload payload = {};
-    payload.sub = "John";
-    payload.iss = "wso2";
-    payload.jti = "100078234ba23";
-    payload.aud = ["ballerina", "ballerinaSamples"];
-    payload.exp = time:currentTime().time/1000 + 600;
-    payload["scope"] = "test-scope";
-
-    string|Error result = issue(header, payload, config);
+    string|Error result = issue(issuerConfig);
     if (result is string) {
         string[] parts = stringutils:split(result, "\\.");
 
@@ -384,7 +344,7 @@ isolated function testIssueJwtWithCustomClaims() {
             string|error resultPayload = 'string:fromBytes(payloadDecodedResult);
             if (resultPayload is string) {
                 test:assertTrue(resultPayload.startsWith("{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\"" +
-                                ", \"ballerinaSamples\"], \"jti\":\"100078234ba23\", \"exp\":"));
+                                ", \"ballerinaSamples\"],"));
                 test:assertTrue(resultPayload.endsWith("\"scope\":\"test-scope\"}"));
             } else {
                 test:assertFail(msg = "Expected string, but found error");
