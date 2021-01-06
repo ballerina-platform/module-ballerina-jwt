@@ -95,8 +95,8 @@ isolated function testIssueJwt() {
         if (payloadDecodedResult is byte[]) {
             string|error resultPayload = 'string:fromBytes(payloadDecodedResult);
             if (resultPayload is string) {
-                test:assertTrue(resultPayload.startsWith("{\"sub\":\"John\", \"iss\":\"wso2\", \""));
-                test:assertTrue(resultPayload.endsWith("\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]}"));
+                test:assertTrue(resultPayload.startsWith("{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\"" +
+                                ", \"ballerinaSamples\"], \"jti\":\"100078234ba23\", \"exp\":"));
             } else {
                 test:assertFail(msg = "Expected string, but found error");
             }
@@ -153,8 +153,8 @@ isolated function testIssueJwtWithSingleAud() {
         if (payloadDecodedResult is byte[]) {
             string|error resultPayload = 'string:fromBytes(payloadDecodedResult);
             if (resultPayload is string) {
-                test:assertTrue(resultPayload.startsWith("{\"sub\":\"John\", \"iss\":\"wso2\", \""));
-                test:assertTrue(resultPayload.endsWith("\", \"aud\":\"ballerina\"}"));
+                test:assertTrue(resultPayload.startsWith("{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":\"ballerina\"" +
+                                ", \"jti\":\"100078234ba23\", \"exp\":"));
             } else {
                 test:assertFail(msg = "Expected string, but found error");
             }
@@ -211,8 +211,8 @@ isolated function testIssueJwtWithSingleAudAndAudAsArray() {
         if (payloadDecodedResult is byte[]) {
             string|error resultPayload = 'string:fromBytes(payloadDecodedResult);
             if (resultPayload is string) {
-                test:assertTrue(resultPayload.startsWith("{\"sub\":\"John\", \"iss\":\"wso2\", \""));
-                test:assertTrue(resultPayload.endsWith("\", \"aud\":[\"ballerina\"]}"));
+                test:assertTrue(resultPayload.startsWith("{\"iss\":\"wso2\", \"sub\":\"John\", " +
+                                "\"aud\":[\"ballerina\"], \"jti\":\"100078234ba23\", \"exp\":"));
             } else {
                 test:assertFail(msg = "Expected string, but found error");
             }
@@ -267,8 +267,8 @@ isolated function testIssueJwtWithNoIssOrSub() {
         if (payloadDecodedResult is byte[]) {
             string|error resultPayload = 'string:fromBytes(payloadDecodedResult);
             if (resultPayload is string) {
-                test:assertTrue(resultPayload.startsWith("{\"exp\":"));
-                test:assertTrue(resultPayload.endsWith("\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]}"));
+                test:assertTrue(resultPayload.startsWith("{\"aud\":[\"ballerina\", \"ballerinaSamples\"], " +
+                                "\"jti\":\"100078234ba23\", \"exp\":"));
             } else {
                 test:assertFail(msg = "Expected string, but found error");
             }
@@ -324,8 +324,8 @@ isolated function testIssueJwtWithNoAudOrSub() {
         if (payloadDecodedResult is byte[]) {
             string|error resultPayload = 'string:fromBytes(payloadDecodedResult);
             if (resultPayload is string) {
-                test:assertTrue(resultPayload.startsWith("{\"sub\":\"John\", \"iss\":\"wso2\", \"exp\":"));
-                test:assertTrue(resultPayload.endsWith("\"}"));
+                test:assertTrue(resultPayload.startsWith("{\"iss\":\"wso2\", \"sub\":\"John\", " +
+                                "\"jti\":\"100078234ba23\", \"exp\":"));
             } else {
                 test:assertFail(msg = "Expected string, but found error");
             }
@@ -359,7 +359,7 @@ isolated function testIssueJwtWithCustomClaims() {
     payload.jti = "100078234ba23";
     payload.aud = ["ballerina", "ballerinaSamples"];
     payload.exp = time:currentTime().time/1000 + 600;
-    payload.customClaims = { "scope": "test-scope" };
+    payload["scope"] = "test-scope";
 
     string|Error result = issue(header, payload, config);
     if (result is string) {
@@ -383,8 +383,9 @@ isolated function testIssueJwtWithCustomClaims() {
         if (payloadDecodedResult is byte[]) {
             string|error resultPayload = 'string:fromBytes(payloadDecodedResult);
             if (resultPayload is string) {
-                test:assertTrue(resultPayload.startsWith("{\"sub\":\"John\", \"iss\":\"wso2\", \""));
-                test:assertTrue(resultPayload.endsWith("\", \"aud\":[\"ballerina\", \"ballerinaSamples\"], \"scope\":\"test-scope\"}"));
+                test:assertTrue(resultPayload.startsWith("{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\"" +
+                                ", \"ballerinaSamples\"], \"jti\":\"100078234ba23\", \"exp\":"));
+                test:assertTrue(resultPayload.endsWith("\"scope\":\"test-scope\"}"));
             } else {
                 test:assertFail(msg = "Expected string, but found error");
             }

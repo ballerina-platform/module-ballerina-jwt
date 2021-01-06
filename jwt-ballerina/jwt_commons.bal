@@ -27,7 +27,7 @@ public const RS384 = "RS384";
 public const RS512 = "RS512";
 
 # Unsecured JWTs (no signing)
-public const NONE = "NONE";
+public const NONE = "none";
 
 //JOSH header parameters
 const string ALG = "alg";
@@ -66,8 +66,7 @@ public type Header record {|
 # + exp - Expiration time, identifies the expiration time (seconds since the Epoch) on or after which the JWT must not be accepted
 # + nbf - Not before, identifies the time (seconds since the Epoch) before which the JWT must not be accepted
 # + iat - Issued at, identifies the time (seconds since the Epoch) at which the JWT was issued
-# + customClaims - Map of custom claims
-public type Payload record {|
+public type Payload record {
     string iss?;
     string sub?;
     string|string[] aud?;
@@ -75,5 +74,4 @@ public type Payload record {|
     int exp?;
     int nbf?;
     int iat?;
-    map<json> customClaims?;
-|};
+};

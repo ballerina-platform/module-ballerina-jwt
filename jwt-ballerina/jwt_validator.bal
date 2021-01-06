@@ -224,7 +224,6 @@ isolated function parseHeader(map<json> headerJson) returns Header {
 
 isolated function parsePayload(map<json> payloadJson) returns Payload|Error {
     Payload payload = {};
-    map<json> customClaims = {};
     string[] keys = payloadJson.keys();
     foreach string key in keys {
         match (key) {
@@ -268,12 +267,9 @@ isolated function parsePayload(map<json> payloadJson) returns Payload|Error {
                 }
             }
             _ => {
-                customClaims[key] = payloadJson[key];
+                payload[key] = payloadJson[key].toJsonString();
             }
         }
-    }
-    if (customClaims.length() > 0) {
-        payload.customClaims = customClaims;
     }
     return payload;
 }

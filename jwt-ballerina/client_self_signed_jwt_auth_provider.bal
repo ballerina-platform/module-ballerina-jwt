@@ -73,7 +73,9 @@ isolated function prepareJwtAuthToken(IssuerConfig issuerConfig) returns string|
 
     map<json>? customClaims = issuerConfig?.customClaims;
     if (customClaims is map<json>) {
-        payload.customClaims = customClaims;
+        foreach string key in customClaims.keys() {
+            payload[key] = customClaims[key].toJsonString();
+        }
     }
 
      // TODO: cache the token per-user per-client and reuse it
