@@ -32,14 +32,14 @@ import ballerina/time;
 # + trustStoreConfig - JWT trust store configurations
 # + jwksConfig - JWKs configurations
 # + jwtCache - Cache used to store parsed JWT information
-public type ValidatorConfig record {|
+public type ValidatorConfig record {
     string issuer?;
     string|string[] audience?;
     int clockSkewInSeconds = 0;
     TrustStoreConfig trustStoreConfig?;
     JwksConfig jwksConfig?;
     cache:Cache jwtCache = new;
-|};
+};
 
 # Represents the JWKs endpoint configurations.
 #
