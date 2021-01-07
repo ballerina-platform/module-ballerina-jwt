@@ -194,53 +194,53 @@ isolated function getJwtSignature(string encodedSignature) returns byte[]|Error 
     return <byte[]>signature;
 }
 
-isolated function parseHeader(map<json> headerJson) returns Header {
+isolated function parseHeader(map<json> headerMap) returns Header {
     Header header = {};
-    string[] keys = headerJson.keys();
+    string[] keys = headerMap.keys();
     foreach string key in keys {
         match (key) {
             ALG => {
-                if (headerJson[key].toJsonString() == "RS256") {
+                if (headerMap[key].toJsonString() == "RS256") {
                     header.alg = RS256;
-                } else if (headerJson[key].toJsonString() == "RS384") {
+                } else if (headerMap[key].toJsonString() == "RS384") {
                     header.alg = RS384;
-                } else if (headerJson[key].toJsonString() == "RS512") {
+                } else if (headerMap[key].toJsonString() == "RS512") {
                     header.alg = RS512;
                 }
             }
             TYP => {
-                header.typ = headerJson[key].toJsonString();
+                header.typ = headerMap[key].toJsonString();
             }
             CTY => {
-                header.cty = headerJson[key].toJsonString();
+                header.cty = headerMap[key].toJsonString();
             }
             KID => {
-                header.kid = headerJson[key].toJsonString();
+                header.kid = headerMap[key].toJsonString();
             }
         }
     }
     return header;
 }
 
-isolated function parsePayload(map<json> payloadJson) returns Payload|Error {
+isolated function parsePayload(map<json> payloadMap) returns Payload|Error {
     Payload payload = {};
-    string[] keys = payloadJson.keys();
+    string[] keys = payloadMap.keys();
     foreach string key in keys {
         match (key) {
             ISS => {
-                payload.iss = payloadJson[key].toJsonString();
+                payload.iss = payloadMap[key].toJsonString();
             }
             SUB => {
-                payload.sub = payloadJson[key].toJsonString();
+                payload.sub = payloadMap[key].toJsonString();
             }
             AUD => {
-                payload.aud = payloadJson[key] is json[] ? check convertToStringArray(<json[]>payloadJson[key]) : payloadJson[key].toJsonString();
+                payload.aud = payloadMap[key] is json[] ? check convertToStringArray(<json[]>payloadMap[key]) : payloadMap[key].toJsonString();
             }
             JTI => {
-                payload.jti = payloadJson[key].toJsonString();
+                payload.jti = payloadMap[key].toJsonString();
             }
             EXP => {
-                string exp = payloadJson[key].toJsonString();
+                string exp = payloadMap[key].toJsonString();
                 int|error value = 'int:fromString(exp);
                 if (value is int) {
                     payload.exp = value;
@@ -249,7 +249,7 @@ isolated function parsePayload(map<json> payloadJson) returns Payload|Error {
                 }
             }
             NBF => {
-                string nbf = payloadJson[key].toJsonString();
+                string nbf = payloadMap[key].toJsonString();
                 int|error value = 'int:fromString(nbf);
                 if (value is int) {
                     payload.nbf = value;
@@ -258,7 +258,7 @@ isolated function parsePayload(map<json> payloadJson) returns Payload|Error {
                 }
             }
             IAT => {
-                string iat = payloadJson[key].toJsonString();
+                string iat = payloadMap[key].toJsonString();
                 int|error value = 'int:fromString(iat);
                 if (value is int) {
                     payload.iat = value;
@@ -267,7 +267,7 @@ isolated function parsePayload(map<json> payloadJson) returns Payload|Error {
                 }
             }
             _ => {
-                payload[key] = payloadJson[key].toJsonString();
+                payload[key] = payloadMap[key].toJsonString();
             }
         }
     }
