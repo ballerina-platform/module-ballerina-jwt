@@ -80,7 +80,7 @@ public isolated function issue(IssuerConfig issuerConfig) returns string|Error {
     if (decodedResults is crypto:Error) {
         return prepareError("Private key decoding failed.", decodedResults);
     }
-    crypto:PrivateKey privateKey = <crypto:PrivateKey>decodedResults;
+    crypto:PrivateKey privateKey = checkpanic decodedResults;
     match (algorithm) {
         RS256 => {
             byte[]|crypto:Error signature = crypto:signRsaSha256(jwtAssertion.toBytes(), privateKey);

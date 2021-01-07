@@ -52,6 +52,6 @@ public class ClientSelfSignedJwtAuthProvider {
         if (result is Error) {
             return prepareError("Failed to generate JWT.", result);
         }
-        return <string>result;
+        return checkpanic result;
     }
 }
