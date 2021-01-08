@@ -27,7 +27,7 @@ public type Error JwtError;
 isolated function prepareError(string message, error? err = ()) returns Error {
     log:printError(message, err = err);
     if (err is error) {
-        return JwtError(message, err);
+        return error JwtError(message, err);
     }
-    return JwtError(message);
+    return error JwtError(message);
 }

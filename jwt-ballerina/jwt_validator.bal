@@ -107,7 +107,7 @@ public isolated function validate(string jwt, ValidatorConfig validatorConfig) r
 }
 
 isolated function validateFromCache(cache:Cache jwtCache, string jwt) returns Payload? {
-    Payload payload = <Payload>jwtCache.get(jwt);
+    Payload payload = <Payload> checkpanic jwtCache.get(jwt);
     int? expTime = payload?.exp;
     // convert to current time and check the expiry time
     if (expTime is () || expTime > (time:currentTime().time / 1000)) {
@@ -157,12 +157,12 @@ isolated function getHeader(string encodedHeader) returns Header|Error {
         if (result is error) {
             return prepareError(result.message(), result);
         }
-        string header = <string>result;
+        string header = checkpanic result;
         json|error jsonHeader = header.fromJsonString();
         if (jsonHeader is error) {
             return prepareError("String to JSON conversion failed for JWT header.", jsonHeader);
         }
-        return parseHeader(<map<json>>jsonHeader);
+        return parseHeader(<map<json>> checkpanic jsonHeader);
     } else {
         return prepareError("Base64 url decode failed for JWT header.", decodedHeader);
     }
@@ -175,12 +175,12 @@ isolated function getPayload(string encodedPayload) returns Payload|Error {
         if (result is error) {
             return prepareError(result.message(), result);
         }
-        string payload = <string>result;
+        string payload = checkpanic result;
         json|error jsonPayload = payload.fromJsonString();
         if (jsonPayload is error) {
             return prepareError("String to JSON conversion failed for JWT paylaod.", jsonPayload);
         }
-        return parsePayload(<map<json>>jsonPayload);
+        return parsePayload(<map<json>> checkpanic jsonPayload);
     } else {
         return prepareError("Base64 url decode failed for JWT payload.", decodedPayload);
     }
@@ -191,56 +191,56 @@ isolated function getJwtSignature(string encodedSignature) returns byte[]|Error 
     if (signature is encoding:Error) {
         return prepareError("Base64 url decode failed for JWT signature.", signature);
     }
-    return <byte[]>signature;
+    return checkpanic signature;
 }
 
-isolated function parseHeader(map<json> headerJson) returns Header {
+isolated function parseHeader(map<json> headerMap) returns Header {
     Header header = {};
-    string[] keys = headerJson.keys();
+    string[] keys = headerMap.keys();
     foreach string key in keys {
         match (key) {
             ALG => {
-                if (headerJson[key].toJsonString() == "RS256") {
+                if (headerMap[key].toJsonString() == "RS256") {
                     header.alg = RS256;
-                } else if (headerJson[key].toJsonString() == "RS384") {
+                } else if (headerMap[key].toJsonString() == "RS384") {
                     header.alg = RS384;
-                } else if (headerJson[key].toJsonString() == "RS512") {
+                } else if (headerMap[key].toJsonString() == "RS512") {
                     header.alg = RS512;
                 }
             }
             TYP => {
-                header.typ = headerJson[key].toJsonString();
+                header.typ = headerMap[key].toJsonString();
             }
             CTY => {
-                header.cty = headerJson[key].toJsonString();
+                header.cty = headerMap[key].toJsonString();
             }
             KID => {
-                header.kid = headerJson[key].toJsonString();
+                header.kid = headerMap[key].toJsonString();
             }
         }
     }
     return header;
 }
 
-isolated function parsePayload(map<json> payloadJson) returns Payload|Error {
+isolated function parsePayload(map<json> payloadMap) returns Payload|Error {
     Payload payload = {};
-    string[] keys = payloadJson.keys();
+    string[] keys = payloadMap.keys();
     foreach string key in keys {
         match (key) {
             ISS => {
-                payload.iss = payloadJson[key].toJsonString();
+                payload.iss = payloadMap[key].toJsonString();
             }
             SUB => {
-                payload.sub = payloadJson[key].toJsonString();
+                payload.sub = payloadMap[key].toJsonString();
             }
             AUD => {
-                payload.aud = payloadJson[key] is json[] ? check convertToStringArray(<json[]>payloadJson[key]) : payloadJson[key].toJsonString();
+                payload.aud = payloadMap[key] is json[] ? check convertToStringArray(<json[]>payloadMap[key]) : payloadMap[key].toJsonString();
             }
             JTI => {
-                payload.jti = payloadJson[key].toJsonString();
+                payload.jti = payloadMap[key].toJsonString();
             }
             EXP => {
-                string exp = payloadJson[key].toJsonString();
+                string exp = payloadMap[key].toJsonString();
                 int|error value = 'int:fromString(exp);
                 if (value is int) {
                     payload.exp = value;
@@ -249,7 +249,7 @@ isolated function parsePayload(map<json> payloadJson) returns Payload|Error {
                 }
             }
             NBF => {
-                string nbf = payloadJson[key].toJsonString();
+                string nbf = payloadMap[key].toJsonString();
                 int|error value = 'int:fromString(nbf);
                 if (value is int) {
                     payload.nbf = value;
@@ -258,7 +258,7 @@ isolated function parsePayload(map<json> payloadJson) returns Payload|Error {
                 }
             }
             IAT => {
-                string iat = payloadJson[key].toJsonString();
+                string iat = payloadMap[key].toJsonString();
                 int|error value = 'int:fromString(iat);
                 if (value is int) {
                     payload.iat = value;
@@ -267,7 +267,7 @@ isolated function parsePayload(map<json> payloadJson) returns Payload|Error {
                 }
             }
             _ => {
-                payload[key] = payloadJson[key].toJsonString();
+                payload[key] = payloadMap[key].toJsonString();
             }
         }
     }
@@ -331,7 +331,7 @@ isolated function validateCertificate(crypto:PublicKey publicKey) returns boolea
         return prepareError(result.message(), result);
     }
 
-    time:Time currTimeInGmt = <time:Time>result;
+    time:Time currTimeInGmt = checkpanic result;
     int currTimeInGmtMillis = currTimeInGmt.time;
 
     crypto:Certificate? certificate = publicKey?.certificate;
@@ -353,11 +353,11 @@ isolated function validateSignatureByTrustStore(string jwt, SigningAlgorithm alg
        return prepareError("Public key decode failed.", publicKey);
     }
 
-    if (!check validateCertificate(<crypto:PublicKey>publicKey)) {
+    if (!check validateCertificate(checkpanic publicKey)) {
        return prepareError("Public key certificate validity period has passed.");
     }
 
-    _ = check validateSignature(jwt, alg, <crypto:PublicKey>publicKey);
+    _ = check validateSignature(jwt, alg, checkpanic publicKey);
 }
 
 isolated function validateSignatureByJwks(string jwt, string kid, SigningAlgorithm alg, JwksConfig jwksConfig)
@@ -366,13 +366,13 @@ isolated function validateSignatureByJwks(string jwt, string kid, SigningAlgorit
     if (jwk is ()) {
         return prepareError("No JWK found for kid: " + kid);
     }
-    string modulus = <string>jwk.n;
-    string exponent = <string>jwk.e;
+    string modulus = <string> checkpanic jwk.n;
+    string exponent = <string> checkpanic jwk.e;
     crypto:PublicKey|crypto:Error publicKey = crypto:buildRsaPublicKey(modulus, exponent);
     if (publicKey is crypto:Error) {
        return prepareError("Public key generation failed.", publicKey);
     }
-    _ = check validateSignature(jwt, alg, <crypto:PublicKey>publicKey);
+    _ = check validateSignature(jwt, alg, checkpanic publicKey);
 }
 
 isolated function validateSignature(string jwt, SigningAlgorithm alg, crypto:PublicKey publicKey) returns Error? {
@@ -412,7 +412,7 @@ isolated function getJwk(string kid, JwksConfig jwksConfig) returns json|Error {
     if (stringResponse is Error) {
         return prepareError("Failed to call JWKs endpoint.", stringResponse);
     }
-    json[] jwksArray = check getJwksArray(<string>stringResponse);
+    json[] jwksArray = check getJwksArray(checkpanic stringResponse);
     foreach json jwk in jwksArray {
         if (jwk.kid == kid) {
             return jwk;
@@ -425,8 +425,8 @@ isolated function getJwksArray(string stringResponse) returns json[]|Error {
     if (jsonResponse is error) {
         return prepareError(jsonResponse.message(), jsonResponse);
     }
-    json payload = <json>jsonResponse;
-    json[] jwks = <json[]>(payload.keys);
+    json payload = checkpanic jsonResponse;
+    json[] jwks = <json[]> checkpanic (payload.keys);
     return jwks;
 }
 
