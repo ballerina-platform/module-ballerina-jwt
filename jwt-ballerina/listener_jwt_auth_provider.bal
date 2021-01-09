@@ -76,12 +76,10 @@ public class ListenerJwtAuthProvider {
         }
 
         cache:Cache? jwtCache = self.jwtCache;
-        if (jwtCache is cache:Cache) {
-            if (jwtCache.hasKey(credential)) {
-                Payload? payload = validateFromCache(jwtCache, credential);
-                if (payload is Payload) {
-                    return payload;
-                }
+        if (jwtCache is cache:Cache && jwtCache.hasKey(credential)) {
+            Payload? payload = validateFromCache(jwtCache, credential);
+            if (payload is Payload) {
+                return payload;
             }
         }
 
