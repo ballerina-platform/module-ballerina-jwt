@@ -31,24 +31,24 @@ import ballerina/time;
 # + clockSkewInSeconds - Clock skew in seconds
 # + trustStoreConfig - JWT trust store configurations
 # + jwksConfig - JWKs configurations
-# + jwtCache - Cache used to store parsed JWT information
+# + cacheConfig - Configurations related to the cache used to store parsed JWT information
 public type ValidatorConfig record {
     string issuer?;
     string|string[] audience?;
     int clockSkewInSeconds = 0;
     TrustStoreConfig trustStoreConfig?;
     JwksConfig jwksConfig?;
-    cache:Cache jwtCache = new;
+    cache:CacheConfig cacheConfig?;
 };
 
 # Represents the JWKs endpoint configurations.
 #
 # + url - URL of the JWKs endpoint
-# + jwksCache - Cache used to store preloaded JWKs information
+# + cacheConfig - Configurations related to the cache used to store preloaded JWKs information
 # + clientConfig - HTTP client configurations which calls the JWKs endpoint
 public type JwksConfig record {|
     string url;
-    cache:Cache jwksCache?;
+    cache:CacheConfig cacheConfig?;
     ClientConfiguration clientConfig = {};
 |};
 
@@ -92,40 +92,17 @@ public type TrustStoreConfig record {|
 #
 # + jwt - JWT that needs to be validated
 # + validatorConfig - JWT validator configurations
+# + jwksCache - JWKs preloaded cache instance or `()` if not applicable
 # + return - `jwt:Payload` or else a `jwt:Error` if token validation fails
-public isolated function validate(string jwt, ValidatorConfig validatorConfig) returns Payload|Error {
-    if (validatorConfig.jwtCache.hasKey(jwt)) {
-        Payload? payload = validateFromCache(validatorConfig.jwtCache, jwt);
-        if (payload is Payload) {
-            return payload;
-        }
-    }
+public isolated function validate(string jwt, ValidatorConfig validatorConfig, cache:Cache? jwksCache = ())
+                                  returns Payload|Error {
     [Header, Payload] [header, payload] = check decode(jwt);
-    _ = check validateJwtRecords(jwt, header, payload, validatorConfig);
-    addToCache(validatorConfig.jwtCache, jwt, payload);
+    if (!validateMandatoryHeaderFields(header)) {
+        return prepareError("Mandatory field signing algorithm (alg) is not provided in JOSE header.");
+    }
+    _ = check validateJwtRecords(header, payload, validatorConfig);
+    _ = check validateSignature(jwt, header, payload, validatorConfig, jwksCache);
     return payload;
-}
-
-isolated function validateFromCache(cache:Cache jwtCache, string jwt) returns Payload? {
-    Payload payload = <Payload> checkpanic jwtCache.get(jwt);
-    int? expTime = payload?.exp;
-    // convert to current time and check the expiry time
-    if (expTime is () || expTime > (time:currentTime().time / 1000)) {
-        return payload;
-    } else {
-        cache:Error? result = jwtCache.invalidate(jwt);
-        if (result is cache:Error) {
-            log:printError("Failed to invalidate JWT from the cache. JWT payload: " + payload.toString());
-        }
-    }
-}
-
-isolated function addToCache(cache:Cache jwtCache, string jwt, Payload payload) {
-    cache:Error? result = jwtCache.put(jwt, payload);
-    if (result is cache:Error) {
-        log:printError("Failed to add JWT to the cache. JWT payload: " + payload.toString());
-        return;
-    }
 }
 
 # Decodes the provided JWT string.
@@ -274,28 +251,52 @@ isolated function parsePayload(map<json> payloadMap) returns Payload|Error {
     return payload;
 }
 
-isolated function validateJwtRecords(string jwt, Header header, Payload payload, ValidatorConfig validatorConfig)
-                                     returns Error? {
-    if (!validateMandatoryHeaderFields(header)) {
-        return prepareError("Mandatory field signing algorithm (alg) is not provided in JOSE header.");
-    }
-
+isolated function validateSignature(string jwt, Header header, Payload payload, ValidatorConfig validatorConfig,
+                                    cache:Cache? jwksCache) returns Error? {
     SigningAlgorithm alg = <SigningAlgorithm>header?.alg;  // The `()` value is already validated.
     JwksConfig? jwksConfig = validatorConfig?.jwksConfig;
     TrustStoreConfig? trustStoreConfig = validatorConfig?.trustStoreConfig;
+
+    if (alg == NONE && jwksConfig is () && trustStoreConfig is ()) {
+        return;
+    }
+
+    if (alg == NONE && (jwksConfig is JwksConfig || trustStoreConfig is TrustStoreConfig)) {
+        return prepareError("Not a valid JWS. Signature algorithm is NONE.");
+    }
+
+    string[] encodedJwtComponents = check getJwtComponents(jwt);
+    if (alg != NONE && (jwksConfig is JwksConfig || trustStoreConfig is TrustStoreConfig)) {
+        if (encodedJwtComponents.length() == 2) {
+            return prepareError("Not a valid JWS. Signature part is required.");
+        }
+    }
+
+    string headerPayloadPart = encodedJwtComponents[0] + "." + encodedJwtComponents[1];
+    byte[] assertion = headerPayloadPart.toBytes();
+    byte[] signature = check getJwtSignature(encodedJwtComponents[2]);
+
     if (jwksConfig is JwksConfig) {
         string? kid = header?.kid;
         if (kid is string) {
-            _ = check validateSignatureByJwks(jwt, kid, alg, jwksConfig);
-        } else if (trustStoreConfig is TrustStoreConfig) {
-            _ = check validateSignatureByTrustStore(jwt, alg, trustStoreConfig);
+            crypto:PublicKey publicKey = check getPublicKeyByJwks(kid, alg, jwksConfig, jwksCache);
+            boolean signatureValidation = check assertSignature(alg, assertion, signature, publicKey);
+            if (!signatureValidation) {
+               return prepareError("JWT signature validation with jwks configurations has failed.");
+            }
         } else {
             return prepareError("Key ID (kid) is not provided in JOSE header.");
         }
     } else if (trustStoreConfig is TrustStoreConfig) {
-        _ = check validateSignatureByTrustStore(jwt, alg, trustStoreConfig);
+        crypto:PublicKey publicKey = check getPublicKeyByTrustStore(alg, trustStoreConfig);
+        boolean signatureValidation = check assertSignature(alg, assertion, signature, publicKey);
+        if (!signatureValidation) {
+           return prepareError("JWT signature validation with trust store configurations has failed.");
+        }
     }
+}
 
+isolated function validateJwtRecords(Header header, Payload payload, ValidatorConfig validatorConfig) returns Error? {
     string? iss = validatorConfig?.issuer;
     if (iss is string) {
         _ = check validateIssuer(payload, iss);
@@ -345,8 +346,8 @@ isolated function validateCertificate(crypto:PublicKey publicKey) returns boolea
     return false;
 }
 
-isolated function validateSignatureByTrustStore(string jwt, SigningAlgorithm alg,
-                                                TrustStoreConfig trustStoreConfig) returns Error? {
+isolated function getPublicKeyByTrustStore(SigningAlgorithm alg, TrustStoreConfig trustStoreConfig)
+                                           returns crypto:PublicKey|Error {
     crypto:PublicKey|crypto:Error publicKey = crypto:decodePublicKey(trustStoreConfig.trustStore,
                                                                      trustStoreConfig.certificateAlias);
     if (publicKey is crypto:Error) {
@@ -356,13 +357,12 @@ isolated function validateSignatureByTrustStore(string jwt, SigningAlgorithm alg
     if (!check validateCertificate(checkpanic publicKey)) {
        return prepareError("Public key certificate validity period has passed.");
     }
-
-    _ = check validateSignature(jwt, alg, checkpanic publicKey);
+    return checkpanic publicKey;
 }
 
-isolated function validateSignatureByJwks(string jwt, string kid, SigningAlgorithm alg, JwksConfig jwksConfig)
-                                          returns Error? {
-    json jwk = check getJwk(kid, jwksConfig);
+isolated function getPublicKeyByJwks(string kid, SigningAlgorithm alg, JwksConfig jwksConfig, cache:Cache? jwksCache)
+                                     returns crypto:PublicKey|Error {
+    json jwk = check getJwk(kid, jwksConfig, jwksCache);
     if (jwk is ()) {
         return prepareError("No JWK found for kid: " + kid);
     }
@@ -372,32 +372,10 @@ isolated function validateSignatureByJwks(string jwt, string kid, SigningAlgorit
     if (publicKey is crypto:Error) {
        return prepareError("Public key generation failed.", publicKey);
     }
-    _ = check validateSignature(jwt, alg, checkpanic publicKey);
+    return checkpanic publicKey;
 }
 
-isolated function validateSignature(string jwt, SigningAlgorithm alg, crypto:PublicKey publicKey) returns Error? {
-    match (alg) {
-        NONE => {
-            return prepareError("Not a valid JWS. Signature algorithm is NONE.");
-        }
-        _ => {
-            string[] encodedJwtComponents = check getJwtComponents(jwt);
-            if (encodedJwtComponents.length() == 2) {
-                return prepareError("Not a valid JWS. Signature is required.");
-            }
-            byte[] signature = check getJwtSignature(encodedJwtComponents[2]);
-            string headerPayloadPart = encodedJwtComponents[0] + "." + encodedJwtComponents[1];
-            byte[] assertion = headerPayloadPart.toBytes();
-            boolean signatureValidation = check verifySignature(alg, assertion, signature, publicKey);
-            if (!signatureValidation) {
-               return prepareError("JWT signature validation has failed.");
-            }
-        }
-    }
-}
-
-isolated function getJwk(string kid, JwksConfig jwksConfig) returns json|Error {
-    cache:Cache? jwksCache = jwksConfig?.jwksCache;
+isolated function getJwk(string kid, JwksConfig jwksConfig, cache:Cache? jwksCache) returns json|Error {
     if (jwksCache is cache:Cache) {
         if (jwksCache.hasKey(kid)) {
             any|cache:Error jwk = jwksCache.get(kid);
@@ -434,7 +412,7 @@ isolated function getJwksResponse(string url, ClientConfiguration clientConfig) 
     'class: "org.ballerinalang.stdlib.jwt.JwksClient"
 } external;
 
-isolated function verifySignature(SigningAlgorithm alg, byte[] assertion, byte[] signaturePart,
+isolated function assertSignature(SigningAlgorithm alg, byte[] assertion, byte[] signaturePart,
                                   crypto:PublicKey publicKey) returns boolean|Error {
     match (alg) {
         RS256 => {

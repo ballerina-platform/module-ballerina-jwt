@@ -15,7 +15,9 @@
 // under the License.
 
 import ballerina/cache;
+import ballerina/log;
 import ballerina/stringutils;
+import ballerina/time;
 
 # Represents the listener JWT Auth provider, which authenticates by validating a JWT.
 # ```ballerina
@@ -35,17 +37,24 @@ import ballerina/stringutils;
 public class ListenerJwtAuthProvider {
 
     ValidatorConfig validatorConfig;
+    cache:Cache? jwtCache = ();
+    cache:Cache? jwksCache = ();
 
     # Provides authentication based on the provided JWT.
     #
     # + validatorConfig - JWT validator configurations
     public isolated function init(ValidatorConfig validatorConfig) {
         self.validatorConfig = validatorConfig;
+        cache:CacheConfig? jwtCacheConfig = validatorConfig?.cacheConfig;
+        if (jwtCacheConfig is cache:CacheConfig) {
+            self.jwtCache = new(jwtCacheConfig);
+        }
         JwksConfig? jwksConfig = validatorConfig?.jwksConfig;
         if (jwksConfig is JwksConfig) {
-            cache:Cache? jwksCache = jwksConfig?.jwksCache;
-            if (jwksCache is cache:Cache) {
-                Error? result = preloadJwksToCache(jwksConfig);
+            cache:CacheConfig? jwksCacheConfig = jwksConfig?.cacheConfig;
+            if (jwksCacheConfig is cache:CacheConfig) {
+                self.jwksCache = new(jwksCacheConfig);
+                Error? result = preloadJwksToCache(<cache:Cache>(self.jwksCache),jwksConfig);
                 if (result is Error) {
                     panic result;
                 }
@@ -66,16 +75,28 @@ public class ListenerJwtAuthProvider {
             return prepareError("Credential format does not match to JWT format.");
         }
 
-        Payload|Error validationResult = validate(credential, self.validatorConfig);
+        cache:Cache? jwtCache = self.jwtCache;
+        if (jwtCache is cache:Cache) {
+            if (jwtCache.hasKey(credential)) {
+                Payload? payload = validateFromCache(jwtCache, credential);
+                if (payload is Payload) {
+                    return payload;
+                }
+            }
+        }
+
+        Payload|Error validationResult = validate(credential, self.validatorConfig, self.jwksCache);
         if (validationResult is Error) {
             return prepareError("JWT validation failed.", validationResult);
+        }
+        if (jwtCache is cache:Cache) {
+            addToCache(jwtCache, credential, checkpanic validationResult);
         }
         return checkpanic validationResult;
     }
 }
 
-isolated function preloadJwksToCache(JwksConfig jwksConfig) returns Error? {
-    cache:Cache jwksCache = <cache:Cache>jwksConfig?.jwksCache;
+isolated function preloadJwksToCache(cache:Cache jwksCache, JwksConfig jwksConfig) returns Error? {
     string|Error stringResponse = getJwksResponse(jwksConfig.url, jwksConfig.clientConfig);
     if (stringResponse is Error) {
         return prepareError("Failed to call JWKs endpoint to preload JWKs to the cache.", stringResponse);
@@ -86,5 +107,27 @@ isolated function preloadJwksToCache(JwksConfig jwksConfig) returns Error? {
         if (cachedResult is cache:Error) {
             return prepareError("Failed to put JWK for the kid: " + <string> checkpanic jwk.kid + " to the cache.", cachedResult);
         }
+    }
+}
+
+isolated function validateFromCache(cache:Cache jwtCache, string jwt) returns Payload? {
+    Payload payload = <Payload> checkpanic jwtCache.get(jwt);
+    int? expTime = payload?.exp;
+    // convert to current time and check the expiry time
+    if (expTime is () || expTime > (time:currentTime().time / 1000)) {
+        return payload;
+    } else {
+        cache:Error? result = jwtCache.invalidate(jwt);
+        if (result is cache:Error) {
+            log:printError("Failed to invalidate JWT from the cache. JWT payload: " + payload.toString());
+        }
+    }
+}
+
+isolated function addToCache(cache:Cache jwtCache, string jwt, Payload payload) {
+    cache:Error? result = jwtCache.put(jwt, payload);
+    if (result is cache:Error) {
+        log:printError("Failed to add JWT to the cache. JWT payload: " + payload.toString());
+        return;
     }
 }
