@@ -318,7 +318,6 @@ isolated function validateJwtRecords(Header header, Payload payload, ValidatorCo
         }
     }
     //TODO : Need to validate jwt id (jti) and custom claims.
-    return ();
 }
 
 isolated function validateMandatoryHeaderFields(Header header) returns boolean {
@@ -459,12 +458,12 @@ isolated function validateAudience(Payload payload, string|string[] audienceConf
     if (audiencePayload is string) {
         if (audienceConfig is string) {
             if (audiencePayload == audienceConfig) {
-                return ();
+                return;
             }
         } else {
             foreach string audience in audienceConfig {
                 if (audience == audiencePayload) {
-                    return ();
+                    return;
                 }
             }
         }
@@ -473,14 +472,14 @@ isolated function validateAudience(Payload payload, string|string[] audienceConf
         if (audienceConfig is string) {
             foreach string audience in audiencePayload {
                 if (audience == audienceConfig) {
-                    return ();
+                    return;
                 }
             }
         } else {
             foreach string audienceC in audienceConfig {
                 foreach string audienceP in audiencePayload {
                     if (audienceC == audienceP) {
-                        return ();
+                        return;
                     }
                 }
             }
