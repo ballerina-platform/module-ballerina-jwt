@@ -359,7 +359,7 @@ isolated function testIssueJwtWithCustomClaims() {
 }
 
 @test:Config {
-    dataProvider: "jwtIssuer"
+    dataProvider: jwtIssuer
 }
 isolated function testValidateJwt(string jwt) {
     ValidatorConfig config = {
@@ -382,7 +382,7 @@ isolated function testValidateJwt(string jwt) {
 }
 
 @test:Config {
-    dataProvider: "jwtIssuer"
+    dataProvider: jwtIssuer
 }
 isolated function testValidateJwtWithSingleAud(string jwt) {
     ValidatorConfig config = {
@@ -405,7 +405,7 @@ isolated function testValidateJwtWithSingleAud(string jwt) {
 }
 
 @test:Config {
-    dataProvider: "jwtIssuer"
+    dataProvider: jwtIssuer
 }
 isolated function testValidateJwtWithSingleAudAndAudAsArray(string jwt) {
     ValidatorConfig config = {
@@ -428,7 +428,7 @@ isolated function testValidateJwtWithSingleAudAndAudAsArray(string jwt) {
 }
 
 @test:Config {
-    dataProvider: "jwtIssuer"
+    dataProvider: jwtIssuer
 }
 isolated function testValidateJwtWithNoIssOrSub(string jwt) {
     ValidatorConfig config = {
@@ -450,7 +450,7 @@ isolated function testValidateJwtWithNoIssOrSub(string jwt) {
 }
 
 @test:Config {
-    dataProvider: "jwtIssuer"
+    dataProvider: jwtIssuer
 }
 isolated function testValidateJwtWithInvalidSignature(string jwt) {
     ValidatorConfig config = {
