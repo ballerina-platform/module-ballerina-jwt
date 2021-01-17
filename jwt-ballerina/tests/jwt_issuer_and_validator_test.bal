@@ -18,7 +18,7 @@
 
 import ballerina/encoding;
 import ballerina/lang.'string;
-import ballerina/stringutils;
+import ballerina/regex;
 import ballerina/test;
 
 isolated function jwtIssuer() returns string {
@@ -64,7 +64,7 @@ isolated function testIssueJwt() {
     string|Error result = issue(issuerConfig);
     if (result is string) {
         test:assertTrue(result.startsWith("eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QifQ."));
-        string[] parts = stringutils:split(result, "\\.");
+        string[] parts = regex:split(result, "\\.");
 
         // check header
         byte[]|encoding:Error headerDecodedResult = encoding:decodeBase64Url(parts[0]);
@@ -117,7 +117,7 @@ isolated function testIssueJwtWithSingleAud() {
 
     string|Error result = issue(issuerConfig);
     if (result is string) {
-        string[] parts = stringutils:split(result, "\\.");
+        string[] parts = regex:split(result, "\\.");
 
         // check header
         byte[]|encoding:Error headerDecodedResult = encoding:decodeBase64Url(parts[0]);
@@ -169,7 +169,7 @@ isolated function testIssueJwtWithSingleAudAndAudAsArray() {
 
     string|Error result = issue(issuerConfig);
     if (result is string) {
-        string[] parts = stringutils:split(result, "\\.");
+        string[] parts = regex:split(result, "\\.");
 
         // check header
         byte[]|encoding:Error headerDecodedResult = encoding:decodeBase64Url(parts[0]);
@@ -219,7 +219,7 @@ isolated function testIssueJwtWithNoIssOrSub() {
 
     string|Error result = issue(issuerConfig);
     if (result is string) {
-        string[] parts = stringutils:split(result, "\\.");
+        string[] parts = regex:split(result, "\\.");
 
         // check header
         byte[]|encoding:Error headerDecodedResult = encoding:decodeBase64Url(parts[0]);
@@ -270,7 +270,7 @@ isolated function testIssueJwtWithNoAudOrSub() {
 
     string|Error result = issue(issuerConfig);
     if (result is string) {
-        string[] parts = stringutils:split(result, "\\.");
+        string[] parts = regex:split(result, "\\.");
 
         // check header
         byte[]|encoding:Error headerDecodedResult = encoding:decodeBase64Url(parts[0]);
@@ -323,7 +323,7 @@ isolated function testIssueJwtWithCustomClaims() {
 
     string|Error result = issue(issuerConfig);
     if (result is string) {
-        string[] parts = stringutils:split(result, "\\.");
+        string[] parts = regex:split(result, "\\.");
 
         // check header
         byte[]|encoding:Error headerDecodedResult = encoding:decodeBase64Url(parts[0]);
@@ -359,7 +359,7 @@ isolated function testIssueJwtWithCustomClaims() {
 }
 
 @test:Config {
-    dataProvider: "jwtIssuer"
+    dataProvider: jwtIssuer
 }
 isolated function testValidateJwt(string jwt) {
     ValidatorConfig config = {
@@ -382,7 +382,7 @@ isolated function testValidateJwt(string jwt) {
 }
 
 @test:Config {
-    dataProvider: "jwtIssuer"
+    dataProvider: jwtIssuer
 }
 isolated function testValidateJwtWithSingleAud(string jwt) {
     ValidatorConfig config = {
@@ -405,7 +405,7 @@ isolated function testValidateJwtWithSingleAud(string jwt) {
 }
 
 @test:Config {
-    dataProvider: "jwtIssuer"
+    dataProvider: jwtIssuer
 }
 isolated function testValidateJwtWithSingleAudAndAudAsArray(string jwt) {
     ValidatorConfig config = {
@@ -428,7 +428,7 @@ isolated function testValidateJwtWithSingleAudAndAudAsArray(string jwt) {
 }
 
 @test:Config {
-    dataProvider: "jwtIssuer"
+    dataProvider: jwtIssuer
 }
 isolated function testValidateJwtWithNoIssOrSub(string jwt) {
     ValidatorConfig config = {
@@ -450,7 +450,7 @@ isolated function testValidateJwtWithNoIssOrSub(string jwt) {
 }
 
 @test:Config {
-    dataProvider: "jwtIssuer"
+    dataProvider: jwtIssuer
 }
 isolated function testValidateJwtWithInvalidSignature(string jwt) {
     ValidatorConfig config = {
