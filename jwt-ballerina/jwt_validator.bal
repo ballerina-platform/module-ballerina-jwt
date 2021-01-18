@@ -194,6 +194,9 @@ isolated function parseHeader(map<json> headerMap) returns Header {
             KID => {
                 header.kid = headerMap[key].toJsonString();
             }
+            _ => {
+                header[key] = headerMap[key].toJsonString();
+            }
         }
     }
     return header;

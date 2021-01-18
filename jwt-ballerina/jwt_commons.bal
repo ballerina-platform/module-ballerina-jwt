@@ -50,12 +50,12 @@ const string IAT = "iat";
 # + typ - Media type of the JWT
 # + cty - Content type, convey structural information about the JWT
 # + kid - Key ID, hint indicating which key was used to secure the JWS
-public type Header record {|
+public type Header record {
     SigningAlgorithm alg?;
     string typ?;
     string cty?;
     string kid?;
-|};
+};
 
 # Represents JWT payload.
 #
