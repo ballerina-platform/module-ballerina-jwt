@@ -24,6 +24,7 @@ import ballerina/uuid;
 # + username - JWT username
 # + issuer - JWT issuer
 # + audience - JWT audience
+# + keyId - JWT key ID
 # + customClaims - Map of custom claims
 # + expTimeInSeconds - Expiry time in seconds
 # + signingAlgorithm - Signing algorithm
@@ -32,6 +33,7 @@ public type IssuerConfig record {|
     string username?;
     string issuer?;
     string|string[] audience?;
+    string keyId?;
     map<json> customClaims?;
     int expTimeInSeconds = 300;
     SigningAlgorithm signingAlgorithm = RS256;
@@ -114,6 +116,10 @@ public isolated function issue(IssuerConfig issuerConfig) returns string|Error {
 
 isolated function prepareHeader(IssuerConfig issuerConfig) returns Header {
     Header header = { alg: issuerConfig.signingAlgorithm, typ: "JWT" };
+    string? kid = issuerConfig?.keyId;
+    if (kid is string) {
+        header.kid = kid;
+    }
     return header;
 }
 
