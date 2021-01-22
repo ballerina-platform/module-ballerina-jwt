@@ -1,0 +1,34 @@
+[[dependency]]
+org = "ballerina"
+name = "cache"
+version = "@stdlib.cache.version@"
+
+[[dependency]]
+org = "ballerina"
+name = "crypto"
+version = "@stdlib.crypto.version@"
+
+[[dependency]]
+org = "ballerina"
+name = "encoding"
+version = "@stdlib.encoding.version@"
+
+[[dependency]]
+org = "ballerina"
+name = "log"
+version = "@stdlib.log.version@"
+
+[[dependency]]
+org = "ballerina"
+name = "regex"
+version = "@stdlib.regex.version@"
+
+[[dependency]]
+org = "ballerina"
+name = "time"
+version = "@stdlib.time.version@"
+
+[[dependency]]
+org = "ballerina"
+name = "uuid"
+version = "@stdlib.uuid.version@"

@@ -17,7 +17,7 @@
 import ballerina/cache;
 import ballerina/crypto;
 import ballerina/encoding;
-import ballerina/java;
+import ballerina/jballerina.java;
 import ballerina/lang.'int;
 import ballerina/lang.'string;
 import ballerina/log;
