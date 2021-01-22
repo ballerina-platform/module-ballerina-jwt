@@ -14,19 +14,19 @@
 // specific language governing permissions and limitations
 // under the License.
 
-# The key algorithms supported by crypto module.
+# The cryptographic algorithms used to secure the JWS.
 public type SigningAlgorithm RS256|RS384|RS512|NONE;
 
-# The `RSA-SHA256` algorithm
+# The `RSA-SHA256` algorithm.
 public const RS256 = "RS256";
 
-# The `RSA-SHA384` algorithm
+# The `RSA-SHA384` algorithm.
 public const RS384 = "RS384";
 
-# The `RSA-SHA512` algorithm
+# The `RSA-SHA512` algorithm.
 public const RS512 = "RS512";
 
-# Unsecured JWTs (no signing)
+# Unsecured JWS (no signing).
 public const NONE = "none";
 
 //JOSH header parameters
@@ -46,7 +46,7 @@ const string IAT = "iat";
 
 # Represents JWT header.
 #
-# + alg - Signing algorithm
+# + alg - Cryptographic algorithm used to secure the JWS
 # + typ - Media type of the JWT
 # + cty - Content type, convey structural information about the JWT
 # + kid - Key ID, hint indicating which key was used to secure the JWS
