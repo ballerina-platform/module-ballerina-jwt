@@ -89,6 +89,7 @@ def artifactLibParent = file("$project.projectDir/build/lib_parent/")
 def tomlVersion = project.version.split("-")[0]
 def ballerinaCentralAccessToken = System.getenv('BALLERINA_CENTRAL_ACCESS_TOKEN')
 def originalConfig = ballerinaConfigFile.text
+def originalDependencyConfig = ballerinaDependencyFile.text
 
 task updateTomlVersions {
     doLast {
@@ -118,6 +119,7 @@ task updateTomlVersions {
 task revertTomlFile {
     doLast {
         ballerinaConfigFile.text = originalConfig
+        ballerinaDependencyFile.text = originalDependencyConfig
     }
 }
 
