@@ -14,8 +14,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
-# Represents the client JWT Auth provider, which is used to authenticate with an external endpoint by generating
-# a self signed JWT.
+# Represents the client JWT Auth provider, which is used to authenticate with an external endpoint by issuing a
+# self-signed JWT.
 # ```ballerina
 # jwt:ClientSelfSignedJwtAuthProvider provider = new({
 #     issuer: "example",
@@ -34,14 +34,14 @@ public class ClientSelfSignedJwtAuthProvider {
 
     IssuerConfig issuerConfig;
 
-    # Provides authentication based on the provided JWT configuration.
+    # Provides authentication based on the provided JWT configurations.
     #
     # + issuerConfig - JWT issuer configurations
     public isolated function init(IssuerConfig issuerConfig) {
         self.issuerConfig = issuerConfig;
     }
 
-    # Generates the JWT for authentication.
+    # Issues a self-signed JWT for authentication.
     # ```ballerina
     # string|auth:Error token = provider.generateToken();
     # ```

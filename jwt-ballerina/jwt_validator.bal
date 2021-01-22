@@ -26,9 +26,9 @@ import ballerina/time;
 
 # Represents JWT validator configurations.
 #
-# + issuer - Expected issuer
-# + audience - Expected audience
-# + clockSkewInSeconds - Clock skew in seconds
+# + issuer - Expected issuer, which is mapped to `iss`
+# + audience - Expected audience, which is mapped to `aud`
+# + clockSkewInSeconds - Clock skew in seconds that can be used to avoid token validation failures due to clock synchronization problems
 # + trustStoreConfig - JWT trust store configurations
 # + jwksConfig - JWKs configurations
 # + cacheConfig - Configurations related to the cache used to store parsed JWT information
@@ -85,7 +85,7 @@ public type TrustStoreConfig record {|
     string certificateAlias;
 |};
 
-# Validates the provided JWT against the provided configurations.
+# Validates the provided JWT, against the provided configurations.
 #```ballerina
 # jwt:Payload|jwt:Error result = jwt:validate(jwt, validatorConfig);
 # ```
@@ -111,7 +111,7 @@ public isolated function validate(string jwt, ValidatorConfig validatorConfig, c
 # ```
 #
 # + jwt - JWT that needs to be decoded
-# + return - The JWT header and payload tuple or else a `jwt:Error` if token decoding fails
+# + return - The `jwt:Header` and `jwt:Payload` as a  tuple or else a `jwt:Error` if token decoding fails
 public isolated function decode(string jwt) returns [Header, Payload]|Error {
     string[] encodedJwtComponents = check getJwtComponents(jwt);
     Header header = check getHeader(encodedJwtComponents[0]);

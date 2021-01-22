@@ -6,11 +6,11 @@ Ballerina JWT Library
   [![Github issues](https://img.shields.io/github/issues/ballerina-platform/ballerina-standard-library/module/jwt.svg?label=Open%20Issues)](https://github.com/ballerina-platform/ballerina-standard-library/labels/module%2Fjwt)
   [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-The JWT library is one of the standard library modules of the<a target="_blank" href="https://ballerina.io/"> Ballerina</a> language.
+The JWT library is one of the standard library modules of the <a target="_blank" href="https://ballerina.io/">Ballerina</a> language.
 
-It provides inbound and outbound JWT authentication provider, which can be used to authenticate using a JWT and the functionality related to issuing and validating JWT.
+It provides a listener JWT authentication provider, which can be used to authenticate the provided credentials against the provided JWT validator configurations, and a client self-signed JWT authentication provider, which can be used to authenticate against an external endpoint with a self-signed JWT issued against the provided JWT issuer configurations. Also, this module provides the functionality related to issuing and validating a JWT.
 
-For more information go to [The JWT Module](https://ballerina.io/swan-lake/learn/api-docs/ballerina/jwt/index.html).
+For more information go to [The JWT Module](https://ballerina.io/swan-lake/learn/api-docs/ballerina/#/ballerina/jwt/latest/jwt/).
 
 For example demonstrations of the usage, go to [Ballerina By Examples](https://ballerina.io/swan-lake/learn/by-example/).
 
@@ -31,7 +31,14 @@ This repository only contains the source code for the module.
    * [OpenJDK](https://adoptopenjdk.net)
    
         > **Note:** Set the JAVA_HOME environment variable to the path name of the directory into which you installed JDK.
-     
+
+2. Export Github Personal Access Token (PAT) with read package permissions as follows:
+
+    ```
+    export packageUser=<Username>
+    export packagePAT=<Personal Access Token>
+    ```
+
 ### Building the Source
 
 Execute the commands below to build from the source.

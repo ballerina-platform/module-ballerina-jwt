@@ -16,7 +16,7 @@
 
 import ballerina/log;
 
-# Represents the JWT distinct error
+# Represents the JWT distinct error.
 public type JwtError distinct error;
 
 # Represents the JWT error type with details. This will be returned if an error occurred while issuing/validating a

@@ -21,13 +21,13 @@ import ballerina/uuid;
 
 # Represents JWT issuer configurations.
 #
-# + username - JWT username
-# + issuer - JWT issuer
-# + audience - JWT audience
-# + keyId - JWT key ID
+# + username - JWT username, which is mapped to `sub`
+# + issuer - JWT issuer, which is mapped to `iss`
+# + audience - JWT audience, which is mapped to `aud`
+# + keyId - JWT key ID, which is mapped `kid`
 # + customClaims - Map of custom claims
 # + expTimeInSeconds - Expiry time in seconds
-# + signingAlgorithm - Signing algorithm
+# + signingAlgorithm - Cryptographic signing algorithm for JWS
 # + keyStoreConfig - JWT key store configurations
 public type IssuerConfig record {|
     string username?;
@@ -42,7 +42,7 @@ public type IssuerConfig record {|
 
 # Represents JWT key store configurations.
 #
-# + keyStore - Keystore to be used in JWT signing
+# + keyStore - Keystore to be used in JWS signing
 # + keyAlias - Signing key alias
 # + keyPassword - Signing key password
 public type KeyStoreConfig record {|
@@ -51,8 +51,8 @@ public type KeyStoreConfig record {|
     string keyPassword;
 |};
 
-# Issues a JWT based on the provided header and payload. JWT will be signed (JWS) if `crypto:KeyStore` information is
-# provided in the `jwt:KeyStoreConfig` and the `alg` field of the `jwt:Header` is not `jwt:NONE`.
+# Issues a JWT based on the provided configurations. JWT will be signed (JWS) if `crypto:KeyStore` information is
+# provided in the `jwt:KeyStoreConfig` and the `jwt:SigningAlgorithm` is not `jwt:NONE`.
 # ```ballerina
 # string|jwt:Error jwt = jwt:issue(issuerConfig);
 # ```
