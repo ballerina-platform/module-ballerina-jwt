@@ -10,9 +10,7 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 11
@@ -27,6 +25,19 @@ jobs:
           packagePAT: ${{ secrets.BALLERINA_BOT_TOKEN }}
         run: |
           ./gradlew publish
+      - name: Archive Error Log
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: Ballerina Internal Log
+          path: jwt-ballerina/ballerina-internal.log
+          if-no-files-found: ignore
+      - name: Archive Code Coverage JSON
+        uses: actions/upload-artifact@v2
+        with:
+          name: Code Coverage JSON
+          path: jwt-ballerina/target/report/test_results.json
+          if-no-files-found: ignore
       - name: Dispatch Dependent Module Builds
         if: github.event.action != 'stdlib-publish-snapshot'
         run: |
