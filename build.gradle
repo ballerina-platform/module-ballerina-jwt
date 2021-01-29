@@ -23,6 +23,7 @@ plugins {
     id "net.researchgate.release" version "2.8.0"
 }
 
+ext.puppycrawlCheckstyleVersion = project.puppycrawlCheckstyleVersion
 ext.ballerinaLangVersion = project.ballerinaLangVersion
 ext.stdlibCacheVersion = project.stdlibCacheVersion
 ext.stdlibCryptoVersion = project.stdlibCryptoVersion
