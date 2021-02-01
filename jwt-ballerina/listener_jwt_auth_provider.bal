@@ -83,7 +83,7 @@ public class ListenerJwtAuthProvider {
             }
         }
 
-        Payload|Error validationResult = validate(credential, self.validatorConfig, self.jwksCache);
+        Payload|Error validationResult = validateJwt(credential, self.validatorConfig, self.jwksCache);
         if (validationResult is Error) {
             return prepareError("JWT validation failed.", validationResult);
         }
