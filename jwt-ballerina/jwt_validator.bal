@@ -92,10 +92,13 @@ public type TrustStoreConfig record {|
 #
 # + jwt - JWT that needs to be validated
 # + validatorConfig - JWT validator configurations
-# + jwksCache - JWKs preloaded cache instance or `()` if not applicable
 # + return - `jwt:Payload` or else a `jwt:Error` if token validation fails
-public isolated function validate(string jwt, ValidatorConfig validatorConfig, cache:Cache? jwksCache = ())
-                                  returns Payload|Error {
+public isolated function validate(string jwt, ValidatorConfig validatorConfig) returns Payload|Error {
+    return validateJwt(jwt, validatorConfig);
+}
+
+isolated function validateJwt(string jwt, ValidatorConfig validatorConfig, cache:Cache? jwksCache = ())
+                              returns Payload|Error {
     [Header, Payload] [header, payload] = check decode(jwt);
     if (!validateMandatoryHeaderFields(header)) {
         return prepareError("Mandatory field signing algorithm (alg) is not provided in JOSE header.");
