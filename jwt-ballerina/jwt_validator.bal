@@ -299,7 +299,7 @@ isolated function validateSignature(string jwt, Header header, Payload payload, 
                 return prepareError("Key ID (kid) is not provided in JOSE header.");
             }
         } else if (certFile is string) {
-            crypto:PublicKey|crypto:Error publicKey = crypto:decodePublicKeyFromCertFile(certFile);
+            crypto:PublicKey|crypto:Error publicKey = crypto:decodeRsaPublicKeyFromCertFile(certFile);
             if (publicKey is crypto:Error) {
                return prepareError("Public key decoding failed.", publicKey);
             }
@@ -313,7 +313,7 @@ isolated function validateSignature(string jwt, Header header, Payload payload, 
         } else if !(trustStoreConfig is ()) {
             crypto:TrustStore trustStore = <crypto:TrustStore> trustStoreConfig?.trustStore;
             string certAlias = <string> trustStoreConfig?.certAlias;
-            crypto:PublicKey|crypto:Error publicKey = crypto:decodePublicKeyFromTrustStore(trustStore, certAlias);
+            crypto:PublicKey|crypto:Error publicKey = crypto:decodeRsaPublicKeyFromTrustStore(trustStore, certAlias);
             if (publicKey is crypto:Error) {
                return prepareError("Public key decoding failed.", publicKey);
             }

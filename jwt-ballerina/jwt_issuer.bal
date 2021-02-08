@@ -85,7 +85,7 @@ public isolated function issue(IssuerConfig issuerConfig) returns string|Error {
         crypto:KeyStore keyStore = <crypto:KeyStore> config?.keyStore;
         string keyAlias = <string> config?.keyAlias;
         string keyPassword = <string> config?.keyPassword;
-        crypto:PrivateKey|crypto:Error privateKey = crypto:decodePrivateKeyFromKeyStore(keyStore, keyAlias, keyPassword);
+        crypto:PrivateKey|crypto:Error privateKey = crypto:decodeRsaPrivateKeyFromKeyStore(keyStore, keyAlias, keyPassword);
         if (privateKey is crypto:Error) {
             return prepareError("Private key decoding failed.", privateKey);
         }
@@ -93,7 +93,7 @@ public isolated function issue(IssuerConfig issuerConfig) returns string|Error {
     } else {
         string keyFile = <string> config?.keyFile;
         string? keyPassword = config?.keyPassword;
-        crypto:PrivateKey|crypto:Error privateKey = crypto:decodePrivateKeyFromKeyFile(keyFile, keyPassword);
+        crypto:PrivateKey|crypto:Error privateKey = crypto:decodeRsaPrivateKeyFromKeyFile(keyFile, keyPassword);
         if (privateKey is crypto:Error) {
             return prepareError("Private key decoding failed.", privateKey);
         }
