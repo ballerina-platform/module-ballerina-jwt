@@ -78,7 +78,7 @@ public isolated function issue(IssuerConfig issuerConfig) returns string|Error {
     crypto:KeyStore keyStore = ksc.keyStore;
     string keyAlias = ksc.keyAlias;
     string keyPassword = ksc.keyPassword;
-    crypto:PrivateKey|crypto:Error decodedResults = crypto:decodePrivateKey(keyStore, keyAlias, keyPassword);
+    crypto:PrivateKey|crypto:Error decodedResults = crypto:decodeRsaPrivateKeyFromKeyStore(keyStore, keyAlias, keyPassword);
     if (decodedResults is crypto:Error) {
         return prepareError("Private key decoding failed.", decodedResults);
     }
