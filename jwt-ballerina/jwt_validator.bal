@@ -353,8 +353,8 @@ isolated function validateCertificate(crypto:PublicKey publicKey) returns boolea
 
 isolated function getPublicKeyByTrustStore(SigningAlgorithm alg, TrustStoreConfig trustStoreConfig)
                                            returns crypto:PublicKey|Error {
-    crypto:PublicKey|crypto:Error publicKey = crypto:decodePublicKey(trustStoreConfig.trustStore,
-                                                                     trustStoreConfig.certificateAlias);
+    crypto:PublicKey|crypto:Error publicKey = crypto:decodeRsaPublicKeyFromTrustStore(trustStoreConfig.trustStore,
+                                                                                   trustStoreConfig.certificateAlias);
     if (publicKey is crypto:Error) {
        return prepareError("Public key decode failed.", publicKey);
     }
