@@ -27,8 +27,7 @@ import ballerina/uuid;
 # + keyId - JWT key ID, which is mapped `kid`
 # + customClaims - Map of custom claims
 # + expTimeInSeconds - Expiry time in seconds
-# + signingAlgorithm - Cryptographic signing algorithm for JWS
-# + keyStoreConfig - JWT key store configurations
+# + signatureConfig - JWT signature configurations
 public type IssuerConfig record {|
     string username?;
     string issuer?;
@@ -36,19 +35,23 @@ public type IssuerConfig record {|
     string keyId?;
     map<json> customClaims?;
     int expTimeInSeconds = 300;
-    SigningAlgorithm signingAlgorithm = RS256;
-    KeyStoreConfig keyStoreConfig?;
+    IssuerSignatureConfig signatureConfig?;
 |};
 
-# Represents JWT key store configurations.
+# Represents JWT signature configurations.
 #
-# + keyStore - Keystore to be used in JWS signing
-# + keyAlias - Signing key alias
-# + keyPassword - Signing key password
-public type KeyStoreConfig record {|
-    crypto:KeyStore keyStore;
-    string keyAlias;
-    string keyPassword;
+# + algorithm - Cryptographic signing algorithm for JWS
+# + config - Key store configurations or private key configurations
+public type IssuerSignatureConfig record {|
+    SigningAlgorithm algorithm = RS256;
+    record {|
+        crypto:KeyStore keyStore;
+        string keyAlias;
+        string keyPassword;
+    |} | record {|
+        string keyFile;
+        string keyPassword?;
+    |} config?;
 |};
 
 # Issues a JWT based on the provided configurations. JWT will be signed (JWS) if `crypto:KeyStore` information is
@@ -66,23 +69,40 @@ public isolated function issue(IssuerConfig issuerConfig) returns string|Error {
     string payloadString = check buildPayloadString(payload);
     string jwtAssertion = headerString + "." + payloadString;
 
-    SigningAlgorithm algorithm = issuerConfig.signingAlgorithm;
-    KeyStoreConfig? keyStoreConfig = issuerConfig?.keyStoreConfig;
+    IssuerSignatureConfig? issuerSignatureConfig = issuerConfig?.signatureConfig;
+    if (issuerSignatureConfig is ()) {
+        return jwtAssertion;
+    }
+    IssuerSignatureConfig signatureConfig = <IssuerSignatureConfig>issuerSignatureConfig;
+    SigningAlgorithm algorithm = signatureConfig.algorithm;
     if (algorithm is NONE) {
         return jwtAssertion;
     }
-    if (keyStoreConfig is ()) {
-        return prepareError("Signing JWT requires KeyStoreConfig with keystore information.");
+    var config = signatureConfig?.config;
+    if (config is ()) {
+        return prepareError("Signing JWT requires keystore information or private key information.");
+    } else if (config?.keyStore is crypto:KeyStore) {
+        crypto:KeyStore keyStore = <crypto:KeyStore> config?.keyStore;
+        string keyAlias = <string> config?.keyAlias;
+        string keyPassword = <string> config?.keyPassword;
+        crypto:PrivateKey|crypto:Error privateKey = crypto:decodePrivateKeyFromKeyStore(keyStore, keyAlias, keyPassword);
+        if (privateKey is crypto:Error) {
+            return prepareError("Private key decoding failed.", privateKey);
+        }
+        return signJwtAssertion(jwtAssertion, algorithm, checkpanic privateKey);
+    } else {
+        string keyFile = <string> config?.keyFile;
+        string? keyPassword = config?.keyPassword;
+        crypto:PrivateKey|crypto:Error privateKey = crypto:decodePrivateKeyFromKeyFile(keyFile, keyPassword);
+        if (privateKey is crypto:Error) {
+            return prepareError("Private key decoding failed.", privateKey);
+        }
+        return signJwtAssertion(jwtAssertion, algorithm, checkpanic privateKey);
     }
-    KeyStoreConfig ksc = <KeyStoreConfig>keyStoreConfig;
-    crypto:KeyStore keyStore = ksc.keyStore;
-    string keyAlias = ksc.keyAlias;
-    string keyPassword = ksc.keyPassword;
-    crypto:PrivateKey|crypto:Error decodedResults = crypto:decodePrivateKey(keyStore, keyAlias, keyPassword);
-    if (decodedResults is crypto:Error) {
-        return prepareError("Private key decoding failed.", decodedResults);
-    }
-    crypto:PrivateKey privateKey = checkpanic decodedResults;
+}
+
+isolated function signJwtAssertion(string jwtAssertion, SigningAlgorithm algorithm, crypto:PrivateKey privateKey)
+                                   returns string|Error {
     match (algorithm) {
         RS256 => {
             byte[]|crypto:Error signature = crypto:signRsaSha256(jwtAssertion.toBytes(), privateKey);
@@ -115,7 +135,11 @@ public isolated function issue(IssuerConfig issuerConfig) returns string|Error {
 }
 
 isolated function prepareHeader(IssuerConfig issuerConfig) returns Header {
-    Header header = { alg: issuerConfig.signingAlgorithm, typ: "JWT" };
+    Header header = { alg: NONE, typ: "JWT" };
+    IssuerSignatureConfig? issuerSignatureConfig = issuerConfig?.signatureConfig;
+    if (issuerSignatureConfig is IssuerSignatureConfig) {
+        header.alg = issuerSignatureConfig.algorithm;
+    }
     string? kid = issuerConfig?.keyId;
     if (kid is string) {
         header.kid = kid;

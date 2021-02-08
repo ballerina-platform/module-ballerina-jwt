@@ -49,12 +49,14 @@ public class ListenerJwtAuthProvider {
         if (jwtCacheConfig is cache:CacheConfig) {
             self.jwtCache = new(jwtCacheConfig);
         }
-        JwksConfig? jwksConfig = validatorConfig?.jwksConfig;
-        if (jwksConfig is JwksConfig) {
+        var jwksConfig = validatorConfig?.signatureConfig?.jwksConfig;
+        if !(jwksConfig is ()) {
+            string url = <string> jwksConfig?.url;
+            ClientConfiguration clientConfig = <ClientConfiguration> jwksConfig?.clientConfig;
             cache:CacheConfig? jwksCacheConfig = jwksConfig?.cacheConfig;
             if (jwksCacheConfig is cache:CacheConfig) {
                 self.jwksCache = new(jwksCacheConfig);
-                Error? result = preloadJwksToCache(<cache:Cache>(self.jwksCache),jwksConfig);
+                Error? result = preloadJwksToCache(<cache:Cache> (self.jwksCache), url, clientConfig);
                 if (result is Error) {
                     panic result;
                 }
@@ -94,8 +96,8 @@ public class ListenerJwtAuthProvider {
     }
 }
 
-isolated function preloadJwksToCache(cache:Cache jwksCache, JwksConfig jwksConfig) returns Error? {
-    string|Error stringResponse = getJwksResponse(jwksConfig.url, jwksConfig.clientConfig);
+isolated function preloadJwksToCache(cache:Cache jwksCache, string url, ClientConfiguration clientConfig) returns Error? {
+    string|Error stringResponse = getJwksResponse(url, clientConfig);
     if (stringResponse is Error) {
         return prepareError("Failed to call JWKs endpoint to preload JWKs to the cache.", stringResponse);
     }

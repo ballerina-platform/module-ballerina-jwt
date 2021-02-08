@@ -29,27 +29,32 @@ import ballerina/time;
 # + issuer - Expected issuer, which is mapped to `iss`
 # + audience - Expected audience, which is mapped to `aud`
 # + clockSkewInSeconds - Clock skew in seconds that can be used to avoid token validation failures due to clock synchronization problems
-# + trustStoreConfig - JWT trust store configurations
-# + jwksConfig - JWKs configurations
+# + signatureConfig - JWT signature configurations
 # + cacheConfig - Configurations related to the cache used to store parsed JWT information
 public type ValidatorConfig record {
     string issuer?;
     string|string[] audience?;
     int clockSkewInSeconds = 0;
-    TrustStoreConfig trustStoreConfig?;
-    JwksConfig jwksConfig?;
+    ValidatorSignatureConfig signatureConfig?;
     cache:CacheConfig cacheConfig?;
 };
 
-# Represents the JWKs endpoint configurations.
+# Represents JWT signature configurations.
 #
-# + url - URL of the JWKs endpoint
-# + cacheConfig - Configurations related to the cache used to store preloaded JWKs information
-# + clientConfig - HTTP client configurations which calls the JWKs endpoint
-public type JwksConfig record {|
-    string url;
-    cache:CacheConfig cacheConfig?;
-    ClientConfiguration clientConfig = {};
+# + jwksConfig - JWKs configurations
+# + certFile - Public certificate file
+# + trustStoreConfig - JWT trust store configurations
+public type ValidatorSignatureConfig record {|
+    record {|
+        string url;
+        cache:CacheConfig cacheConfig?;
+        ClientConfiguration clientConfig = {};
+    |} jwksConfig?;
+    string certFile?;
+    record {|
+        crypto:TrustStore trustStore;
+        string certAlias;
+    |} trustStoreConfig?;
 |};
 
 # Represents the configurations of the client used to call the JWKs endpoint.
@@ -74,15 +79,6 @@ public enum HttpVersion {
 public type SecureSocket record {|
     boolean disable = false;
     crypto:TrustStore trustStore?;
-|};
-
-# Represents JWT trust store configurations.
-#
-# + trustStore - Trust store used for signature verification
-# + certificateAlias - Token signed public key certificate alias
-public type TrustStoreConfig record {|
-    crypto:TrustStore trustStore;
-    string certificateAlias;
 |};
 
 # Validates the provided JWT, against the provided configurations.
@@ -260,19 +256,18 @@ isolated function parsePayload(map<json> payloadMap) returns Payload|Error {
 isolated function validateSignature(string jwt, Header header, Payload payload, ValidatorConfig validatorConfig,
                                     cache:Cache? jwksCache) returns Error? {
     SigningAlgorithm alg = <SigningAlgorithm>header?.alg;  // The `()` value is already validated.
-    JwksConfig? jwksConfig = validatorConfig?.jwksConfig;
-    TrustStoreConfig? trustStoreConfig = validatorConfig?.trustStoreConfig;
+    ValidatorSignatureConfig? validatorSignatureConfig = validatorConfig?.signatureConfig;
 
-    if (alg == NONE && jwksConfig is () && trustStoreConfig is ()) {
+    if (alg == NONE && validatorSignatureConfig is ()) {
         return;
     }
 
-    if (alg == NONE && (jwksConfig is JwksConfig || trustStoreConfig is TrustStoreConfig)) {
+    if (alg == NONE && (validatorSignatureConfig is ValidatorSignatureConfig)) {
         return prepareError("Not a valid JWS. Signature algorithm is NONE.");
     }
 
     string[] encodedJwtComponents = check getJwtComponents(jwt);
-    if (alg != NONE && (jwksConfig is JwksConfig || trustStoreConfig is TrustStoreConfig)) {
+    if (alg != NONE && (validatorSignatureConfig is ValidatorSignatureConfig)) {
         if (encodedJwtComponents.length() == 2) {
             return prepareError("Not a valid JWS. Signature part is required.");
         }
@@ -282,22 +277,53 @@ isolated function validateSignature(string jwt, Header header, Payload payload, 
     byte[] assertion = headerPayloadPart.toBytes();
     byte[] signature = check getJwtSignature(encodedJwtComponents[2]);
 
-    if (jwksConfig is JwksConfig) {
-        string? kid = header?.kid;
-        if (kid is string) {
-            crypto:PublicKey publicKey = check getPublicKeyByJwks(kid, alg, jwksConfig, jwksCache);
-            boolean signatureValidation = check assertSignature(alg, assertion, signature, publicKey);
-            if (!signatureValidation) {
-               return prepareError("JWT signature validation with jwks configurations has failed.");
+    if (validatorSignatureConfig is ValidatorSignatureConfig) {
+        var jwksConfig = validatorSignatureConfig?.jwksConfig;
+        string? certFile = validatorSignatureConfig?.certFile;
+        var trustStoreConfig = validatorSignatureConfig?.trustStoreConfig;
+        if !(jwksConfig is ()) {
+            string? kid = header?.kid;
+            if (kid is string) {
+                string url = <string> jwksConfig?.url;
+                ClientConfiguration clientConfig = <ClientConfiguration> jwksConfig?.clientConfig;
+                json jwk = check getJwk(kid, url, clientConfig, jwksCache);
+                if (jwk is ()) {
+                    return prepareError("No JWK found for kid: " + kid);
+                }
+                crypto:PublicKey publicKey = check getPublicKeyByJwks(jwk);
+                boolean signatureValidation = check assertSignature(alg, assertion, signature, publicKey);
+                if (!signatureValidation) {
+                   return prepareError("JWT signature validation with jwks configurations has failed.");
+                }
+            } else {
+                return prepareError("Key ID (kid) is not provided in JOSE header.");
             }
-        } else {
-            return prepareError("Key ID (kid) is not provided in JOSE header.");
-        }
-    } else if (trustStoreConfig is TrustStoreConfig) {
-        crypto:PublicKey publicKey = check getPublicKeyByTrustStore(alg, trustStoreConfig);
-        boolean signatureValidation = check assertSignature(alg, assertion, signature, publicKey);
-        if (!signatureValidation) {
-           return prepareError("JWT signature validation with trust store configurations has failed.");
+        } else if (certFile is string) {
+            crypto:PublicKey|crypto:Error publicKey = crypto:decodePublicKeyFromCertFile(certFile);
+            if (publicKey is crypto:Error) {
+               return prepareError("Public key decoding failed.", publicKey);
+            }
+            if (!check validateCertificate(checkpanic publicKey)) {
+               return prepareError("Public key certificate validity period has passed.");
+            }
+            boolean signatureValidation = check assertSignature(alg, assertion, signature, checkpanic publicKey);
+            if (!signatureValidation) {
+               return prepareError("JWT signature validation with public key configurations has failed.");
+            }
+        } else if !(trustStoreConfig is ()) {
+            crypto:TrustStore trustStore = <crypto:TrustStore> trustStoreConfig?.trustStore;
+            string certAlias = <string> trustStoreConfig?.certAlias;
+            crypto:PublicKey|crypto:Error publicKey = crypto:decodePublicKeyFromTrustStore(trustStore, certAlias);
+            if (publicKey is crypto:Error) {
+               return prepareError("Public key decoding failed.", publicKey);
+            }
+            if (!check validateCertificate(checkpanic publicKey)) {
+               return prepareError("Public key certificate validity period has passed.");
+            }
+            boolean signatureValidation = check assertSignature(alg, assertion, signature, checkpanic publicKey);
+            if (!signatureValidation) {
+               return prepareError("JWT signature validation with trust store configurations has failed.");
+            }
         }
     }
 }
@@ -351,26 +377,7 @@ isolated function validateCertificate(crypto:PublicKey publicKey) returns boolea
     return false;
 }
 
-isolated function getPublicKeyByTrustStore(SigningAlgorithm alg, TrustStoreConfig trustStoreConfig)
-                                           returns crypto:PublicKey|Error {
-    crypto:PublicKey|crypto:Error publicKey = crypto:decodePublicKey(trustStoreConfig.trustStore,
-                                                                     trustStoreConfig.certificateAlias);
-    if (publicKey is crypto:Error) {
-       return prepareError("Public key decode failed.", publicKey);
-    }
-
-    if (!check validateCertificate(checkpanic publicKey)) {
-       return prepareError("Public key certificate validity period has passed.");
-    }
-    return checkpanic publicKey;
-}
-
-isolated function getPublicKeyByJwks(string kid, SigningAlgorithm alg, JwksConfig jwksConfig, cache:Cache? jwksCache)
-                                     returns crypto:PublicKey|Error {
-    json jwk = check getJwk(kid, jwksConfig, jwksCache);
-    if (jwk is ()) {
-        return prepareError("No JWK found for kid: " + kid);
-    }
+isolated function getPublicKeyByJwks(json jwk) returns crypto:PublicKey|Error {
     string modulus = <string> checkpanic jwk.n;
     string exponent = <string> checkpanic jwk.e;
     crypto:PublicKey|crypto:Error publicKey = crypto:buildRsaPublicKey(modulus, exponent);
@@ -380,7 +387,7 @@ isolated function getPublicKeyByJwks(string kid, SigningAlgorithm alg, JwksConfi
     return checkpanic publicKey;
 }
 
-isolated function getJwk(string kid, JwksConfig jwksConfig, cache:Cache? jwksCache) returns json|Error {
+isolated function getJwk(string kid, string url, ClientConfiguration clientConfig, cache:Cache? jwksCache) returns json|Error {
     if (jwksCache is cache:Cache) {
         if (jwksCache.hasKey(kid)) {
             any|cache:Error jwk = jwksCache.get(kid);
@@ -391,7 +398,7 @@ isolated function getJwk(string kid, JwksConfig jwksConfig, cache:Cache? jwksCac
             }
         }
     }
-    string|Error stringResponse = getJwksResponse(jwksConfig.url, jwksConfig.clientConfig);
+    string|Error stringResponse = getJwksResponse(url, clientConfig);
     if (stringResponse is Error) {
         return prepareError("Failed to call JWKs endpoint.", stringResponse);
     }
