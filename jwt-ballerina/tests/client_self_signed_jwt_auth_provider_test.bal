@@ -24,13 +24,15 @@ isolated function testClientJwtAuthProviderSuccess() {
         username: "admin",
         issuer: "wso2",
         audience: ["ballerina"],
-        keyStoreConfig: {
-            keyStore: {
-                path: KEYSTORE_PATH,
-                password: "ballerina"
-            },
-            keyAlias: "ballerina",
-            keyPassword: "ballerina"
+        signatureConfig: {
+            config: {
+                keyStore: {
+                    path: KEYSTORE_PATH,
+                    password: "ballerina"
+                },
+                keyAlias: "ballerina",
+                keyPassword: "ballerina"
+            }
         }
     };
     ClientSelfSignedJwtAuthProvider jwtAuthProvider = new(jwtConfig);

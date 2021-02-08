@@ -28,12 +28,14 @@ isolated function testListenerJwtAuthProviderSuccess() {
     ValidatorConfig jwtConfig = {
         issuer: "wso2",
         audience: "ballerina",
-        trustStoreConfig: {
-            trustStore: {
-                path: TRUSTSTORE_PATH,
-                password: "ballerina"
-            },
-            certificateAlias: "ballerina"
+        signatureConfig: {
+            trustStoreConfig: {
+                trustStore: {
+                    path: TRUSTSTORE_PATH,
+                    password: "ballerina"
+                },
+                certAlias: "ballerina"
+            }
         }
     };
     ListenerJwtAuthProvider jwtAuthProvider = new(jwtConfig);
@@ -57,12 +59,14 @@ isolated function testListenerJwtAuthProviderFailure() {
     ValidatorConfig jwtConfig = {
         issuer: "invalid",
         audience: "ballerina",
-        trustStoreConfig: {
-            trustStore: {
-                path: TRUSTSTORE_PATH,
-                password: "ballerina"
-            },
-            certificateAlias: "ballerina"
+        signatureConfig: {
+            trustStoreConfig: {
+                trustStore: {
+                    path: TRUSTSTORE_PATH,
+                    password: "ballerina"
+                },
+                certAlias: "ballerina"
+            }
         }
     };
     ListenerJwtAuthProvider jwtAuthProvider = new(jwtConfig);
