@@ -224,7 +224,7 @@ isolated function testIssueJwtWithPrivateKey() {
         test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT");
     }
 
-    ValidatorConfig config = {
+    ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
         clockSkewInSeconds: 60,
@@ -232,7 +232,7 @@ isolated function testIssueJwtWithPrivateKey() {
             certFile: PUBLIC_CERT_PATH
         }
     };
-    Payload|Error payload = validate(checkpanic result, config);
+    Payload|Error payload = validate(checkpanic result, validatorConfig);
     if (payload is Error) {
         string? errMsg = payload.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT");
@@ -264,7 +264,7 @@ isolated function testIssueJwtWithEncryptedPrivateKey() {
         test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT");
     }
 
-    ValidatorConfig config = {
+    ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
         clockSkewInSeconds: 60,
@@ -272,7 +272,7 @@ isolated function testIssueJwtWithEncryptedPrivateKey() {
             certFile: PUBLIC_CERT_PATH
         }
     };
-    Payload|Error payload = validate(checkpanic result, config);
+    Payload|Error payload = validate(checkpanic result, validatorConfig);
     if (payload is Error) {
         string? errMsg = payload.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT");
@@ -333,7 +333,7 @@ isolated function jwtDataProvider() returns string {
     dataProvider: jwtDataProvider
 }
 isolated function testValidateJwt(string jwt) {
-    ValidatorConfig config = {
+    ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
         clockSkewInSeconds: 60,
@@ -347,7 +347,7 @@ isolated function testValidateJwt(string jwt) {
             }
         }
     };
-    Payload|Error result = validate(jwt, config);
+    Payload|Error result = validate(jwt, validatorConfig);
     if (result is Error) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
@@ -358,7 +358,7 @@ isolated function testValidateJwt(string jwt) {
     dataProvider: jwtDataProvider
 }
 isolated function testValidateJwtWithSingleAud(string jwt) {
-    ValidatorConfig config = {
+    ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: "ballerina",
         clockSkewInSeconds: 60,
@@ -372,7 +372,7 @@ isolated function testValidateJwtWithSingleAud(string jwt) {
             }
         }
     };
-    Payload|Error result = validate(jwt, config);
+    Payload|Error result = validate(jwt, validatorConfig);
     if (result is Error) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
@@ -383,7 +383,7 @@ isolated function testValidateJwtWithSingleAud(string jwt) {
     dataProvider: jwtDataProvider
 }
 isolated function testValidateJwtWithSingleAudAndAudAsArray(string jwt) {
-    ValidatorConfig config = {
+    ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: "ballerina",
         clockSkewInSeconds: 60,
@@ -397,7 +397,7 @@ isolated function testValidateJwtWithSingleAudAndAudAsArray(string jwt) {
             }
         }
     };
-    Payload|Error result = validate(jwt, config);
+    Payload|Error result = validate(jwt, validatorConfig);
     if (result is Error) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
@@ -408,7 +408,7 @@ isolated function testValidateJwtWithSingleAudAndAudAsArray(string jwt) {
     dataProvider: jwtDataProvider
 }
 isolated function testValidateJwtWithNoIssOrSub(string jwt) {
-    ValidatorConfig config = {
+    ValidatorConfig validatorConfig = {
         audience: "ballerinaSamples",
         clockSkewInSeconds: 60,
         signatureConfig: {
@@ -421,7 +421,7 @@ isolated function testValidateJwtWithNoIssOrSub(string jwt) {
             }
         }
     };
-    Payload|Error result = validate(jwt, config);
+    Payload|Error result = validate(jwt, validatorConfig);
     if (result is Error) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
@@ -432,7 +432,7 @@ isolated function testValidateJwtWithNoIssOrSub(string jwt) {
     dataProvider: jwtDataProvider
 }
 isolated function testValidateJwtWithInvalidSignature(string jwt) {
-    ValidatorConfig config = {
+    ValidatorConfig validatorConfig = {
         signatureConfig: {
             trustStoreConfig: {
                 trustStore: {
@@ -443,7 +443,7 @@ isolated function testValidateJwtWithInvalidSignature(string jwt) {
             }
         }
     };
-    Payload|Error result = validate(jwt, config);
+    Payload|Error result = validate(jwt, validatorConfig);
     if (result is Error) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
@@ -459,7 +459,7 @@ isolated function testValidateJwtSignatureWithJwk() {
                  "ikzciG8ADddksm-0AMi5uPsgAQdg7FNaH9f4vAL6SPMEYp2gN6GDnWTH7M1vnknwjOwTbQpGrPu_w2V1tbsBwSzof3Fk_cYrnt" +
                  "u8D_pfsBu3eqFiJZD7AXUq8EYbgIxpSwvdi6_Rvw2_TAi46drouxXK2Jglz_HvheUVCERT15Y8JNJONJPJ52MsN6t297hyFV9A" +
                  "myNPzwHxxmi753TclbapDqDnVPI1tpc-Q";
-    ValidatorConfig config = {
+    ValidatorConfig validatorConfig = {
         issuer: "ballerina",
         audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
         signatureConfig: {
@@ -468,7 +468,7 @@ isolated function testValidateJwtSignatureWithJwk() {
             }
         }
     };
-    Payload|Error result = validate(jwt, config);
+    Payload|Error result = validate(jwt, validatorConfig);
     if (result is Error) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
@@ -487,7 +487,7 @@ isolated function testValidateJwtSignatureWithInvalidJwk() {
              "SsJOc608d-2Tq77ZzJkq7RXPRTxdim4lHkL9PgJpuJzbbk7-c9z3Zd10Kd7n_BuiiUCqJxQQTvfwAShjl6pHd-Z6bqBTdIPDBg" +
              "hJnTmGgEydWDBzvl8zsUPZJAUFHLlKUBIW8Qy0tC7NpUnPWyYoXdFf0hpkQi0h58fTG9iMr-30mlFJgBRjsanbBQEemWXokZ6T" +
              "uam1DQAQB9-Tsxk1TQ5GRyMKcsD2gWt-aJsyRLtXSwmgsUxTyA6VCLlF9oJuMxg-hQKxiDS1RSXHReczw";
-    ValidatorConfig config = {
+    ValidatorConfig validatorConfig = {
         issuer: "ballerina",
         audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
         signatureConfig: {
@@ -496,7 +496,7 @@ isolated function testValidateJwtSignatureWithInvalidJwk() {
             }
         }
     };
-    Payload|Error result = validate(jwt, config);
+    Payload|Error result = validate(jwt, validatorConfig);
     if (result is Payload) {
         test:assertFail(msg = "Error in validating JWT with invalid JWK.");
     }
@@ -511,7 +511,7 @@ isolated function testValidateJwtSignatureWithJwkWithClientConfig() {
                  "ikzciG8ADddksm-0AMi5uPsgAQdg7FNaH9f4vAL6SPMEYp2gN6GDnWTH7M1vnknwjOwTbQpGrPu_w2V1tbsBwSzof3Fk_cYrnt" +
                  "u8D_pfsBu3eqFiJZD7AXUq8EYbgIxpSwvdi6_Rvw2_TAi46drouxXK2Jglz_HvheUVCERT15Y8JNJONJPJ52MsN6t297hyFV9A" +
                  "myNPzwHxxmi753TclbapDqDnVPI1tpc-Q";
-    ValidatorConfig config = {
+    ValidatorConfig validatorConfig = {
         issuer: "ballerina",
         audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
         signatureConfig: {
@@ -529,7 +529,7 @@ isolated function testValidateJwtSignatureWithJwkWithClientConfig() {
             }
         }
     };
-    Payload|Error result = validate(jwt, config);
+    Payload|Error result = validate(jwt, validatorConfig);
     if (result is Error) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT with client configurations.");
@@ -540,7 +540,7 @@ isolated function testValidateJwtSignatureWithJwkWithClientConfig() {
     dataProvider: jwtDataProvider
 }
 isolated function testValidateJwtSignatureWithPublicCert(string jwt) {
-    ValidatorConfig config = {
+    ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
         clockSkewInSeconds: 60,
@@ -548,7 +548,7 @@ isolated function testValidateJwtSignatureWithPublicCert(string jwt) {
             certFile: PUBLIC_CERT_PATH
         }
     };
-    Payload|Error result = validate(jwt, config);
+    Payload|Error result = validate(jwt, validatorConfig);
     if (result is Error) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
@@ -559,7 +559,7 @@ isolated function testValidateJwtSignatureWithPublicCert(string jwt) {
     dataProvider: jwtDataProvider
 }
 isolated function testValidateJwtSignatureWithInvalidPublicCert(string jwt) {
-    ValidatorConfig config = {
+    ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
         clockSkewInSeconds: 60,
@@ -567,7 +567,7 @@ isolated function testValidateJwtSignatureWithInvalidPublicCert(string jwt) {
             certFile: INVALID_PUBLIC_CERT_PATH
         }
     };
-    Payload|Error result = validate(jwt, config);
+    Payload|Error result = validate(jwt, validatorConfig);
     if (result is Error) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
