@@ -10,9 +10,9 @@ The JWT library is one of the standard library modules of the <a target="_blank"
 
 It provides a listener JWT authentication provider, which can be used to authenticate the provided credentials against the provided JWT validator configurations, and a client self-signed JWT authentication provider, which can be used to authenticate against an external endpoint with a self-signed JWT issued against the provided JWT issuer configurations. Also, this module provides the functionality related to issuing and validating a JWT.
 
-For more information go to [The JWT Module](https://ballerina.io/swan-lake/learn/api-docs/ballerina/#/ballerina/jwt/latest/jwt/).
+For more information go to [The JWT Module](https://ballerina.io/learn/api-docs/ballerina/#/ballerina/jwt/latest/jwt/).
 
-For example demonstrations of the usage, go to [Ballerina By Examples](https://ballerina.io/swan-lake/learn/by-example/).
+For example demonstrations of the usage, go to [Ballerina By Examples](https://ballerina.io/learn/by-example/).
 
 ## Issues and Projects
 
