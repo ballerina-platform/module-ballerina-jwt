@@ -16,3 +16,7 @@
 
 const string KEYSTORE_PATH = "tests/resources/keystore/ballerinaKeystore.p12";
 const string TRUSTSTORE_PATH = "tests/resources/keystore/ballerinaTruststore.p12";
+const string PRIVATE_KEY_PATH = "tests/resources/key/private.key";
+const string ENCRYPTED_PRIVATE_KEY_PATH = "tests/resources/key/encrypted-private.key";
+const string PUBLIC_CERT_PATH = "tests/resources/cert/public.crt";
+const string INVALID_PUBLIC_CERT_PATH = "tests/resources/cert/invalid-public.crt";

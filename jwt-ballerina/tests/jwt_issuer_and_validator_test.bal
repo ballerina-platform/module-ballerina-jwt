@@ -28,13 +28,15 @@ isolated function testIssueJwt() {
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
         expTimeInSeconds: 600,
-        keyStoreConfig: {
-            keyStore: {
-                path: KEYSTORE_PATH,
-                password: "ballerina"
-            },
-            keyAlias: "ballerina",
-            keyPassword: "ballerina"
+        signatureConfig: {
+            config: {
+                keyStore: {
+                    path: KEYSTORE_PATH,
+                    password: "ballerina"
+                },
+                keyAlias: "ballerina",
+                keyPassword: "ballerina"
+            }
         }
     };
 
@@ -57,13 +59,15 @@ isolated function testIssueJwtWithSingleAud() {
         issuer: "wso2",
         audience: "ballerina",
         expTimeInSeconds: 600,
-        keyStoreConfig: {
-            keyStore: {
-                path: KEYSTORE_PATH,
-                password: "ballerina"
-            },
-            keyAlias: "ballerina",
-            keyPassword: "ballerina"
+        signatureConfig: {
+            config: {
+                keyStore: {
+                    path: KEYSTORE_PATH,
+                    password: "ballerina"
+                },
+                keyAlias: "ballerina",
+                keyPassword: "ballerina"
+            }
         }
     };
 
@@ -85,13 +89,15 @@ isolated function testIssueJwtWithSingleAudAndAudAsArray() {
         issuer: "wso2",
         audience: ["ballerina"],
         expTimeInSeconds: 600,
-        keyStoreConfig: {
-            keyStore: {
-                path: KEYSTORE_PATH,
-                password: "ballerina"
-            },
-            keyAlias: "ballerina",
-            keyPassword: "ballerina"
+        signatureConfig: {
+            config: {
+                keyStore: {
+                    path: KEYSTORE_PATH,
+                    password: "ballerina"
+                },
+                keyAlias: "ballerina",
+                keyPassword: "ballerina"
+            }
         }
     };
 
@@ -111,13 +117,15 @@ isolated function testIssueJwtWithNoIssOrSub() {
     IssuerConfig issuerConfig = {
         audience: ["ballerina", "ballerinaSamples"],
         expTimeInSeconds: 600,
-        keyStoreConfig: {
-            keyStore: {
-                path: KEYSTORE_PATH,
-                password: "ballerina"
-            },
-            keyAlias: "ballerina",
-            keyPassword: "ballerina"
+        signatureConfig: {
+            config: {
+                keyStore: {
+                    path: KEYSTORE_PATH,
+                    password: "ballerina"
+                },
+                keyAlias: "ballerina",
+                keyPassword: "ballerina"
+            }
         }
     };
 
@@ -138,13 +146,15 @@ isolated function testIssueJwtWithNoAudOrSub() {
         username: "John",
         issuer: "wso2",
         expTimeInSeconds: 600,
-        keyStoreConfig: {
-            keyStore: {
-                path: KEYSTORE_PATH,
-                password: "ballerina"
-            },
-            keyAlias: "ballerina",
-            keyPassword: "ballerina"
+        signatureConfig: {
+            config: {
+                keyStore: {
+                    path: KEYSTORE_PATH,
+                    password: "ballerina"
+                },
+                keyAlias: "ballerina",
+                keyPassword: "ballerina"
+            }
         }
     };
 
@@ -167,13 +177,15 @@ isolated function testIssueJwtWithCustomClaims() {
         audience: ["ballerina", "ballerinaSamples"],
         customClaims: { "scope": "test-scope" },
         expTimeInSeconds: 600,
-        keyStoreConfig: {
-            keyStore: {
-                path: KEYSTORE_PATH,
-                password: "ballerina"
-            },
-            keyAlias: "ballerina",
-            keyPassword: "ballerina"
+        signatureConfig: {
+            config: {
+                keyStore: {
+                    path: KEYSTORE_PATH,
+                    password: "ballerina"
+                },
+                keyAlias: "ballerina",
+                keyPassword: "ballerina"
+            }
         }
     };
 
@@ -185,6 +197,85 @@ isolated function testIssueJwtWithCustomClaims() {
     } else {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT.");
+    }
+}
+
+@test:Config {}
+isolated function testIssueJwtWithPrivateKey() {
+    IssuerConfig issuerConfig = {
+        username: "John",
+        issuer: "wso2",
+        audience: ["ballerina", "ballerinaSamples"],
+        expTimeInSeconds: 600,
+        signatureConfig: {
+            config: {
+                keyFile: PRIVATE_KEY_PATH
+            }
+        }
+    };
+
+    string|Error result = issue(issuerConfig);
+    if (result is string) {
+        string header = "{\"alg\":\"RS256\", \"typ\":\"JWT\"}";
+        string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]";
+        assertDecodedJwt(result, header, payload);
+    } else {
+        string? errMsg = result.message();
+        test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT");
+    }
+
+    ValidatorConfig validatorConfig = {
+        issuer: "wso2",
+        audience: ["ballerina", "ballerinaSamples"],
+        clockSkewInSeconds: 60,
+        signatureConfig: {
+            certFile: PUBLIC_CERT_PATH
+        }
+    };
+    Payload|Error payload = validate(checkpanic result, validatorConfig);
+    if (payload is Error) {
+        string? errMsg = payload.message();
+        test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT");
+    }
+}
+
+@test:Config {}
+isolated function testIssueJwtWithEncryptedPrivateKey() {
+    IssuerConfig issuerConfig = {
+        username: "John",
+        issuer: "wso2",
+        audience: ["ballerina", "ballerinaSamples"],
+        expTimeInSeconds: 600,
+        signatureConfig: {
+            config: {
+                keyFile: ENCRYPTED_PRIVATE_KEY_PATH,
+                keyPassword: "ballerina"
+            }
+        }
+    };
+
+    string|Error result = issue(issuerConfig);
+    if (result is string) {
+        string header = "{\"alg\":\"RS256\", \"typ\":\"JWT\"}";
+        string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]";
+        assertDecodedJwt(result, header, payload);
+    } else {
+        string? errMsg = result.message();
+        test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT");
+    }
+
+    ValidatorConfig validatorConfig = {
+        issuer: "wso2",
+        audience: ["ballerina", "ballerinaSamples"],
+        clockSkewInSeconds: 60,
+        signatureConfig: {
+            certFile: PUBLIC_CERT_PATH
+        }
+    };
+    Payload|Error payload = validate(checkpanic result, validatorConfig);
+    if (payload is Error) {
+        string? errMsg = payload.message();
+        test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT");
     }
 }
 
@@ -224,13 +315,15 @@ isolated function jwtDataProvider() returns string {
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
         expTimeInSeconds: 600,
-        keyStoreConfig: {
-            keyStore: {
-                path: KEYSTORE_PATH,
-                password: "ballerina"
-            },
-            keyAlias: "ballerina",
-            keyPassword: "ballerina"
+        signatureConfig: {
+            config: {
+                keyStore: {
+                    path: KEYSTORE_PATH,
+                    password: "ballerina"
+                },
+                keyAlias: "ballerina",
+                keyPassword: "ballerina"
+            }
         }
     };
     return checkpanic issue(issuerConfig);
@@ -240,19 +333,21 @@ isolated function jwtDataProvider() returns string {
     dataProvider: jwtDataProvider
 }
 isolated function testValidateJwt(string jwt) {
-    ValidatorConfig config = {
+    ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
         clockSkewInSeconds: 60,
-        trustStoreConfig: {
-            trustStore: {
-                path: TRUSTSTORE_PATH,
-                password: "ballerina"
-            },
-            certificateAlias: "ballerina"
+        signatureConfig: {
+            trustStoreConfig: {
+                trustStore: {
+                    path: TRUSTSTORE_PATH,
+                    password: "ballerina"
+                },
+                certAlias: "ballerina"
+            }
         }
     };
-    Payload|Error result = validate(jwt, config);
+    Payload|Error result = validate(jwt, validatorConfig);
     if (result is Error) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
@@ -263,19 +358,21 @@ isolated function testValidateJwt(string jwt) {
     dataProvider: jwtDataProvider
 }
 isolated function testValidateJwtWithSingleAud(string jwt) {
-    ValidatorConfig config = {
+    ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: "ballerina",
         clockSkewInSeconds: 60,
-        trustStoreConfig: {
-            trustStore: {
-                path: TRUSTSTORE_PATH,
-                password: "ballerina"
-            },
-            certificateAlias: "ballerina"
+        signatureConfig: {
+            trustStoreConfig: {
+                trustStore: {
+                    path: TRUSTSTORE_PATH,
+                    password: "ballerina"
+                },
+                certAlias: "ballerina"
+            }
         }
     };
-    Payload|Error result = validate(jwt, config);
+    Payload|Error result = validate(jwt, validatorConfig);
     if (result is Error) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
@@ -286,19 +383,21 @@ isolated function testValidateJwtWithSingleAud(string jwt) {
     dataProvider: jwtDataProvider
 }
 isolated function testValidateJwtWithSingleAudAndAudAsArray(string jwt) {
-    ValidatorConfig config = {
+    ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: "ballerina",
         clockSkewInSeconds: 60,
-        trustStoreConfig: {
-            trustStore: {
-                path: TRUSTSTORE_PATH,
-                password: "ballerina"
-            },
-            certificateAlias: "ballerina"
+        signatureConfig: {
+            trustStoreConfig: {
+                trustStore: {
+                    path: TRUSTSTORE_PATH,
+                    password: "ballerina"
+                },
+                certAlias: "ballerina"
+            }
         }
     };
-    Payload|Error result = validate(jwt, config);
+    Payload|Error result = validate(jwt, validatorConfig);
     if (result is Error) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
@@ -309,18 +408,20 @@ isolated function testValidateJwtWithSingleAudAndAudAsArray(string jwt) {
     dataProvider: jwtDataProvider
 }
 isolated function testValidateJwtWithNoIssOrSub(string jwt) {
-    ValidatorConfig config = {
+    ValidatorConfig validatorConfig = {
         audience: "ballerinaSamples",
         clockSkewInSeconds: 60,
-        trustStoreConfig: {
-            trustStore: {
-                path: TRUSTSTORE_PATH,
-                password: "ballerina"
-            },
-            certificateAlias: "ballerina"
+        signatureConfig: {
+            trustStoreConfig: {
+                trustStore: {
+                    path: TRUSTSTORE_PATH,
+                    password: "ballerina"
+                },
+                certAlias: "ballerina"
+            }
         }
     };
-    Payload|Error result = validate(jwt, config);
+    Payload|Error result = validate(jwt, validatorConfig);
     if (result is Error) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
@@ -331,16 +432,18 @@ isolated function testValidateJwtWithNoIssOrSub(string jwt) {
     dataProvider: jwtDataProvider
 }
 isolated function testValidateJwtWithInvalidSignature(string jwt) {
-    ValidatorConfig config = {
-        trustStoreConfig: {
-            trustStore: {
-                path: TRUSTSTORE_PATH,
-                password: "ballerina"
-            },
-            certificateAlias: "ballerina"
+    ValidatorConfig validatorConfig = {
+        signatureConfig: {
+            trustStoreConfig: {
+                trustStore: {
+                    path: TRUSTSTORE_PATH,
+                    password: "ballerina"
+                },
+                certAlias: "ballerina"
+            }
         }
     };
-    Payload|Error result = validate(jwt, config);
+    Payload|Error result = validate(jwt, validatorConfig);
     if (result is Error) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
@@ -356,14 +459,16 @@ isolated function testValidateJwtSignatureWithJwk() {
                  "ikzciG8ADddksm-0AMi5uPsgAQdg7FNaH9f4vAL6SPMEYp2gN6GDnWTH7M1vnknwjOwTbQpGrPu_w2V1tbsBwSzof3Fk_cYrnt" +
                  "u8D_pfsBu3eqFiJZD7AXUq8EYbgIxpSwvdi6_Rvw2_TAi46drouxXK2Jglz_HvheUVCERT15Y8JNJONJPJ52MsN6t297hyFV9A" +
                  "myNPzwHxxmi753TclbapDqDnVPI1tpc-Q";
-    ValidatorConfig config = {
+    ValidatorConfig validatorConfig = {
         issuer: "ballerina",
         audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
-        jwksConfig: {
-            url: "https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks"
+        signatureConfig: {
+            jwksConfig: {
+                url: "https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks"
+            }
         }
     };
-    Payload|Error result = validate(jwt, config);
+    Payload|Error result = validate(jwt, validatorConfig);
     if (result is Error) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
@@ -382,14 +487,16 @@ isolated function testValidateJwtSignatureWithInvalidJwk() {
              "SsJOc608d-2Tq77ZzJkq7RXPRTxdim4lHkL9PgJpuJzbbk7-c9z3Zd10Kd7n_BuiiUCqJxQQTvfwAShjl6pHd-Z6bqBTdIPDBg" +
              "hJnTmGgEydWDBzvl8zsUPZJAUFHLlKUBIW8Qy0tC7NpUnPWyYoXdFf0hpkQi0h58fTG9iMr-30mlFJgBRjsanbBQEemWXokZ6T" +
              "uam1DQAQB9-Tsxk1TQ5GRyMKcsD2gWt-aJsyRLtXSwmgsUxTyA6VCLlF9oJuMxg-hQKxiDS1RSXHReczw";
-    ValidatorConfig config = {
+    ValidatorConfig validatorConfig = {
         issuer: "ballerina",
         audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
-        jwksConfig: {
-            url: "https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks"
+        signatureConfig: {
+            jwksConfig: {
+                url: "https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks"
+            }
         }
     };
-    Payload|Error result = validate(jwt, config);
+    Payload|Error result = validate(jwt, validatorConfig);
     if (result is Payload) {
         test:assertFail(msg = "Error in validating JWT with invalid JWK.");
     }
@@ -404,25 +511,65 @@ isolated function testValidateJwtSignatureWithJwkWithClientConfig() {
                  "ikzciG8ADddksm-0AMi5uPsgAQdg7FNaH9f4vAL6SPMEYp2gN6GDnWTH7M1vnknwjOwTbQpGrPu_w2V1tbsBwSzof3Fk_cYrnt" +
                  "u8D_pfsBu3eqFiJZD7AXUq8EYbgIxpSwvdi6_Rvw2_TAi46drouxXK2Jglz_HvheUVCERT15Y8JNJONJPJ52MsN6t297hyFV9A" +
                  "myNPzwHxxmi753TclbapDqDnVPI1tpc-Q";
-    ValidatorConfig config = {
+    ValidatorConfig validatorConfig = {
         issuer: "ballerina",
         audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
-        jwksConfig: {
-            url: "https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks",
-            clientConfig: {
-                httpVersion: HTTP_2,
-                secureSocket: {
-                    trustStore: {
-                        path: TRUSTSTORE_PATH,
-                        password: "ballerina"
+        signatureConfig: {
+            jwksConfig: {
+                url: "https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks",
+                clientConfig: {
+                    httpVersion: HTTP_2,
+                    secureSocket: {
+                        trustStore: {
+                            path: TRUSTSTORE_PATH,
+                            password: "ballerina"
+                        }
                     }
                 }
             }
         }
     };
-    Payload|Error result = validate(jwt, config);
+    Payload|Error result = validate(jwt, validatorConfig);
     if (result is Error) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT with client configurations.");
+    }
+}
+
+@test:Config {
+    dataProvider: jwtDataProvider
+}
+isolated function testValidateJwtSignatureWithPublicCert(string jwt) {
+    ValidatorConfig validatorConfig = {
+        issuer: "wso2",
+        audience: ["ballerina", "ballerinaSamples"],
+        clockSkewInSeconds: 60,
+        signatureConfig: {
+            certFile: PUBLIC_CERT_PATH
+        }
+    };
+    Payload|Error result = validate(jwt, validatorConfig);
+    if (result is Error) {
+        string? errMsg = result.message();
+        test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
+    }
+}
+
+@test:Config {
+    dataProvider: jwtDataProvider
+}
+isolated function testValidateJwtSignatureWithInvalidPublicCert(string jwt) {
+    ValidatorConfig validatorConfig = {
+        issuer: "wso2",
+        audience: ["ballerina", "ballerinaSamples"],
+        clockSkewInSeconds: 60,
+        signatureConfig: {
+            certFile: INVALID_PUBLIC_CERT_PATH
+        }
+    };
+    Payload|Error result = validate(jwt, validatorConfig);
+    if (result is Error) {
+        string? errMsg = result.message();
+        test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
     }
 }
