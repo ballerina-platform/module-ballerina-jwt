@@ -288,7 +288,7 @@ isolated function validateSignature(string jwt, Header header, Payload payload, 
                 ClientConfiguration clientConfig = <ClientConfiguration> jwksConfig?.clientConfig;
                 json jwk = check getJwk(kid, url, clientConfig, jwksCache);
                 if (jwk is ()) {
-                    return prepareError("No JWK found for kid: " + kid);
+                    return prepareError("No JWK found for kid '" + kid + "'.");
                 }
                 crypto:PublicKey publicKey = check getPublicKeyByJwks(jwk);
                 boolean signatureValidation = check assertSignature(alg, assertion, signature, publicKey);
