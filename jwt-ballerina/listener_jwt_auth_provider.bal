@@ -101,11 +101,11 @@ isolated function preloadJwksToCache(cache:Cache jwksCache, string url, ClientCo
     if (stringResponse is Error) {
         return prepareError("Failed to call JWKs endpoint to preload JWKs to the cache.", stringResponse);
     }
-    json[] jwksArray = check getJwksArray(<string> checkpanic stringResponse);
+    json[] jwksArray = check getJwksArray(checkpanic stringResponse);
     foreach json jwk in jwksArray {
         cache:Error? cachedResult = jwksCache.put(<string> checkpanic jwk.kid, jwk);
         if (cachedResult is cache:Error) {
-            return prepareError("Failed to put JWK for the kid: " + <string> checkpanic jwk.kid + " to the cache.", cachedResult);
+            return prepareError("Failed to put JWK for the kid '" + <string> checkpanic jwk.kid + "' to the cache.", cachedResult);
         }
     }
 }

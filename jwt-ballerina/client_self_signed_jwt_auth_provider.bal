@@ -50,7 +50,7 @@ public class ClientSelfSignedJwtAuthProvider {
     public isolated function generateToken() returns string|Error {
         string|Error result = issue(self.issuerConfig);
         if (result is Error) {
-            return prepareError("Failed to generate JWT.", result);
+            return prepareError("Failed to generate a self-signed JWT.", result);
         }
         return checkpanic result;
     }
