@@ -162,7 +162,6 @@ task initializeVariables {
 
         if (graph.hasTask(":${packageName}-ballerina:publish")) {
             ballerinaPublish.enabled = true
-            ballerinaTest.enabled = false
         } else {
             ballerinaPublish.enabled = false
         }
