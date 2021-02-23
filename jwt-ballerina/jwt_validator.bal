@@ -16,7 +16,6 @@
 
 import ballerina/cache;
 import ballerina/crypto;
-import ballerina/encoding;
 import ballerina/jballerina.java;
 import ballerina/lang.'int;
 import ballerina/lang.'string;
@@ -127,7 +126,7 @@ isolated function getJwtComponents(string jwt) returns string[]|Error {
 }
 
 isolated function getHeader(string encodedHeader) returns Header|Error {
-    byte[]|error decodedHeader = encoding:decodeBase64Url(encodedHeader);
+    byte[]|Error decodedHeader = decodeBase64Url(encodedHeader);
     if (decodedHeader is byte[]) {
         string|error result = 'string:fromBytes(decodedHeader);
         if (result is error) {
@@ -140,12 +139,12 @@ isolated function getHeader(string encodedHeader) returns Header|Error {
         }
         return parseHeader(<map<json>> checkpanic jsonHeader);
     } else {
-        return prepareError("Base64 url decode failed for JWT header.", decodedHeader);
+        return prepareError("Base64 URL decode failed for JWT header.", decodedHeader);
     }
 }
 
 isolated function getPayload(string encodedPayload) returns Payload|Error {
-    byte[]|error decodedPayload = encoding:decodeBase64Url(encodedPayload);
+    byte[]|Error decodedPayload = decodeBase64Url(encodedPayload);
     if (decodedPayload is byte[]) {
         string|error result = 'string:fromBytes(decodedPayload);
         if (result is error) {
@@ -158,13 +157,13 @@ isolated function getPayload(string encodedPayload) returns Payload|Error {
         }
         return parsePayload(<map<json>> checkpanic jsonPayload);
     } else {
-        return prepareError("Base64 url decode failed for JWT payload.", decodedPayload);
+        return prepareError("Base64 URL decode failed for JWT payload.", decodedPayload);
     }
 }
 
 isolated function getJwtSignature(string encodedSignature) returns byte[]|Error {
-    byte[]|encoding:Error signature = encoding:decodeBase64Url(encodedSignature);
-    if (signature is encoding:Error) {
+    byte[]|Error signature = decodeBase64Url(encodedSignature);
+    if (signature is Error) {
         return prepareError("Base64 URL decode failed for JWT signature.", signature);
     }
     return checkpanic signature;
