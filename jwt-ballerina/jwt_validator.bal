@@ -165,7 +165,7 @@ isolated function getPayload(string encodedPayload) returns Payload|Error {
 isolated function getJwtSignature(string encodedSignature) returns byte[]|Error {
     byte[]|encoding:Error signature = encoding:decodeBase64Url(encodedSignature);
     if (signature is encoding:Error) {
-        return prepareError("Base64 url decode failed for JWT signature.", signature);
+        return prepareError("Base64 URL decode failed for JWT signature.", signature);
     }
     return checkpanic signature;
 }
@@ -293,7 +293,7 @@ isolated function validateSignature(string jwt, Header header, Payload payload, 
                 crypto:PublicKey publicKey = check getPublicKeyByJwks(jwk);
                 boolean signatureValidation = check assertSignature(alg, assertion, signature, publicKey);
                 if (!signatureValidation) {
-                   return prepareError("JWT signature validation with jwks configurations has failed.");
+                   return prepareError("JWT signature validation with JWKs configurations has failed.");
                 }
             } else {
                 return prepareError("Key ID (kid) is not provided in JOSE header.");
@@ -301,7 +301,7 @@ isolated function validateSignature(string jwt, Header header, Payload payload, 
         } else if (certFile is string) {
             crypto:PublicKey|crypto:Error publicKey = crypto:decodeRsaPublicKeyFromCertFile(certFile);
             if (publicKey is crypto:Error) {
-               return prepareError("Public key decoding failed.", publicKey);
+               return prepareError("Failed to decode public key.", publicKey);
             }
             if (!check validateCertificate(checkpanic publicKey)) {
                return prepareError("Public key certificate validity period has passed.");
@@ -315,7 +315,7 @@ isolated function validateSignature(string jwt, Header header, Payload payload, 
             string certAlias = <string> trustStoreConfig?.certAlias;
             crypto:PublicKey|crypto:Error publicKey = crypto:decodeRsaPublicKeyFromTrustStore(trustStore, certAlias);
             if (publicKey is crypto:Error) {
-               return prepareError("Public key decoding failed.", publicKey);
+               return prepareError("Failed to decode public key.", publicKey);
             }
             if (!check validateCertificate(checkpanic publicKey)) {
                return prepareError("Public key certificate validity period has passed.");
@@ -346,7 +346,7 @@ isolated function validateJwtRecords(Header header, Payload payload, ValidatorCo
     int? nbf = payload?.nbf;
     if (nbf is int) {
         if (!validateNotBeforeTime(nbf)) {
-            return prepareError("JWT is used before Not_Before_Time (nbf).");
+            return prepareError("JWT is used before not-before-time (nbf).");
         }
     }
     //TODO : Need to validate jwt id (jti) and custom claims.
@@ -394,7 +394,7 @@ isolated function getJwk(string kid, string url, ClientConfiguration clientConfi
             if (jwk is json) {
                 return jwk;
             } else {
-                log:print("Failed to retrieve JWK for the kid: " + kid + " from the cache.");
+                log:print("Failed to retrieve JWK for the kid '" + kid + "' from the cache.");
             }
         }
     }
@@ -432,7 +432,7 @@ isolated function assertSignature(SigningAlgorithm alg, byte[] assertion, byte[]
             if (result is boolean) {
                 return result;
             } else {
-                return prepareError("SHA256 singature verification failed.", result);
+                return prepareError("SHA256 signature verification failed.", result);
             }
         }
         RS384 => {
@@ -440,7 +440,7 @@ isolated function assertSignature(SigningAlgorithm alg, byte[] assertion, byte[]
             if (result is boolean) {
                 return result;
             } else {
-                return prepareError("SHA384 singature verification failed.", result);
+                return prepareError("SHA384 signature verification failed.", result);
             }
         }
         RS512 => {
@@ -448,7 +448,7 @@ isolated function assertSignature(SigningAlgorithm alg, byte[] assertion, byte[]
             if (result is boolean) {
                 return result;
             } else {
-                return prepareError("SHA512 singature verification failed.", result);
+                return prepareError("SHA512 signature verification failed.", result);
             }
         }
     }
@@ -459,7 +459,7 @@ isolated function validateIssuer(Payload payload, string issuerConfig) returns E
     string? issuePayload = payload?.iss;
     if (issuePayload is string) {
         if (issuePayload != issuerConfig) {
-            return prepareError("JWT contained invalid issuer name : " + issuePayload);
+            return prepareError("JWT contained invalid issuer name '" + issuePayload + "'");
         }
     } else {
         return prepareError("JWT must contain a valid issuer name.");

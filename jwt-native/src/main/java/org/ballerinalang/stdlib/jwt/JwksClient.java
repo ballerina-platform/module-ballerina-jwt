@@ -141,8 +141,8 @@ public class JwksClient {
             if (response.statusCode() == 200) {
                 return StringUtils.fromString(response.body());
             }
-            return createError("Failed to get a success response from JWKs endpoint. Response Code: " +
-                                       response.statusCode() + ". Response Body: " + response.body());
+            return createError("Failed to get a success response from JWKs endpoint. Response Code: '" +
+                                       response.statusCode() + "'. Response Body: '" + response.body() + "'");
         } catch (IOException | InterruptedException e) {
             return createError("Failed to send the request to JWKs endpoint. " + e.getMessage());
         }
