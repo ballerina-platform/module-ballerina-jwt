@@ -404,7 +404,8 @@ isolated function getJwk(string kid, string url, ClientConfiguration clientConfi
     }
     json[] jwksArray = check getJwksArray(checkpanic stringResponse);
     foreach json jwk in jwksArray {
-        if (jwk.kid == kid) {
+        json|error responseKid = jwk.kid;
+        if (responseKid is json && responseKid == kid) {
             return jwk;
         }
     }
