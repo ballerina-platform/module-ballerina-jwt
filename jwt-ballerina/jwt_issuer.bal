@@ -87,7 +87,7 @@ public isolated function issue(IssuerConfig issuerConfig) returns string|Error {
         string keyPassword = <string> config?.keyPassword;
         crypto:PrivateKey|crypto:Error privateKey = crypto:decodeRsaPrivateKeyFromKeyStore(keyStore, keyAlias, keyPassword);
         if (privateKey is crypto:Error) {
-            return prepareError("Private key decoding failed.", privateKey);
+            return prepareError("Failed to decode private key.", privateKey);
         }
         return signJwtAssertion(jwtAssertion, algorithm, checkpanic privateKey);
     } else {
@@ -95,7 +95,7 @@ public isolated function issue(IssuerConfig issuerConfig) returns string|Error {
         string? keyPassword = config?.keyPassword;
         crypto:PrivateKey|crypto:Error privateKey = crypto:decodeRsaPrivateKeyFromKeyFile(keyFile, keyPassword);
         if (privateKey is crypto:Error) {
-            return prepareError("Private key decoding failed.", privateKey);
+            return prepareError("Failed to decode private key.", privateKey);
         }
         return signJwtAssertion(jwtAssertion, algorithm, checkpanic privateKey);
     }
