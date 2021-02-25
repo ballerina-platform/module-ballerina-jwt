@@ -1,3 +1,6 @@
+codecov:
+  require_ci_to_pass: no
+
 fixes:
   - "ballerina/jwt/*/::jwt-ballerina/"
 
