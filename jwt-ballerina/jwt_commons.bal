@@ -14,6 +14,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import ballerina/jballerina.java;
+
 # The cryptographic algorithms used to secure the JWS.
 public type SigningAlgorithm RS256|RS384|RS512|NONE;
 
@@ -75,3 +77,11 @@ public type Payload record {
     int nbf?;
     int iat?;
 };
+
+isolated function encodeBase64Url(byte[] input) returns string = @java:Method {
+    'class: "org.ballerinalang.stdlib.jwt.JwtUtils"
+} external;
+
+isolated function decodeBase64Url(string input) returns byte[]|Error = @java:Method {
+    'class: "org.ballerinalang.stdlib.jwt.JwtUtils"
+} external;

@@ -15,7 +15,6 @@
 // under the License.
 
 import ballerina/crypto;
-import ballerina/encoding;
 import ballerina/time;
 import ballerina/uuid;
 
@@ -107,7 +106,7 @@ isolated function signJwtAssertion(string jwtAssertion, SigningAlgorithm algorit
         RS256 => {
             byte[]|crypto:Error signature = crypto:signRsaSha256(jwtAssertion.toBytes(), privateKey);
             if (signature is byte[]) {
-                return (jwtAssertion + "." + encoding:encodeBase64Url(signature));
+                return (jwtAssertion + "." + encodeBase64Url(signature));
             } else {
                 return prepareError("Private key signing failed for SHA256 algorithm.", signature);
             }
@@ -115,7 +114,7 @@ isolated function signJwtAssertion(string jwtAssertion, SigningAlgorithm algorit
         RS384 => {
             byte[]|crypto:Error signature = crypto:signRsaSha384(jwtAssertion.toBytes(), privateKey);
             if (signature is byte[]) {
-                return (jwtAssertion + "." + encoding:encodeBase64Url(signature));
+                return (jwtAssertion + "." + encodeBase64Url(signature));
             } else {
                 return prepareError("Private key signing failed for SHA384 algorithm.", signature);
             }
@@ -123,7 +122,7 @@ isolated function signJwtAssertion(string jwtAssertion, SigningAlgorithm algorit
         RS512 => {
             byte[]|crypto:Error signature = crypto:signRsaSha512(jwtAssertion.toBytes(), privateKey);
             if (signature is byte[]) {
-                return (jwtAssertion + "." + encoding:encodeBase64Url(signature));
+                return (jwtAssertion + "." + encodeBase64Url(signature));
             } else {
                 return prepareError("Private key signing failed for SHA512 algorithm.", signature);
             }
@@ -181,11 +180,11 @@ isolated function buildHeaderString(Header header) returns string|Error {
     if (!validateMandatoryHeaderFields(header)) {
         return prepareError("Mandatory field signing algorithm (alg) is empty.");
     }
-    return encoding:encodeBase64Url(header.toJsonString().toBytes());
+    return encodeBase64Url(header.toJsonString().toBytes());
 }
 
 isolated function buildPayloadString(Payload payload) returns string|Error {
-    return encoding:encodeBase64Url(payload.toJsonString().toBytes());
+    return encodeBase64Url(payload.toJsonString().toBytes());
 }
 
 isolated function appendToMap(map<json> fromMap, map<json> toMap) returns map<json> {

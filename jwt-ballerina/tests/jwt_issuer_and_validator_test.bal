@@ -16,7 +16,6 @@
 
 // NOTE: All the tokens/credentials used in this test are dummy tokens/credentials and used only for testing purposes.
 
-import ballerina/encoding;
 import ballerina/lang.'string;
 import ballerina/regex;
 import ballerina/test;
@@ -283,7 +282,7 @@ isolated function assertDecodedJwt(string jwt, string header, string payload) {
     string[] parts = regex:split(jwt, "\\.");
 
     // check header
-    byte[]|encoding:Error headerDecodedResult = encoding:decodeBase64Url(parts[0]);
+    byte[]|Error headerDecodedResult = decodeBase64Url(parts[0]);
     if (headerDecodedResult is byte[]) {
         string|error resultHeader = 'string:fromBytes(headerDecodedResult);
         if (resultHeader is string) {
@@ -296,7 +295,7 @@ isolated function assertDecodedJwt(string jwt, string header, string payload) {
     }
 
     // check payload
-    byte[]|encoding:Error payloadDecodedResult = encoding:decodeBase64Url(parts[1]);
+    byte[]|Error payloadDecodedResult = decodeBase64Url(parts[1]);
     if (payloadDecodedResult is byte[]) {
         string|error resultPayload = 'string:fromBytes(payloadDecodedResult);
         if (resultPayload is string) {

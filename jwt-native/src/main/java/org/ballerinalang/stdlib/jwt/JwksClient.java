@@ -18,9 +18,7 @@
 
 package org.ballerinalang.stdlib.jwt;
 
-import io.ballerina.runtime.api.creators.ErrorCreator;
 import io.ballerina.runtime.api.utils.StringUtils;
-import io.ballerina.runtime.api.values.BError;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BString;
 
@@ -59,7 +57,7 @@ public class JwksClient {
                     HttpClient client = buildHttpClient(httpVersion, sslContext);
                     return callJwksEndpoint(client, url.getValue());
                 } catch (NoSuchAlgorithmException | KeyManagementException e) {
-                    return createError("Failed to init SSL context. " + e.getMessage());
+                    return JwtUtils.createError("Failed to init SSL context. " + e.getMessage());
                 }
             }
             BMap<BString, BString> trustStore =
@@ -70,7 +68,7 @@ public class JwksClient {
                     HttpClient client = buildHttpClient(httpVersion, sslContext);
                     return callJwksEndpoint(client, url.getValue());
                 } catch (Exception e) {
-                    return createError("Failed to init SSL context with truststore. " + e.getMessage());
+                    return JwtUtils.createError("Failed to init SSL context with truststore. " + e.getMessage());
                 }
             }
         }
@@ -141,20 +139,15 @@ public class JwksClient {
             if (response.statusCode() == 200) {
                 return StringUtils.fromString(response.body());
             }
-            return createError("Failed to get a success response from JWKs endpoint. Response Code: '" +
+            return JwtUtils.createError("Failed to get a success response from JWKs endpoint. Response Code: '" +
                                        response.statusCode() + "'. Response Body: '" + response.body() + "'");
         } catch (IOException | InterruptedException e) {
-            return createError("Failed to send the request to JWKs endpoint. " + e.getMessage());
+            return JwtUtils.createError("Failed to send the request to JWKs endpoint. " + e.getMessage());
         }
     }
 
     private static BMap<?, ?> getMapValueIfPresent(BMap<BString, Object> config, String key) {
         return config.containsKey(StringUtils.fromString(key)) ?
                 config.getMapValue(StringUtils.fromString(key)) : null;
-    }
-
-    private static BError createError(String errMsg) {
-        return ErrorCreator.createDistinctError(JwtConstants.JWT_ERROR_TYPE, ModuleUtils.getModule(),
-                                                StringUtils.fromString(errMsg));
     }
 }
