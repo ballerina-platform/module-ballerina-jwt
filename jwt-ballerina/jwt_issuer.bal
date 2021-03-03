@@ -25,7 +25,7 @@ import ballerina/uuid;
 # + audience - JWT audience, which is mapped to `aud`
 # + keyId - JWT key ID, which is mapped `kid`
 # + customClaims - Map of custom claims
-# + expTimeInSeconds - Expiry time in seconds
+# + expTime - Expiry time in seconds
 # + signatureConfig - JWT signature configurations
 public type IssuerConfig record {|
     string username?;
@@ -33,7 +33,7 @@ public type IssuerConfig record {|
     string|string[] audience?;
     string keyId?;
     map<json> customClaims?;
-    int expTimeInSeconds = 300;
+    decimal expTime = 300;
     IssuerSignatureConfig signatureConfig?;
 |};
 
@@ -148,7 +148,7 @@ isolated function prepareHeader(IssuerConfig issuerConfig) returns Header {
 
 isolated function preparePayload(IssuerConfig issuerConfig) returns Payload {
     Payload payload = {
-        exp: time:currentTime().time / 1000 + issuerConfig.expTimeInSeconds,
+        exp: time:currentTime().time / 1000 + <int> issuerConfig.expTime,
         iat: time:currentTime().time / 1000,
         nbf: time:currentTime().time / 1000,
         jti: uuid:createType4AsString()

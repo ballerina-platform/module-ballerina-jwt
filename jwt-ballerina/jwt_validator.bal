@@ -27,13 +27,13 @@ import ballerina/time;
 #
 # + issuer - Expected issuer, which is mapped to `iss`
 # + audience - Expected audience, which is mapped to `aud`
-# + clockSkewInSeconds - Clock skew in seconds that can be used to avoid token validation failures due to clock synchronization problems
+# + clockSkew - Clock skew (in seconds) that can be used to avoid token validation failures due to clock synchronization problems
 # + signatureConfig - JWT signature configurations
 # + cacheConfig - Configurations related to the cache used to store parsed JWT information
 public type ValidatorConfig record {
     string issuer?;
     string|string[] audience?;
-    int clockSkewInSeconds = 0;
+    decimal clockSkew = 0;
     ValidatorSignatureConfig signatureConfig?;
     cache:CacheConfig cacheConfig?;
 };
@@ -338,7 +338,7 @@ isolated function validateJwtRecords(Header header, Payload payload, ValidatorCo
     }
     int? exp = payload?.exp;
     if (exp is int) {
-        if (!validateExpirationTime(exp, validatorConfig.clockSkewInSeconds)) {
+        if (!validateExpirationTime(exp, <int> validatorConfig.clockSkew)) {
             return prepareError("JWT is expired.");
         }
     }

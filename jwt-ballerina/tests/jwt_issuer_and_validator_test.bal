@@ -26,7 +26,7 @@ isolated function testIssueJwt() {
         username: "John",
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
-        expTimeInSeconds: 600,
+        expTime: 600,
         signatureConfig: {
             config: {
                 keyStore: {
@@ -57,7 +57,7 @@ isolated function testIssueJwtWithSingleAud() {
         username: "John",
         issuer: "wso2",
         audience: "ballerina",
-        expTimeInSeconds: 600,
+        expTime: 600,
         signatureConfig: {
             config: {
                 keyStore: {
@@ -87,7 +87,7 @@ isolated function testIssueJwtWithSingleAudAndAudAsArray() {
         username: "John",
         issuer: "wso2",
         audience: ["ballerina"],
-        expTimeInSeconds: 600,
+        expTime: 600,
         signatureConfig: {
             config: {
                 keyStore: {
@@ -115,7 +115,7 @@ isolated function testIssueJwtWithSingleAudAndAudAsArray() {
 isolated function testIssueJwtWithNoIssOrSub() {
     IssuerConfig issuerConfig = {
         audience: ["ballerina", "ballerinaSamples"],
-        expTimeInSeconds: 600,
+        expTime: 600,
         signatureConfig: {
             config: {
                 keyStore: {
@@ -144,7 +144,7 @@ isolated function testIssueJwtWithNoAudOrSub() {
     IssuerConfig issuerConfig = {
         username: "John",
         issuer: "wso2",
-        expTimeInSeconds: 600,
+        expTime: 600,
         signatureConfig: {
             config: {
                 keyStore: {
@@ -175,7 +175,7 @@ isolated function testIssueJwtWithCustomClaims() {
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
         customClaims: { "scope": "test-scope" },
-        expTimeInSeconds: 600,
+        expTime: 600,
         signatureConfig: {
             config: {
                 keyStore: {
@@ -205,7 +205,7 @@ isolated function testIssueJwtWithPrivateKey() {
         username: "John",
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
-        expTimeInSeconds: 600,
+        expTime: 600,
         signatureConfig: {
             config: {
                 keyFile: PRIVATE_KEY_PATH
@@ -226,7 +226,7 @@ isolated function testIssueJwtWithPrivateKey() {
     ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
-        clockSkewInSeconds: 60,
+        clockSkew: 60,
         signatureConfig: {
             certFile: PUBLIC_CERT_PATH
         }
@@ -244,7 +244,7 @@ isolated function testIssueJwtWithEncryptedPrivateKey() {
         username: "John",
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
-        expTimeInSeconds: 600,
+        expTime: 600,
         signatureConfig: {
             config: {
                 keyFile: ENCRYPTED_PRIVATE_KEY_PATH,
@@ -266,7 +266,7 @@ isolated function testIssueJwtWithEncryptedPrivateKey() {
     ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
-        clockSkewInSeconds: 60,
+        clockSkew: 60,
         signatureConfig: {
             certFile: PUBLIC_CERT_PATH
         }
@@ -313,7 +313,7 @@ isolated function jwtDataProvider() returns string {
         username: "John",
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
-        expTimeInSeconds: 600,
+        expTime: 600,
         signatureConfig: {
             config: {
                 keyStore: {
@@ -335,7 +335,7 @@ isolated function testValidateJwt(string jwt) {
     ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
-        clockSkewInSeconds: 60,
+        clockSkew: 60,
         signatureConfig: {
             trustStoreConfig: {
                 trustStore: {
@@ -360,7 +360,7 @@ isolated function testValidateJwtWithSingleAud(string jwt) {
     ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: "ballerina",
-        clockSkewInSeconds: 60,
+        clockSkew: 60,
         signatureConfig: {
             trustStoreConfig: {
                 trustStore: {
@@ -385,7 +385,7 @@ isolated function testValidateJwtWithSingleAudAndAudAsArray(string jwt) {
     ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: "ballerina",
-        clockSkewInSeconds: 60,
+        clockSkew: 60,
         signatureConfig: {
             trustStoreConfig: {
                 trustStore: {
@@ -409,7 +409,7 @@ isolated function testValidateJwtWithSingleAudAndAudAsArray(string jwt) {
 isolated function testValidateJwtWithNoIssOrSub(string jwt) {
     ValidatorConfig validatorConfig = {
         audience: "ballerinaSamples",
-        clockSkewInSeconds: 60,
+        clockSkew: 60,
         signatureConfig: {
             trustStoreConfig: {
                 trustStore: {
@@ -542,7 +542,7 @@ isolated function testValidateJwtSignatureWithPublicCert(string jwt) {
     ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
-        clockSkewInSeconds: 60,
+        clockSkew: 60,
         signatureConfig: {
             certFile: PUBLIC_CERT_PATH
         }
@@ -561,7 +561,7 @@ isolated function testValidateJwtSignatureWithInvalidPublicCert(string jwt) {
     ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
-        clockSkewInSeconds: 60,
+        clockSkew: 60,
         signatureConfig: {
             certFile: INVALID_PUBLIC_CERT_PATH
         }
