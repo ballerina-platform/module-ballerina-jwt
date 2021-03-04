@@ -20,3 +20,14 @@ const string PRIVATE_KEY_PATH = "tests/resources/key/private.key";
 const string ENCRYPTED_PRIVATE_KEY_PATH = "tests/resources/key/encryptedPrivate.key";
 const string PUBLIC_CERT_PATH = "tests/resources/cert/public.crt";
 const string INVALID_PUBLIC_CERT_PATH = "tests/resources/cert/invalidPublic.crt";
+
+// Build complete error message by evaluating all the inner causes.
+isolated function buildCompleteErrorMessage(error err) returns string {
+    string message = err.message();
+    error? cause = err.cause();
+    while (cause is error) {
+        message += " " + cause.message();
+        cause = cause.cause();
+    }
+    return message;
+}
