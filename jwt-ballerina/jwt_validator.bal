@@ -74,10 +74,23 @@ public enum HttpVersion {
 # Represents the SSL/TLS configurations.
 #
 # + disable - Disable SSL validation
-# + trustStore - Configurations associated with TrustStore
+# + cert - Configurations associated with `crypto:TrustStore` or single certificate file that the client trusts
+# + key - Configurations associated with `crypto:KeyStore` or combination of certificate and private key of the client
 public type SecureSocket record {|
     boolean disable = false;
-    crypto:TrustStore trustStore?;
+    crypto:TrustStore|string cert;
+    crypto:KeyStore|CertKey key?;
+|};
+
+# Represents combination of certificate, private key and private key password if encrypted.
+#
+# + certFile - A file containing the certificate
+# + keyFile - A file containing the private key
+# + keyPassword - Password of the private key if it is encrypted
+public type CertKey record {|
+   string certFile;
+   string keyFile;
+   string keyPassword?;
 |};
 
 # Validates the provided JWT, against the provided configurations.
