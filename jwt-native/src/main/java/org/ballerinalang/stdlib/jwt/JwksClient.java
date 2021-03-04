@@ -18,9 +18,12 @@
 
 package org.ballerinalang.stdlib.jwt;
 
+import io.ballerina.runtime.api.creators.ErrorCreator;
 import io.ballerina.runtime.api.utils.StringUtils;
+import io.ballerina.runtime.api.values.BError;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BString;
+import org.ballerinalang.stdlib.crypto.nativeimpl.Decode;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -28,12 +31,13 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.security.KeyManagementException;
 import java.security.KeyStore;
-import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.util.UUID;
 
+import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -46,34 +50,61 @@ import javax.net.ssl.X509TrustManager;
 public class JwksClient {
 
     public static Object getJwksResponse(BString url, BMap<BString, Object> clientConfig) {
-        String httpVersion = clientConfig.getStringValue(StringUtils.fromString(JwtConstants.HTTP_VERSION)).getValue();
+        HttpRequest request = buildHttpRequest(url.getValue());
+        String httpVersion = getBStringValueIfPresent(clientConfig, JwtConstants.HTTP_VERSION).getValue();
         BMap<BString, Object> secureSocket =
-                (BMap<BString, Object>) getMapValueIfPresent(clientConfig, JwtConstants.SECURE_SOCKET);
+                (BMap<BString, Object>) getBMapValueIfPresent(clientConfig, JwtConstants.SECURE_SOCKET);
         if (secureSocket != null) {
-            boolean disable = secureSocket.getBooleanValue(StringUtils.fromString(JwtConstants.DISABLE));
-            if (disable) {
-                try {
-                    SSLContext sslContext = initSslContext();
-                    HttpClient client = buildHttpClient(httpVersion, sslContext);
-                    return callJwksEndpoint(client, url.getValue());
-                } catch (NoSuchAlgorithmException | KeyManagementException e) {
-                    return JwtUtils.createError("Failed to init SSL context. " + e.getMessage());
-                }
-            }
-            BMap<BString, BString> trustStore =
-                    (BMap<BString, BString>) getMapValueIfPresent(secureSocket, JwtConstants.TRUSTSTORE);
-            if (trustStore != null) {
-                try {
-                    SSLContext sslContext = initSslContext(trustStore);
-                    HttpClient client = buildHttpClient(httpVersion, sslContext);
-                    return callJwksEndpoint(client, url.getValue());
-                } catch (Exception e) {
-                    return JwtUtils.createError("Failed to init SSL context with truststore. " + e.getMessage());
-                }
+            try {
+                SSLContext sslContext = getSslContext(secureSocket);
+                HttpClient client = buildHttpClient(httpVersion, sslContext);
+                return callEndpoint(client, request);
+            } catch (Exception e) {
+                return createError("Failed to init SSL context. " + e.getMessage());
             }
         }
         HttpClient client = buildHttpClient(httpVersion);
-        return callJwksEndpoint(client, url.getValue());
+        return callEndpoint(client, request);
+    }
+
+    private static SSLContext getSslContext(BMap<BString, Object> secureSocket) throws Exception {
+        boolean disable = secureSocket.getBooleanValue(JwtConstants.DISABLE);
+        Object cert = secureSocket.get(JwtConstants.CERT);
+        BMap<BString, BString> key = (BMap<BString, BString>) getBMapValueIfPresent(secureSocket,
+                                                                                    JwtConstants.KEY);
+        if (disable) {
+            return initSslContext();
+        }
+        if (cert instanceof BString) {
+            if (key != null) {
+                if (key.containsKey(JwtConstants.CERT_FILE)) {
+                    BString certFile = key.get(JwtConstants.CERT_FILE);
+                    BString keyFile = key.get(JwtConstants.KEY_FILE);
+                    BString keyPassword = getBStringValueIfPresent(key, JwtConstants.KEY_PASSWORD);
+                    return initSslContext((BString) cert, certFile, keyFile, keyPassword);
+                } else {
+                    return initSslContext((BString) cert, key);
+                }
+            } else {
+                return initSslContext((BString) cert);
+            }
+        }
+        if (cert instanceof BMap) {
+            BMap<BString, BString> trustStore = (BMap<BString, BString>) cert;
+            if (key != null) {
+                if (key.containsKey(JwtConstants.CERT_FILE)) {
+                    BString certFile = key.get(JwtConstants.CERT_FILE);
+                    BString keyFile = key.get(JwtConstants.KEY_FILE);
+                    BString keyPassword = getBStringValueIfPresent(key, JwtConstants.KEY_PASSWORD);
+                    return initSslContext(trustStore, certFile, keyFile, keyPassword);
+                } else {
+                    return initSslContext(trustStore, key);
+                }
+            } else {
+                return initSslContext(trustStore);
+            }
+        }
+        return null;
     }
 
     private static HttpClient.Version getHttpVersion(String httpVersion) {
@@ -83,8 +114,8 @@ public class JwksClient {
         return HttpClient.Version.HTTP_1_1;
     }
 
-    private static SSLContext initSslContext() throws NoSuchAlgorithmException, KeyManagementException {
-        TrustManager[] trustAllCerts = new TrustManager[]{
+    private static SSLContext initSslContext() throws Exception {
+        TrustManager[] trustManagers = new TrustManager[]{
                 new X509TrustManager() {
                     public X509Certificate[] getAcceptedIssuers() {
                         return new X509Certificate[0];
@@ -97,57 +128,169 @@ public class JwksClient {
                     }
                 }
         };
-        SSLContext sslContext = SSLContext.getInstance(JwtConstants.TLS);
-        sslContext.init(null, trustAllCerts, new SecureRandom());
-        return sslContext;
+        return buildSslContext(null, trustManagers);
     }
 
     private static SSLContext initSslContext(BMap<BString, BString> trustStore) throws Exception {
-        String path = trustStore.getStringValue(StringUtils.fromString(JwtConstants.PATH)).getValue();
-        String password = trustStore.getStringValue(StringUtils.fromString(JwtConstants.PASSWORD)).getValue();
-        try (FileInputStream is = new FileInputStream(path)) {
-            char[] passphrase = password.toCharArray();
+        BString path = trustStore.getStringValue(JwtConstants.PATH);
+        BString password = trustStore.getStringValue(JwtConstants.PASSWORD);
+        KeyStore ts = getKeyStore(path, password);
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        tmf.init(ts);
+        return buildSslContext(null, tmf.getTrustManagers());
+    }
+
+    private static SSLContext initSslContext(BString cert) throws Exception {
+        KeyStore ts = buildTrustStore(cert);
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        tmf.init(ts);
+        return buildSslContext(null, tmf.getTrustManagers());
+    }
+
+    private static SSLContext initSslContext(BMap<BString, BString> trustStore, BMap<BString, BString> keyStore)
+            throws Exception {
+        BString trustStorePath = trustStore.getStringValue(JwtConstants.PATH);
+        BString trustStorePassword = trustStore.getStringValue(JwtConstants.PASSWORD);
+        KeyStore ts = getKeyStore(trustStorePath, trustStorePassword);
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        tmf.init(ts);
+        BString keyStorePath = keyStore.getStringValue(JwtConstants.PATH);
+        BString keyStorePassword = keyStore.getStringValue(JwtConstants.PASSWORD);
+        KeyStore ks = getKeyStore(keyStorePath, keyStorePassword);
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        kmf.init(ks, keyStorePassword.getValue().toCharArray());
+        return buildSslContext(kmf.getKeyManagers(), tmf.getTrustManagers());
+    }
+
+    private static SSLContext initSslContext(BMap<BString, BString> trustStore, BString certFile, BString keyFile,
+                                             BString keyPassword) throws Exception {
+        BString trustStorePath = trustStore.getStringValue(JwtConstants.PATH);
+        BString trustStorePassword = trustStore.getStringValue(JwtConstants.PASSWORD);
+        KeyStore ts = getKeyStore(trustStorePath, trustStorePassword);
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        tmf.init(ts);
+        KeyStore ks = buildKeyStore(certFile, keyFile, keyPassword);
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        kmf.init(ks, "".toCharArray());
+        return buildSslContext(kmf.getKeyManagers(), tmf.getTrustManagers());
+    }
+
+    private static SSLContext initSslContext(BString cert, BString certFile, BString keyFile,
+                                             BString keyPassword) throws Exception {
+        KeyStore ts = buildTrustStore(cert);
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        tmf.init(ts);
+        KeyStore ks = buildKeyStore(certFile, keyFile, keyPassword);
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        kmf.init(ks, "".toCharArray());
+        return buildSslContext(kmf.getKeyManagers(), tmf.getTrustManagers());
+    }
+
+    private static SSLContext initSslContext(BString cert, BMap<BString, BString> keyStore) throws Exception {
+        KeyStore ts = buildTrustStore(cert);
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        tmf.init(ts);
+
+        BString keyStorePath = keyStore.getStringValue(JwtConstants.PATH);
+        BString keyStorePassword = keyStore.getStringValue(JwtConstants.PASSWORD);
+        KeyStore ks = getKeyStore(keyStorePath, keyStorePassword);
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        kmf.init(ks, keyStorePassword.getValue().toCharArray());
+
+        return buildSslContext(kmf.getKeyManagers(), tmf.getTrustManagers());
+    }
+
+    private static KeyStore getKeyStore(BString path, BString password) throws Exception {
+        try (FileInputStream is = new FileInputStream(path.getValue())) {
+            char[] passphrase = password.getValue().toCharArray();
             KeyStore ks = KeyStore.getInstance(JwtConstants.PKCS12);
             ks.load(is, passphrase);
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            tmf.init(ks);
-            SSLContext sslContext = SSLContext.getInstance(JwtConstants.TLS);
-            sslContext.init(null, tmf.getTrustManagers(), new SecureRandom());
-            return sslContext;
+            return ks;
         }
     }
 
+    private static KeyStore buildTrustStore(BString path) throws Exception {
+        Object publicKeyMap = Decode.decodeRsaPublicKeyFromCertFile(path);
+        if (publicKeyMap instanceof BMap) {
+            X509Certificate x509Certificate = (X509Certificate) ((BMap<BString, Object>) publicKeyMap).getNativeData(
+                    JwtConstants.NATIVE_DATA_PUBLIC_KEY_CERTIFICATE);
+            KeyStore truststore = KeyStore.getInstance(JwtConstants.PKCS12);
+            truststore.load(null, "".toCharArray());
+            truststore.setCertificateEntry(UUID.randomUUID().toString(), x509Certificate);
+            return truststore;
+        } else {
+            throw new Exception("Failed to get the public key from Crypto API. " +
+                                        ((BError) publicKeyMap).getErrorMessage().getValue());
+        }
+    }
+
+    private static KeyStore buildKeyStore(BString certPath, BString keyPath, BString keyPassword) throws Exception {
+        Object publicKey = Decode.decodeRsaPublicKeyFromCertFile(certPath);
+        if (publicKey instanceof BMap) {
+            X509Certificate publicCert = (X509Certificate) ((BMap<BString, Object>) publicKey).getNativeData(
+                    JwtConstants.NATIVE_DATA_PUBLIC_KEY_CERTIFICATE);
+            Object privateKeyMap = Decode.decodeRsaPrivateKeyFromKeyFile(keyPath, keyPassword);
+            if (privateKeyMap instanceof BMap) {
+                PrivateKey privateKey = (PrivateKey) ((BMap<BString, Object>) privateKeyMap).getNativeData(
+                        JwtConstants.NATIVE_DATA_PRIVATE_KEY);
+                KeyStore ks = KeyStore.getInstance(JwtConstants.PKCS12);
+                ks.load(null, "".toCharArray());
+                ks.setKeyEntry(UUID.randomUUID().toString(), privateKey, "".toCharArray(),
+                               new X509Certificate[]{publicCert});
+                return ks;
+            } else {
+                throw new Exception("Failed to get the private key from Crypto API. " +
+                                            ((BError) privateKeyMap).getErrorMessage().getValue());
+            }
+        } else {
+            throw new Exception("Failed to get the public key from Crypto API. " +
+                                        ((BError) publicKey).getErrorMessage().getValue());
+        }
+    }
+
+    private static SSLContext buildSslContext(KeyManager[] keyManagers, TrustManager[] trustManagers) throws Exception {
+        SSLContext sslContext = SSLContext.getInstance(JwtConstants.TLS);
+        sslContext.init(keyManagers, trustManagers, new SecureRandom());
+        return sslContext;
+    }
+
     private static HttpClient buildHttpClient(String httpVersion) {
-        return HttpClient.newBuilder()
-                .version(getHttpVersion(httpVersion))
-                .build();
+        return HttpClient.newBuilder().version(getHttpVersion(httpVersion)).build();
     }
 
     private static HttpClient buildHttpClient(String httpVersion, SSLContext sslContext) {
-        return HttpClient.newBuilder()
-                .version(getHttpVersion(httpVersion))
-                .sslContext(sslContext)
+        return HttpClient.newBuilder().version(getHttpVersion(httpVersion)).sslContext(sslContext).build();
+    }
+
+    private static HttpRequest buildHttpRequest(String url) {
+        return HttpRequest.newBuilder()
+                .uri(URI.create(url))
                 .build();
     }
 
-    private static Object callJwksEndpoint(HttpClient client, String url) {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .build();
+    private static Object callEndpoint(HttpClient client, HttpRequest request) {
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
                 return StringUtils.fromString(response.body());
             }
             return JwtUtils.createError("Failed to get a success response from JWKs endpoint. Response Code: '" +
-                                       response.statusCode() + "'. Response Body: '" + response.body() + "'");
+                                                response.statusCode() + "'. Response Body: '" + response.body() + "'");
         } catch (IOException | InterruptedException e) {
             return JwtUtils.createError("Failed to send the request to JWKs endpoint. " + e.getMessage());
         }
     }
 
-    private static BMap<?, ?> getMapValueIfPresent(BMap<BString, Object> config, String key) {
-        return config.containsKey(StringUtils.fromString(key)) ?
-                config.getMapValue(StringUtils.fromString(key)) : null;
+    private static BMap<?, ?> getBMapValueIfPresent(BMap<BString, ?> config, BString key) {
+        return config.containsKey(key) ? config.getMapValue(key) : null;
+    }
+
+    private static BString getBStringValueIfPresent(BMap<BString, ?> config, BString key) {
+        return config.containsKey(key) ? config.getStringValue(key) : null;
+    }
+
+    private static BError createError(String errMsg) {
+        return ErrorCreator.createDistinctError(JwtConstants.JWT_ERROR_TYPE, ModuleUtils.getModule(),
+                                                StringUtils.fromString(errMsg));
     }
 }
