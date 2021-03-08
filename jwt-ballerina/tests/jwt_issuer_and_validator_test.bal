@@ -502,7 +502,7 @@ isolated function testValidateJwtSignatureWithInvalidJwk() {
 }
 
 @test:Config {}
-isolated function testValidateJwtSignatureWithJwkWithClientConfig() {
+isolated function testValidateJwtSignatureWithJwkWithValidTrustStore() {
     string jwt = "eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QiLCAia2lkIjoiTlRBeFptTXhORE15WkRnM01UVTFaR00wTXpFek9ESmhaV0k0Tk" +
                  "RObFpEVTFPR0ZrTmpGaU1RIn0.eyJzdWIiOiJhZG1pbiIsICJpc3MiOiJiYWxsZXJpbmEiLCAiZXhwIjoxOTA3NjY1NzQ2LCAi" +
                  "anRpIjoiMTAwMDc4MjM0YmEyMyIsICJhdWQiOlsidkV3emJjYXNKVlFtMWpWWUhVSENqaHhaNHRZYSJdfQ.E8E7VO18V6MG7Ns" +
@@ -519,7 +519,7 @@ isolated function testValidateJwtSignatureWithJwkWithClientConfig() {
                 clientConfig: {
                     httpVersion: HTTP_2,
                     secureSocket: {
-                        trustStore: {
+                        cert: {
                             path: TRUSTSTORE_PATH,
                             password: "ballerina"
                         }
@@ -532,6 +532,38 @@ isolated function testValidateJwtSignatureWithJwkWithClientConfig() {
     if (result is Error) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT with client configurations.");
+    }
+}
+
+@test:Config {}
+isolated function testValidateJwtSignatureWithJwkWithClientInvalidCertificate() {
+    string jwt = "eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QiLCAia2lkIjoiTlRBeFptTXhORE15WkRnM01UVTFaR00wTXpFek9ESmhaV0k0Tk" +
+                 "RObFpEVTFPR0ZrTmpGaU1RIn0.eyJzdWIiOiJhZG1pbiIsICJpc3MiOiJiYWxsZXJpbmEiLCAiZXhwIjoxOTA3NjY1NzQ2LCAi" +
+                 "anRpIjoiMTAwMDc4MjM0YmEyMyIsICJhdWQiOlsidkV3emJjYXNKVlFtMWpWWUhVSENqaHhaNHRZYSJdfQ.E8E7VO18V6MG7Ns" +
+                 "87Y314Dqg8RYOMe0WWYlSYFhSv0mHkJQ8bSSyBJzFG0Se_7UsTWFBwzIALw6wUiP7UGraosilf8k6HGJWbTjWtLXfniJXx5Ncz" +
+                 "ikzciG8ADddksm-0AMi5uPsgAQdg7FNaH9f4vAL6SPMEYp2gN6GDnWTH7M1vnknwjOwTbQpGrPu_w2V1tbsBwSzof3Fk_cYrnt" +
+                 "u8D_pfsBu3eqFiJZD7AXUq8EYbgIxpSwvdi6_Rvw2_TAi46drouxXK2Jglz_HvheUVCERT15Y8JNJONJPJ52MsN6t297hyFV9A" +
+                 "myNPzwHxxmi753TclbapDqDnVPI1tpc-Q";
+    ValidatorConfig validatorConfig = {
+        issuer: "ballerina",
+        audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
+        signatureConfig: {
+            jwksConfig: {
+                url: "https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks",
+                clientConfig: {
+                    httpVersion: HTTP_2,
+                    secureSocket: {
+                        cert: PUBLIC_CERT_PATH
+                    }
+                }
+            }
+        }
+    };
+    Payload|Error result = validate(jwt, validatorConfig);
+    if (result is Error) {
+        test:assertEquals(buildCompleteErrorMessage(result), "Failed to call JWKs endpoint. Failed to send the request to the endpoint. PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target");
+    } else {
+        test:assertFail(msg = "Error in validating JWT signature with invalid certificate.");
     }
 }
 
