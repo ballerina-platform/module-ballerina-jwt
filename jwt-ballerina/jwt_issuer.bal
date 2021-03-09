@@ -15,7 +15,6 @@
 // under the License.
 
 import ballerina/crypto;
-import ballerina/encoding;
 import ballerina/time;
 import ballerina/uuid;
 
@@ -26,7 +25,7 @@ import ballerina/uuid;
 # + audience - JWT audience, which is mapped to `aud`
 # + keyId - JWT key ID, which is mapped `kid`
 # + customClaims - Map of custom claims
-# + expTimeInSeconds - Expiry time in seconds
+# + expTime - Expiry time in seconds
 # + signatureConfig - JWT signature configurations
 public type IssuerConfig record {|
     string username?;
@@ -34,7 +33,7 @@ public type IssuerConfig record {|
     string|string[] audience?;
     string keyId?;
     map<json> customClaims?;
-    int expTimeInSeconds = 300;
+    decimal expTime = 300;
     IssuerSignatureConfig signatureConfig?;
 |};
 
@@ -87,7 +86,7 @@ public isolated function issue(IssuerConfig issuerConfig) returns string|Error {
         string keyPassword = <string> config?.keyPassword;
         crypto:PrivateKey|crypto:Error privateKey = crypto:decodeRsaPrivateKeyFromKeyStore(keyStore, keyAlias, keyPassword);
         if (privateKey is crypto:Error) {
-            return prepareError("Private key decoding failed.", privateKey);
+            return prepareError("Failed to decode private key.", privateKey);
         }
         return signJwtAssertion(jwtAssertion, algorithm, checkpanic privateKey);
     } else {
@@ -95,7 +94,7 @@ public isolated function issue(IssuerConfig issuerConfig) returns string|Error {
         string? keyPassword = config?.keyPassword;
         crypto:PrivateKey|crypto:Error privateKey = crypto:decodeRsaPrivateKeyFromKeyFile(keyFile, keyPassword);
         if (privateKey is crypto:Error) {
-            return prepareError("Private key decoding failed.", privateKey);
+            return prepareError("Failed to decode private key.", privateKey);
         }
         return signJwtAssertion(jwtAssertion, algorithm, checkpanic privateKey);
     }
@@ -107,7 +106,7 @@ isolated function signJwtAssertion(string jwtAssertion, SigningAlgorithm algorit
         RS256 => {
             byte[]|crypto:Error signature = crypto:signRsaSha256(jwtAssertion.toBytes(), privateKey);
             if (signature is byte[]) {
-                return (jwtAssertion + "." + encoding:encodeBase64Url(signature));
+                return (jwtAssertion + "." + encodeBase64Url(signature));
             } else {
                 return prepareError("Private key signing failed for SHA256 algorithm.", signature);
             }
@@ -115,7 +114,7 @@ isolated function signJwtAssertion(string jwtAssertion, SigningAlgorithm algorit
         RS384 => {
             byte[]|crypto:Error signature = crypto:signRsaSha384(jwtAssertion.toBytes(), privateKey);
             if (signature is byte[]) {
-                return (jwtAssertion + "." + encoding:encodeBase64Url(signature));
+                return (jwtAssertion + "." + encodeBase64Url(signature));
             } else {
                 return prepareError("Private key signing failed for SHA384 algorithm.", signature);
             }
@@ -123,7 +122,7 @@ isolated function signJwtAssertion(string jwtAssertion, SigningAlgorithm algorit
         RS512 => {
             byte[]|crypto:Error signature = crypto:signRsaSha512(jwtAssertion.toBytes(), privateKey);
             if (signature is byte[]) {
-                return (jwtAssertion + "." + encoding:encodeBase64Url(signature));
+                return (jwtAssertion + "." + encodeBase64Url(signature));
             } else {
                 return prepareError("Private key signing failed for SHA512 algorithm.", signature);
             }
@@ -149,7 +148,7 @@ isolated function prepareHeader(IssuerConfig issuerConfig) returns Header {
 
 isolated function preparePayload(IssuerConfig issuerConfig) returns Payload {
     Payload payload = {
-        exp: time:currentTime().time / 1000 + issuerConfig.expTimeInSeconds,
+        exp: time:currentTime().time / 1000 + <int> issuerConfig.expTime,
         iat: time:currentTime().time / 1000,
         nbf: time:currentTime().time / 1000,
         jti: uuid:createType4AsString()
@@ -181,11 +180,11 @@ isolated function buildHeaderString(Header header) returns string|Error {
     if (!validateMandatoryHeaderFields(header)) {
         return prepareError("Mandatory field signing algorithm (alg) is empty.");
     }
-    return encoding:encodeBase64Url(header.toJsonString().toBytes());
+    return encodeBase64Url(header.toJsonString().toBytes());
 }
 
 isolated function buildPayloadString(Payload payload) returns string|Error {
-    return encoding:encodeBase64Url(payload.toJsonString().toBytes());
+    return encodeBase64Url(payload.toJsonString().toBytes());
 }
 
 isolated function appendToMap(map<json> fromMap, map<json> toMap) returns map<json> {

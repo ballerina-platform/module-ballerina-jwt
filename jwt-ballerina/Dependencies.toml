@@ -10,11 +10,6 @@ version = "@stdlib.crypto.version@"
 
 [[dependency]]
 org = "ballerina"
-name = "encoding"
-version = "@stdlib.encoding.version@"
-
-[[dependency]]
-org = "ballerina"
 name = "log"
 version = "@stdlib.log.version@"
 

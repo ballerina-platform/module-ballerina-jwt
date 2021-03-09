@@ -4,6 +4,6 @@ This package provides a listener JWT authentication provider, which can be used 
 
 For information on the operations, which you can perform with this module, see the below **Functions**. For examples on the usage of the operations, see the following.
  * [JWT Issue/Validate Example](https://ballerina.io/learn/by-example/jwt-issue-validate.html)
- * [Secured Service with JWT Auth Example](https://ballerina.io/learn/by-example/secured-service-with-jwt-auth.html)
- * [Secured Client with Self Signed JWT Auth Example](https://ballerina.io/learn/by-example/secured-client-with-self-signed-jwt-auth.html)
- * [Secured Client with Bearer Token Auth Example](https://ballerina.io/learn/by-example/secured-client-with-bearer-token-auth.html)
+ * [HTTP Service with JWT Auth Example](https://ballerina.io/learn/by-example/http-service-with-jwt-auth.html)
+ * [HTTP Client with Self Signed JWT Auth Example](https://ballerina.io/learn/by-example/http-client-with-self-signed-jwt-auth.html)
+ * [HTTP Client with Bearer Token Auth Example](https://ballerina.io/learn/by-example/http-client-with-bearer-token-auth.html)

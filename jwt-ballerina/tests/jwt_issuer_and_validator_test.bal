@@ -16,7 +16,6 @@
 
 // NOTE: All the tokens/credentials used in this test are dummy tokens/credentials and used only for testing purposes.
 
-import ballerina/encoding;
 import ballerina/lang.'string;
 import ballerina/regex;
 import ballerina/test;
@@ -27,7 +26,7 @@ isolated function testIssueJwt() {
         username: "John",
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
-        expTimeInSeconds: 600,
+        expTime: 600,
         signatureConfig: {
             config: {
                 keyStore: {
@@ -58,7 +57,7 @@ isolated function testIssueJwtWithSingleAud() {
         username: "John",
         issuer: "wso2",
         audience: "ballerina",
-        expTimeInSeconds: 600,
+        expTime: 600,
         signatureConfig: {
             config: {
                 keyStore: {
@@ -88,7 +87,7 @@ isolated function testIssueJwtWithSingleAudAndAudAsArray() {
         username: "John",
         issuer: "wso2",
         audience: ["ballerina"],
-        expTimeInSeconds: 600,
+        expTime: 600,
         signatureConfig: {
             config: {
                 keyStore: {
@@ -116,7 +115,7 @@ isolated function testIssueJwtWithSingleAudAndAudAsArray() {
 isolated function testIssueJwtWithNoIssOrSub() {
     IssuerConfig issuerConfig = {
         audience: ["ballerina", "ballerinaSamples"],
-        expTimeInSeconds: 600,
+        expTime: 600,
         signatureConfig: {
             config: {
                 keyStore: {
@@ -145,7 +144,7 @@ isolated function testIssueJwtWithNoAudOrSub() {
     IssuerConfig issuerConfig = {
         username: "John",
         issuer: "wso2",
-        expTimeInSeconds: 600,
+        expTime: 600,
         signatureConfig: {
             config: {
                 keyStore: {
@@ -176,7 +175,7 @@ isolated function testIssueJwtWithCustomClaims() {
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
         customClaims: { "scope": "test-scope" },
-        expTimeInSeconds: 600,
+        expTime: 600,
         signatureConfig: {
             config: {
                 keyStore: {
@@ -206,7 +205,7 @@ isolated function testIssueJwtWithPrivateKey() {
         username: "John",
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
-        expTimeInSeconds: 600,
+        expTime: 600,
         signatureConfig: {
             config: {
                 keyFile: PRIVATE_KEY_PATH
@@ -227,7 +226,7 @@ isolated function testIssueJwtWithPrivateKey() {
     ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
-        clockSkewInSeconds: 60,
+        clockSkew: 60,
         signatureConfig: {
             certFile: PUBLIC_CERT_PATH
         }
@@ -245,7 +244,7 @@ isolated function testIssueJwtWithEncryptedPrivateKey() {
         username: "John",
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
-        expTimeInSeconds: 600,
+        expTime: 600,
         signatureConfig: {
             config: {
                 keyFile: ENCRYPTED_PRIVATE_KEY_PATH,
@@ -267,7 +266,7 @@ isolated function testIssueJwtWithEncryptedPrivateKey() {
     ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
-        clockSkewInSeconds: 60,
+        clockSkew: 60,
         signatureConfig: {
             certFile: PUBLIC_CERT_PATH
         }
@@ -283,7 +282,7 @@ isolated function assertDecodedJwt(string jwt, string header, string payload) {
     string[] parts = regex:split(jwt, "\\.");
 
     // check header
-    byte[]|encoding:Error headerDecodedResult = encoding:decodeBase64Url(parts[0]);
+    byte[]|Error headerDecodedResult = decodeBase64Url(parts[0]);
     if (headerDecodedResult is byte[]) {
         string|error resultHeader = 'string:fromBytes(headerDecodedResult);
         if (resultHeader is string) {
@@ -296,7 +295,7 @@ isolated function assertDecodedJwt(string jwt, string header, string payload) {
     }
 
     // check payload
-    byte[]|encoding:Error payloadDecodedResult = encoding:decodeBase64Url(parts[1]);
+    byte[]|Error payloadDecodedResult = decodeBase64Url(parts[1]);
     if (payloadDecodedResult is byte[]) {
         string|error resultPayload = 'string:fromBytes(payloadDecodedResult);
         if (resultPayload is string) {
@@ -314,7 +313,7 @@ isolated function jwtDataProvider() returns string {
         username: "John",
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
-        expTimeInSeconds: 600,
+        expTime: 600,
         signatureConfig: {
             config: {
                 keyStore: {
@@ -336,7 +335,7 @@ isolated function testValidateJwt(string jwt) {
     ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
-        clockSkewInSeconds: 60,
+        clockSkew: 60,
         signatureConfig: {
             trustStoreConfig: {
                 trustStore: {
@@ -361,7 +360,7 @@ isolated function testValidateJwtWithSingleAud(string jwt) {
     ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: "ballerina",
-        clockSkewInSeconds: 60,
+        clockSkew: 60,
         signatureConfig: {
             trustStoreConfig: {
                 trustStore: {
@@ -386,7 +385,7 @@ isolated function testValidateJwtWithSingleAudAndAudAsArray(string jwt) {
     ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: "ballerina",
-        clockSkewInSeconds: 60,
+        clockSkew: 60,
         signatureConfig: {
             trustStoreConfig: {
                 trustStore: {
@@ -410,7 +409,7 @@ isolated function testValidateJwtWithSingleAudAndAudAsArray(string jwt) {
 isolated function testValidateJwtWithNoIssOrSub(string jwt) {
     ValidatorConfig validatorConfig = {
         audience: "ballerinaSamples",
-        clockSkewInSeconds: 60,
+        clockSkew: 60,
         signatureConfig: {
             trustStoreConfig: {
                 trustStore: {
@@ -503,7 +502,7 @@ isolated function testValidateJwtSignatureWithInvalidJwk() {
 }
 
 @test:Config {}
-isolated function testValidateJwtSignatureWithJwkWithClientConfig() {
+isolated function testValidateJwtSignatureWithJwkWithValidTrustStore() {
     string jwt = "eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QiLCAia2lkIjoiTlRBeFptTXhORE15WkRnM01UVTFaR00wTXpFek9ESmhaV0k0Tk" +
                  "RObFpEVTFPR0ZrTmpGaU1RIn0.eyJzdWIiOiJhZG1pbiIsICJpc3MiOiJiYWxsZXJpbmEiLCAiZXhwIjoxOTA3NjY1NzQ2LCAi" +
                  "anRpIjoiMTAwMDc4MjM0YmEyMyIsICJhdWQiOlsidkV3emJjYXNKVlFtMWpWWUhVSENqaHhaNHRZYSJdfQ.E8E7VO18V6MG7Ns" +
@@ -520,7 +519,7 @@ isolated function testValidateJwtSignatureWithJwkWithClientConfig() {
                 clientConfig: {
                     httpVersion: HTTP_2,
                     secureSocket: {
-                        trustStore: {
+                        cert: {
                             path: TRUSTSTORE_PATH,
                             password: "ballerina"
                         }
@@ -536,6 +535,38 @@ isolated function testValidateJwtSignatureWithJwkWithClientConfig() {
     }
 }
 
+@test:Config {}
+isolated function testValidateJwtSignatureWithJwkWithClientInvalidCertificate() {
+    string jwt = "eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QiLCAia2lkIjoiTlRBeFptTXhORE15WkRnM01UVTFaR00wTXpFek9ESmhaV0k0Tk" +
+                 "RObFpEVTFPR0ZrTmpGaU1RIn0.eyJzdWIiOiJhZG1pbiIsICJpc3MiOiJiYWxsZXJpbmEiLCAiZXhwIjoxOTA3NjY1NzQ2LCAi" +
+                 "anRpIjoiMTAwMDc4MjM0YmEyMyIsICJhdWQiOlsidkV3emJjYXNKVlFtMWpWWUhVSENqaHhaNHRZYSJdfQ.E8E7VO18V6MG7Ns" +
+                 "87Y314Dqg8RYOMe0WWYlSYFhSv0mHkJQ8bSSyBJzFG0Se_7UsTWFBwzIALw6wUiP7UGraosilf8k6HGJWbTjWtLXfniJXx5Ncz" +
+                 "ikzciG8ADddksm-0AMi5uPsgAQdg7FNaH9f4vAL6SPMEYp2gN6GDnWTH7M1vnknwjOwTbQpGrPu_w2V1tbsBwSzof3Fk_cYrnt" +
+                 "u8D_pfsBu3eqFiJZD7AXUq8EYbgIxpSwvdi6_Rvw2_TAi46drouxXK2Jglz_HvheUVCERT15Y8JNJONJPJ52MsN6t297hyFV9A" +
+                 "myNPzwHxxmi753TclbapDqDnVPI1tpc-Q";
+    ValidatorConfig validatorConfig = {
+        issuer: "ballerina",
+        audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
+        signatureConfig: {
+            jwksConfig: {
+                url: "https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks",
+                clientConfig: {
+                    httpVersion: HTTP_2,
+                    secureSocket: {
+                        cert: PUBLIC_CERT_PATH
+                    }
+                }
+            }
+        }
+    };
+    Payload|Error result = validate(jwt, validatorConfig);
+    if (result is Error) {
+        test:assertEquals(buildCompleteErrorMessage(result), "Failed to call JWKs endpoint. Failed to send the request to the endpoint. PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target");
+    } else {
+        test:assertFail(msg = "Error in validating JWT signature with invalid certificate.");
+    }
+}
+
 @test:Config {
     dataProvider: jwtDataProvider
 }
@@ -543,7 +574,7 @@ isolated function testValidateJwtSignatureWithPublicCert(string jwt) {
     ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
-        clockSkewInSeconds: 60,
+        clockSkew: 60,
         signatureConfig: {
             certFile: PUBLIC_CERT_PATH
         }
@@ -562,7 +593,7 @@ isolated function testValidateJwtSignatureWithInvalidPublicCert(string jwt) {
     ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
-        clockSkewInSeconds: 60,
+        clockSkew: 60,
         signatureConfig: {
             certFile: INVALID_PUBLIC_CERT_PATH
         }
