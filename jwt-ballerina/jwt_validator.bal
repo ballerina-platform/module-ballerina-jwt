@@ -406,7 +406,7 @@ isolated function getJwk(string kid, string url, ClientConfiguration clientConfi
             if (jwk is json) {
                 return jwk;
             } else {
-                log:print("Failed to retrieve JWK for the kid '" + kid + "' from the cache.");
+                log:printDebug("Failed to retrieve JWK for the kid '" + kid + "' from the cache.");
             }
         }
     }
