@@ -147,10 +147,11 @@ isolated function prepareHeader(IssuerConfig issuerConfig) returns Header {
 }
 
 isolated function preparePayload(IssuerConfig issuerConfig) returns Payload {
+    [int, decimal] currentTime = time:utcNow();
     Payload payload = {
-        exp: time:currentTime().time / 1000 + <int> issuerConfig.expTime,
-        iat: time:currentTime().time / 1000,
-        nbf: time:currentTime().time / 1000,
+        exp: currentTime[0] + <int> issuerConfig.expTime,
+        iat: currentTime[0],
+        nbf: currentTime[0],
         jti: uuid:createType4AsString()
     };
 
