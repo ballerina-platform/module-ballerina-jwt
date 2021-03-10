@@ -315,7 +315,7 @@ isolated function validateSignature(string jwt, Header header, Payload payload, 
             if (publicKey is crypto:Error) {
                return prepareError("Failed to decode public key.", publicKey);
             }
-            if (!check validateCertificate(checkpanic publicKey)) {
+            if (!validateCertificate(checkpanic publicKey)) {
                return prepareError("Public key certificate validity period has passed.");
             }
             boolean signatureValidation = check assertSignature(alg, assertion, signature, checkpanic publicKey);
@@ -329,7 +329,7 @@ isolated function validateSignature(string jwt, Header header, Payload payload, 
             if (publicKey is crypto:Error) {
                return prepareError("Failed to decode public key.", publicKey);
             }
-            if (!check validateCertificate(checkpanic publicKey)) {
+            if (!validateCertificate(checkpanic publicKey)) {
                return prepareError("Public key certificate validity period has passed.");
             }
             boolean signatureValidation = check assertSignature(alg, assertion, signature, checkpanic publicKey);
@@ -369,20 +369,13 @@ isolated function validateMandatoryHeaderFields(Header header) returns boolean {
     return alg is SigningAlgorithm;
 }
 
-isolated function validateCertificate(crypto:PublicKey publicKey) returns boolean|Error {
-    time:Time|time:Error result = time:toTimeZone(time:currentTime(), "GMT");
-    if (result is time:Error) {
-        return prepareError(result.message(), result);
-    }
-
-    time:Time currTimeInGmt = checkpanic result;
-    int currTimeInGmtMillis = currTimeInGmt.time;
-
+isolated function validateCertificate(crypto:PublicKey publicKey) returns boolean {
+    [int, decimal] currentTime = time:utcNow();
     crypto:Certificate? certificate = publicKey?.certificate;
     if (certificate is crypto:Certificate) {
-        int notBefore = certificate.notBefore.time;
-        int notAfter = certificate.notAfter.time;
-        if (currTimeInGmtMillis >= notBefore && currTimeInGmtMillis <= notAfter) {
+        [int, decimal] notBefore = certificate.notBefore;
+        [int, decimal] notAfter = certificate.notAfter;
+        if (currentTime[0] >= notBefore[0] && currentTime[0] <= notAfter[0]) {
             return true;
         }
     }
@@ -517,16 +510,17 @@ isolated function validateAudience(Payload payload, string|string[] audienceConf
 }
 
 isolated function validateExpirationTime(int expTime, int clockSkew) returns boolean {
-    //Convert current time which is in milliseconds to seconds.
+    [int, decimal] currentTime = time:utcNow();
     if (clockSkew > 0) {
-        return expTime + clockSkew > time:currentTime().time / 1000;
+        return expTime + clockSkew > currentTime[0];
     } else {
-        return expTime > time:currentTime().time / 1000;
+        return expTime > currentTime[0];
     }
 }
 
 isolated function validateNotBeforeTime(int nbf) returns boolean {
-    return time:currentTime().time > nbf;
+    [int, decimal] currentTime = time:utcNow();
+    return currentTime[0] > nbf;
 }
 
 isolated function convertToStringArray(json[] jsonData) returns string[]|Error {

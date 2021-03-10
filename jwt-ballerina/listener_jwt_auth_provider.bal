@@ -114,7 +114,8 @@ isolated function validateFromCache(cache:Cache jwtCache, string jwt) returns Pa
     Payload payload = <Payload> checkpanic jwtCache.get(jwt);
     int? expTime = payload?.exp;
     // convert to current time and check the expiry time
-    if (expTime is () || expTime > (time:currentTime().time / 1000)) {
+    [int, decimal] currentTime = time:utcNow();
+    if (expTime is () || expTime > currentTime[0]) {
         return payload;
     } else {
         cache:Error? result = jwtCache.invalidate(jwt);
