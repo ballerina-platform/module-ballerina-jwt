@@ -357,7 +357,7 @@ isolated function validateJwtRecords(Header header, Payload payload, ValidatorCo
     }
     int? nbf = payload?.nbf;
     if (nbf is int) {
-        if (!validateNotBeforeTime(nbf)) {
+        if (!validateNotBeforeTime(nbf, <int> validatorConfig.clockSkew)) {
             return prepareError("JWT is used before not-before-time (nbf).");
         }
     }
@@ -518,9 +518,13 @@ isolated function validateExpirationTime(int expTime, int clockSkew) returns boo
     }
 }
 
-isolated function validateNotBeforeTime(int nbf) returns boolean {
+isolated function validateNotBeforeTime(int nbf, int clockSkew) returns boolean {
     [int, decimal] currentTime = time:utcNow();
-    return currentTime[0] > nbf;
+    if (clockSkew > 0) {
+        return nbf - clockSkew < currentTime[0];
+    } else {
+        return nbf < currentTime[0];
+    }
 }
 
 isolated function convertToStringArray(json[] jsonData) returns string[]|Error {
