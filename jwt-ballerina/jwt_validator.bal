@@ -512,18 +512,18 @@ isolated function validateAudience(Payload payload, string|string[] audienceConf
 isolated function validateExpirationTime(int expTime, int clockSkew) returns boolean {
     [int, decimal] currentTime = time:utcNow();
     if (clockSkew > 0) {
-        return expTime + clockSkew > currentTime[0];
+        return expTime + clockSkew >= currentTime[0];
     } else {
-        return expTime > currentTime[0];
+        return expTime >= currentTime[0];
     }
 }
 
 isolated function validateNotBeforeTime(int nbf, int clockSkew) returns boolean {
     [int, decimal] currentTime = time:utcNow();
     if (clockSkew > 0) {
-        return nbf - clockSkew < currentTime[0];
+        return nbf - clockSkew <= currentTime[0];
     } else {
-        return nbf < currentTime[0];
+        return nbf <= currentTime[0];
     }
 }
 
