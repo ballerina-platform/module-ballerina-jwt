@@ -30,7 +30,6 @@ ext.stdlibCryptoVersion = project.stdlibCryptoVersion
 ext.stdlibLogVersion = project.stdlibLogVersion
 ext.stdlibRegexVersion = project.stdlibRegexVersion
 ext.stdlibTimeVersion = project.stdlibTimeVersion
-ext.stdlibUuidVersion = project.stdlibUuidVersion
 // Transitive dependencies
 ext.stdlibTaskVersion = project.stdlibTaskVersion
 
@@ -94,13 +93,6 @@ allprojects {
                 password System.getenv("packagePAT")
             }
         }
-        maven {
-            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-uuid'
-            credentials {
-                username System.getenv("packageUser")
-                password System.getenv("packagePAT")
-            }
-        }
         // Transitive dependencies
         maven {
             url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-task'
@@ -125,7 +117,6 @@ subprojects {
         ballerinaStdLibs "org.ballerinalang:log-ballerina:${stdlibLogVersion}"
         ballerinaStdLibs "org.ballerinalang:regex-ballerina:${stdlibRegexVersion}"
         ballerinaStdLibs "org.ballerinalang:time-ballerina:${stdlibTimeVersion}"
-        ballerinaStdLibs "org.ballerinalang:uuid-ballerina:${stdlibUuidVersion}"
         // Transitive dependencies
         ballerinaStdLibs "org.ballerinalang:task-ballerina:${stdlibTaskVersion}"
     }

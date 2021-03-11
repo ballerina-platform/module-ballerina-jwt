@@ -22,8 +22,3 @@ version = "@stdlib.regex.version@"
 org = "ballerina"
 name = "time"
 version = "@stdlib.time.version@"
-
-[[dependency]]
-org = "ballerina"
-name = "uuid"
-version = "@stdlib.uuid.version@"
