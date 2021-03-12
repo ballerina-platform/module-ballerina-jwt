@@ -19,11 +19,11 @@ import ballerina/time;
 
 # Represents JWT issuer configurations.
 #
-# + username - JWT username, which is mapped to `sub`
-# + issuer - JWT issuer, which is mapped to `iss`
-# + audience - JWT audience, which is mapped to `aud`
-# + jwtId - JWT ID, which is mapped to `jti`
-# + keyId - JWT key ID, which is mapped `kid`
+# + username - JWT username, which is mapped to the `sub`
+# + issuer - JWT issuer, which is mapped to the `iss`
+# + audience - JWT audience, which is mapped to the `aud`
+# + jwtId - JWT ID, which is mapped to the `jti`
+# + keyId - JWT key ID, which is mapped the `kid`
 # + customClaims - Map of custom claims
 # + expTime - Expiry time in seconds
 # + signatureConfig - JWT signature configurations
@@ -41,7 +41,7 @@ public type IssuerConfig record {|
 # Represents JWT signature configurations.
 #
 # + algorithm - Cryptographic signing algorithm for JWS
-# + config - Key store configurations or private key configurations
+# + config - KeyStore configurations or private key configurations
 public type IssuerSignatureConfig record {|
     SigningAlgorithm algorithm = RS256;
     record {|

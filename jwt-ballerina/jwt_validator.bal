@@ -25,11 +25,11 @@ import ballerina/time;
 
 # Represents JWT validator configurations.
 #
-# + issuer - Expected issuer, which is mapped to `iss`
-# + audience - Expected audience, which is mapped to `aud`
+# + issuer - Expected issuer, which is mapped to the `iss`
+# + audience - Expected audience, which is mapped to the `aud`
 # + clockSkew - Clock skew (in seconds) that can be used to avoid token validation failures due to clock synchronization problems
 # + signatureConfig - JWT signature configurations
-# + cacheConfig - Configurations related to the cache used to store parsed JWT information
+# + cacheConfig - Configurations related to the cache, which are used to store parsed JWT information
 public type ValidatorConfig record {
     string issuer?;
     string|string[] audience?;
@@ -40,9 +40,9 @@ public type ValidatorConfig record {
 
 # Represents JWT signature configurations.
 #
-# + jwksConfig - JWKs configurations
+# + jwksConfig - JWKS configurations
 # + certFile - Public certificate file
-# + trustStoreConfig - JWT trust store configurations
+# + trustStoreConfig - JWT TrustStore configurations
 public type ValidatorSignatureConfig record {|
     record {|
         string url;
@@ -56,10 +56,10 @@ public type ValidatorSignatureConfig record {|
     |} trustStoreConfig?;
 |};
 
-# Represents the configurations of the client used to call the JWKs endpoint.
+# Represents the configurations of the client used to call the JWKS endpoint.
 #
 # + httpVersion - The HTTP version of the client
-# + secureSocket - SSL/TLS related configurations
+# + secureSocket - SSL/TLS-related configurations
 public type ClientConfiguration record {|
     HttpVersion httpVersion = HTTP_1_1;
     SecureSocket secureSocket?;
@@ -74,8 +74,8 @@ public enum HttpVersion {
 # Represents the SSL/TLS configurations.
 #
 # + disable - Disable SSL validation
-# + cert - Configurations associated with `crypto:TrustStore` or single certificate file that the client trusts
-# + key - Configurations associated with `crypto:KeyStore` or combination of certificate and private key of the client
+# + cert - Configurations associated with the `crypto:TrustStore` or single certificate file that the client trusts
+# + key - Configurations associated with the `crypto:KeyStore` or combination of certificate and private key of the client
 public type SecureSocket record {|
     boolean disable = false;
     crypto:TrustStore|string cert;
@@ -86,7 +86,7 @@ public type SecureSocket record {|
 #
 # + certFile - A file containing the certificate
 # + keyFile - A file containing the private key
-# + keyPassword - Password of the private key if it is encrypted
+# + keyPassword - Password of the private key (if encrypted)
 public type CertKey record {|
    string certFile;
    string keyFile;
@@ -305,7 +305,7 @@ isolated function validateSignature(string jwt, Header header, Payload payload, 
                 crypto:PublicKey publicKey = check getPublicKeyByJwks(jwk);
                 boolean signatureValidation = check assertSignature(alg, assertion, signature, publicKey);
                 if (!signatureValidation) {
-                   return prepareError("JWT signature validation with JWKs configurations has failed.");
+                   return prepareError("JWT signature validation with JWKS configurations has failed.");
                 }
             } else {
                 return prepareError("Key ID (kid) is not provided in JOSE header.");
@@ -334,7 +334,7 @@ isolated function validateSignature(string jwt, Header header, Payload payload, 
             }
             boolean signatureValidation = check assertSignature(alg, assertion, signature, checkpanic publicKey);
             if (!signatureValidation) {
-               return prepareError("JWT signature validation with trust store configurations has failed.");
+               return prepareError("JWT signature validation with TrustStore configurations has failed.");
             }
         }
     }
@@ -405,7 +405,7 @@ isolated function getJwk(string kid, string url, ClientConfiguration clientConfi
     }
     string|Error stringResponse = getJwksResponse(url, clientConfig);
     if (stringResponse is Error) {
-        return prepareError("Failed to call JWKs endpoint.", stringResponse);
+        return prepareError("Failed to call JWKS endpoint.", stringResponse);
     }
     json[] jwksArray = check getJwksArray(checkpanic stringResponse);
     foreach json jwk in jwksArray {

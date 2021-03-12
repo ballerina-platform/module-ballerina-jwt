@@ -99,7 +99,7 @@ public class ListenerJwtAuthProvider {
 isolated function preloadJwksToCache(cache:Cache jwksCache, string url, ClientConfiguration clientConfig) returns Error? {
     string|Error stringResponse = getJwksResponse(url, clientConfig);
     if (stringResponse is Error) {
-        return prepareError("Failed to call JWKs endpoint to preload JWKs to the cache.", stringResponse);
+        return prepareError("Failed to call JWKS endpoint to preload JWKS to the cache.", stringResponse);
     }
     json[] jwksArray = check getJwksArray(checkpanic stringResponse);
     foreach json jwk in jwksArray {
