@@ -49,9 +49,10 @@ public class ClientSelfSignedJwtAuthProvider {
     # + return - Generated token or else an `auth:Error` if token can't be generated
     public isolated function generateToken() returns string|Error {
         string|Error result = issue(self.issuerConfig);
-        if (result is Error) {
+        if (result is string) {
+            return result;
+        } else {
             return prepareError("Failed to generate a self-signed JWT.", result);
         }
-        return checkpanic result;
     }
 }
