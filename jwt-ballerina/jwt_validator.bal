@@ -142,15 +142,16 @@ isolated function getHeader(string encodedHeader) returns Header|Error {
     byte[]|Error decodedHeader = decodeBase64Url(encodedHeader);
     if (decodedHeader is byte[]) {
         string|error result = 'string:fromBytes(decodedHeader);
-        if (result is error) {
-            return prepareError(result.message(), result);
+        if (result is string) {
+            json|error jsonHeader = result.fromJsonString();
+            if (jsonHeader is json) {
+                return parseHeader(<map<json>> jsonHeader);
+            } else {
+                return prepareError("String to JSON conversion failed for JWT header.", jsonHeader);
+            }
+        } else {
+            return prepareError("Failed to convert byte[] of decoded header to string.", result);
         }
-        string header = checkpanic result;
-        json|error jsonHeader = header.fromJsonString();
-        if (jsonHeader is error) {
-            return prepareError("String to JSON conversion failed for JWT header.", jsonHeader);
-        }
-        return parseHeader(<map<json>> checkpanic jsonHeader);
     } else {
         return prepareError("Base64 URL decode failed for JWT header.", decodedHeader);
     }
@@ -160,15 +161,16 @@ isolated function getPayload(string encodedPayload) returns Payload|Error {
     byte[]|Error decodedPayload = decodeBase64Url(encodedPayload);
     if (decodedPayload is byte[]) {
         string|error result = 'string:fromBytes(decodedPayload);
-        if (result is error) {
-            return prepareError(result.message(), result);
+        if (result is string) {
+            json|error jsonPayload = result.fromJsonString();
+            if (jsonPayload is json) {
+                return parsePayload(<map<json>> jsonPayload);
+            } else {
+                return prepareError("String to JSON conversion failed for JWT paylaod.", jsonPayload);
+            }
+        } else {
+            return prepareError("Failed to convert byte[] of decoded payload to string.", result);
         }
-        string payload = checkpanic result;
-        json|error jsonPayload = payload.fromJsonString();
-        if (jsonPayload is error) {
-            return prepareError("String to JSON conversion failed for JWT paylaod.", jsonPayload);
-        }
-        return parsePayload(<map<json>> checkpanic jsonPayload);
     } else {
         return prepareError("Base64 URL decode failed for JWT payload.", decodedPayload);
     }
@@ -176,13 +178,14 @@ isolated function getPayload(string encodedPayload) returns Payload|Error {
 
 isolated function getJwtSignature(string encodedSignature) returns byte[]|Error {
     byte[]|Error signature = decodeBase64Url(encodedSignature);
-    if (signature is Error) {
+    if (signature is byte[]) {
+        return signature;
+    } else {
         return prepareError("Base64 URL decode failed for JWT signature.", signature);
     }
-    return checkpanic signature;
 }
 
-isolated function parseHeader(map<json> headerMap) returns Header {
+isolated function parseHeader(map<json> headerMap) returns Header|Error {
     Header header = {};
     string[] keys = headerMap.keys();
     foreach string key in keys {
@@ -194,6 +197,8 @@ isolated function parseHeader(map<json> headerMap) returns Header {
                     header.alg = RS384;
                 } else if (headerMap[key].toJsonString() == "RS512") {
                     header.alg = RS512;
+                } else {
+                    return prepareError("Ballerina does not support the '" + headerMap[key].toJsonString() + "' signinig algorithm.");
                 }
             }
             TYP => {
@@ -312,29 +317,31 @@ isolated function validateSignature(string jwt, Header header, Payload payload, 
             }
         } else if (certFile is string) {
             crypto:PublicKey|crypto:Error publicKey = crypto:decodeRsaPublicKeyFromCertFile(certFile);
-            if (publicKey is crypto:Error) {
-               return prepareError("Failed to decode public key.", publicKey);
-            }
-            if (!validateCertificate(checkpanic publicKey)) {
-               return prepareError("Public key certificate validity period has passed.");
-            }
-            boolean signatureValidation = check assertSignature(alg, assertion, signature, checkpanic publicKey);
-            if (!signatureValidation) {
-               return prepareError("JWT signature validation with public key configurations has failed.");
+            if (publicKey is crypto:PublicKey) {
+                if (!validateCertificate(publicKey)) {
+                   return prepareError("Public key certificate validity period has passed.");
+                }
+                boolean signatureValidation = check assertSignature(alg, assertion, signature, publicKey);
+                if (!signatureValidation) {
+                   return prepareError("JWT signature validation with public key configurations has failed.");
+                }
+            } else {
+                return prepareError("Failed to decode public key.", publicKey);
             }
         } else if !(trustStoreConfig is ()) {
             crypto:TrustStore trustStore = <crypto:TrustStore> trustStoreConfig?.trustStore;
             string certAlias = <string> trustStoreConfig?.certAlias;
             crypto:PublicKey|crypto:Error publicKey = crypto:decodeRsaPublicKeyFromTrustStore(trustStore, certAlias);
-            if (publicKey is crypto:Error) {
-               return prepareError("Failed to decode public key.", publicKey);
-            }
-            if (!validateCertificate(checkpanic publicKey)) {
-               return prepareError("Public key certificate validity period has passed.");
-            }
-            boolean signatureValidation = check assertSignature(alg, assertion, signature, checkpanic publicKey);
-            if (!signatureValidation) {
-               return prepareError("JWT signature validation with TrustStore configurations has failed.");
+            if (publicKey is crypto:PublicKey) {
+                if (!validateCertificate(publicKey)) {
+                   return prepareError("Public key certificate validity period has passed.");
+                }
+                boolean signatureValidation = check assertSignature(alg, assertion, signature, publicKey);
+                if (!signatureValidation) {
+                   return prepareError("JWT signature validation with TrustStore configurations has failed.");
+                }
+            } else {
+                return prepareError("Failed to decode public key.", publicKey);
             }
         }
     }
@@ -383,13 +390,18 @@ isolated function validateCertificate(crypto:PublicKey publicKey) returns boolea
 }
 
 isolated function getPublicKeyByJwks(json jwk) returns crypto:PublicKey|Error {
-    string modulus = <string> checkpanic jwk.n;
-    string exponent = <string> checkpanic jwk.e;
-    crypto:PublicKey|crypto:Error publicKey = crypto:buildRsaPublicKey(modulus, exponent);
-    if (publicKey is crypto:Error) {
-       return prepareError("Public key generation failed.", publicKey);
+    json|error modulus = jwk.n;
+    json|error exponent = jwk.e;
+    if (modulus is json && exponent is json) {
+        crypto:PublicKey|crypto:Error publicKey = crypto:buildRsaPublicKey(modulus.toJsonString(), exponent.toJsonString());
+        if (publicKey is crypto:PublicKey) {
+            return publicKey;
+        } else {
+            return prepareError("Public key generation failed.", publicKey);
+        }
+    } else {
+        return prepareError("Failed to access modulus and exponent from the JWK '" + jwk.toJsonString() + "'.");
     }
-    return checkpanic publicKey;
 }
 
 isolated function getJwk(string kid, string url, ClientConfiguration clientConfig, cache:Cache? jwksCache) returns json|Error {
@@ -404,26 +416,31 @@ isolated function getJwk(string kid, string url, ClientConfiguration clientConfi
         }
     }
     string|Error stringResponse = getJwksResponse(url, clientConfig);
-    if (stringResponse is Error) {
-        return prepareError("Failed to call JWKS endpoint.", stringResponse);
-    }
-    json[] jwksArray = check getJwksArray(checkpanic stringResponse);
-    foreach json jwk in jwksArray {
-        json|error responseKid = jwk.kid;
-        if (responseKid is json && responseKid == kid) {
-            return jwk;
+    if (stringResponse is string) {
+        json[] jwksArray = check getJwksArray(stringResponse);
+        foreach json jwk in jwksArray {
+            json|error responseKid = jwk.kid;
+            if (responseKid is json && responseKid == kid) {
+                return jwk;
+            }
         }
+    } else {
+        return prepareError("Failed to call JWKS endpoint.", stringResponse);
     }
 }
 
 isolated function getJwksArray(string stringResponse) returns json[]|Error {
-    json|error jsonResponse = (<string>stringResponse).fromJsonString();
-    if (jsonResponse is error) {
-        return prepareError(jsonResponse.message(), jsonResponse);
+    json|error jsonResponse = stringResponse.fromJsonString();
+    if (jsonResponse is json) {
+        json|error jwks = jsonResponse.keys;
+        if (jwks is json) {
+            return <json[]> jwks;
+        } else {
+            return prepareError("Failed to access 'keys' property from the JSON '" + jsonResponse.toJsonString() + "'.", jwks);
+        }
+    } else {
+        return prepareError("Failed to convert '" + stringResponse + "' to JSON.", jsonResponse);
     }
-    json payload = checkpanic jsonResponse;
-    json[] jwks = <json[]> checkpanic (payload.keys);
-    return jwks;
 }
 
 isolated function getJwksResponse(string url, ClientConfiguration clientConfig) returns string|Error = @java:Method {
