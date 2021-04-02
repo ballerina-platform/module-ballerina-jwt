@@ -86,42 +86,54 @@ public class ListenerJwtAuthProvider {
         }
 
         Payload|Error validationResult = validateJwt(credential, self.validatorConfig, self.jwksCache);
-        if (validationResult is Error) {
+        if (validationResult is Payload) {
+            if (jwtCache is cache:Cache) {
+                addToCache(jwtCache, credential, validationResult);
+            }
+            return validationResult;
+        } else {
             return prepareError("JWT validation failed.", validationResult);
         }
-        if (jwtCache is cache:Cache) {
-            addToCache(jwtCache, credential, checkpanic validationResult);
-        }
-        return checkpanic validationResult;
     }
 }
 
 isolated function preloadJwksToCache(cache:Cache jwksCache, string url, ClientConfiguration clientConfig) returns Error? {
     string|Error stringResponse = getJwksResponse(url, clientConfig);
-    if (stringResponse is Error) {
-        return prepareError("Failed to call JWKS endpoint to preload JWKS to the cache.", stringResponse);
-    }
-    json[] jwksArray = check getJwksArray(checkpanic stringResponse);
-    foreach json jwk in jwksArray {
-        cache:Error? cachedResult = jwksCache.put(<string> checkpanic jwk.kid, jwk);
-        if (cachedResult is cache:Error) {
-            return prepareError("Failed to put JWK for the kid '" + <string> checkpanic jwk.kid + "' to the cache.", cachedResult);
+    if (stringResponse is string) {
+        json[] jwksArray = check getJwksArray(stringResponse);
+        foreach json jwk in jwksArray {
+            json|error kid = jwk.kid;
+            if (kid is json) {
+                cache:Error? cachedResult = jwksCache.put(kid.toJsonString(), jwk);
+                if (cachedResult is cache:Error) {
+                    return prepareError("Failed to put JWK for the kid '" + kid.toJsonString() + "' to the cache.", cachedResult);
+                }
+            } else {
+                return prepareError("Failed to access 'kid' property from the JSON '" + jwk.toJsonString() + "'.", kid);
+            }
         }
+    } else {
+        return prepareError("Failed to call JWKS endpoint to preload JWKS to the cache.", stringResponse);
     }
 }
 
 isolated function validateFromCache(cache:Cache jwtCache, string jwt) returns Payload? {
-    Payload payload = <Payload> checkpanic jwtCache.get(jwt);
-    int? expTime = payload?.exp;
-    // convert to current time and check the expiry time
-    [int, decimal] currentTime = time:utcNow();
-    if (expTime is () || expTime > currentTime[0]) {
-        return payload;
-    } else {
-        cache:Error? result = jwtCache.invalidate(jwt);
-        if (result is cache:Error) {
-            log:printError("Failed to invalidate JWT from the cache. JWT payload: '" + payload.toString() + "'");
+    any|cache:Error cachedResult = jwtCache.get(jwt);
+    if (cachedResult is any) {
+        Payload payload = <Payload> cachedResult;
+        int? expTime = payload?.exp;
+        // convert to current time and check the expiry time
+        [int, decimal] currentTime = time:utcNow();
+        if (expTime is () || expTime > currentTime[0]) {
+            return payload;
+        } else {
+            cache:Error? result = jwtCache.invalidate(jwt);
+            if (result is cache:Error) {
+                log:printError("Failed to invalidate JWT from the cache. JWT payload: '" + payload.toString() + "'");
+            }
         }
+    } else {
+        log:printError("Failed to retrieve JWT entry from the cache.");
     }
 }
 

@@ -215,26 +215,26 @@ isolated function testIssueJwtWithPrivateKey() {
 
     string|Error result = issue(issuerConfig);
     if (result is string) {
-        string header = "{\"alg\":\"RS256\", \"typ\":\"JWT\"}";
-        string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]";
-        assertDecodedJwt(result, header, payload);
+        string expectedHeader = "{\"alg\":\"RS256\", \"typ\":\"JWT\"}";
+        string expectedPayload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]";
+        assertDecodedJwt(result, expectedHeader, expectedPayload);
+
+        ValidatorConfig validatorConfig = {
+            issuer: "wso2",
+            audience: ["ballerina", "ballerinaSamples"],
+            clockSkew: 60,
+            signatureConfig: {
+                certFile: PUBLIC_CERT_PATH
+            }
+        };
+        Payload|Error payload = validate(result, validatorConfig);
+        if (payload is Error) {
+            string? errMsg = payload.message();
+            test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT");
+        }
     } else {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT");
-    }
-
-    ValidatorConfig validatorConfig = {
-        issuer: "wso2",
-        audience: ["ballerina", "ballerinaSamples"],
-        clockSkew: 60,
-        signatureConfig: {
-            certFile: PUBLIC_CERT_PATH
-        }
-    };
-    Payload|Error payload = validate(checkpanic result, validatorConfig);
-    if (payload is Error) {
-        string? errMsg = payload.message();
-        test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT");
     }
 }
 
@@ -255,26 +255,26 @@ isolated function testIssueJwtWithEncryptedPrivateKey() {
 
     string|Error result = issue(issuerConfig);
     if (result is string) {
-        string header = "{\"alg\":\"RS256\", \"typ\":\"JWT\"}";
-        string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]";
-        assertDecodedJwt(result, header, payload);
+        string expectedHeader = "{\"alg\":\"RS256\", \"typ\":\"JWT\"}";
+        string expectedPayload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]";
+        assertDecodedJwt(result, expectedHeader, expectedPayload);
+
+        ValidatorConfig validatorConfig = {
+            issuer: "wso2",
+            audience: ["ballerina", "ballerinaSamples"],
+            clockSkew: 60,
+            signatureConfig: {
+                certFile: PUBLIC_CERT_PATH
+            }
+        };
+        Payload|Error payload = validate(result, validatorConfig);
+        if (payload is Error) {
+            string? errMsg = payload.message();
+            test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT");
+        }
     } else {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT");
-    }
-
-    ValidatorConfig validatorConfig = {
-        issuer: "wso2",
-        audience: ["ballerina", "ballerinaSamples"],
-        clockSkew: 60,
-        signatureConfig: {
-            certFile: PUBLIC_CERT_PATH
-        }
-    };
-    Payload|Error payload = validate(checkpanic result, validatorConfig);
-    if (payload is Error) {
-        string? errMsg = payload.message();
-        test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT");
     }
 }
 
@@ -325,7 +325,12 @@ isolated function jwtDataProvider() returns string {
             }
         }
     };
-    return checkpanic issue(issuerConfig);
+    string|Error token = issue(issuerConfig);
+    if (token is string) {
+        return token;
+    } else {
+        panic token;
+    }
 }
 
 @test:Config {
