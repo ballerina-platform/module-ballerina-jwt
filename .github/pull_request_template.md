@@ -1,7 +1,5 @@
 ## Purpose
 
-Fixes:
-
 ## Examples
 
 ## Checklist
