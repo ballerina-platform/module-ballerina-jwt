@@ -103,9 +103,9 @@ public isolated function issue(IssuerConfig issuerConfig) returns string|Error {
     }
 }
 
-isolated function signJwtAssertion(string jwtAssertion, SigningAlgorithm algorithm, crypto:PrivateKey privateKey)
+isolated function signJwtAssertion(string jwtAssertion, SigningAlgorithm alg, crypto:PrivateKey privateKey)
                                    returns string|Error {
-    match (algorithm) {
+    match (alg) {
         RS256 => {
             byte[]|crypto:Error signature = crypto:signRsaSha256(jwtAssertion.toBytes(), privateKey);
             if (signature is byte[]) {
@@ -131,7 +131,7 @@ isolated function signJwtAssertion(string jwtAssertion, SigningAlgorithm algorit
             }
         }
         _ => {
-            return prepareError("Unsupported JWS algorithm.");
+            return prepareError("Unsupported signing algorithm '" + alg.toString() + "'.");
         }
     }
 }
