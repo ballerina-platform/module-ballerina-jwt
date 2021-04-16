@@ -566,7 +566,7 @@ isolated function testValidateJwtSignatureWithJwkWithClientInvalidCertificate() 
     };
     Payload|Error result = validate(jwt, validatorConfig);
     if (result is Error) {
-        test:assertEquals(buildCompleteErrorMessage(result), "Failed to call JWKS endpoint. Failed to send the request to the endpoint. PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target");
+        test:assertEquals(buildCompleteErrorMessage(result), "Failed to call JWKS endpoint 'https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks'. Failed to send the request to the endpoint. PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target");
     } else {
         test:assertFail(msg = "Error in validating JWT signature with invalid certificate.");
     }

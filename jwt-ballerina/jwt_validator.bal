@@ -198,7 +198,7 @@ isolated function parseHeader(map<json> headerMap) returns Header|Error {
                 } else if (headerMap[key].toJsonString() == "RS512") {
                     header.alg = RS512;
                 } else {
-                    return prepareError("Ballerina does not support the '" + headerMap[key].toJsonString() + "' signinig algorithm.");
+                    return prepareError("Unsupported signing algorithm '" + headerMap[key].toJsonString() + "'.");
                 }
             }
             TYP => {
@@ -280,7 +280,7 @@ isolated function validateSignature(string jwt, Header header, Payload payload, 
     }
 
     if (alg == NONE && (validatorSignatureConfig is ValidatorSignatureConfig)) {
-        return prepareError("Not a valid JWS. Signature algorithm is NONE.");
+        return prepareError("Not a valid JWS. Signing algorithm is 'NONE'.");
     }
 
     string[] encodedJwtComponents = check getJwtComponents(jwt);
@@ -368,7 +368,6 @@ isolated function validateJwtRecords(Header header, Payload payload, ValidatorCo
             return prepareError("JWT is used before not-before-time (nbf).");
         }
     }
-    //TODO : Need to validate jwt id (jti) and custom claims.
 }
 
 isolated function validateMandatoryHeaderFields(Header header) returns boolean {
@@ -425,7 +424,7 @@ isolated function getJwk(string kid, string url, ClientConfiguration clientConfi
             }
         }
     } else {
-        return prepareError("Failed to call JWKS endpoint.", stringResponse);
+        return prepareError("Failed to call JWKS endpoint '" + url + "'.", stringResponse);
     }
 }
 
@@ -475,7 +474,7 @@ isolated function assertSignature(SigningAlgorithm alg, byte[] assertion, byte[]
             }
         }
     }
-    return prepareError("Unsupported JWS algorithm.");
+    return prepareError("Unsupported JWS algorithm '" + alg.toString() + "'.");
 }
 
 isolated function validateIssuer(Payload payload, string issuerConfig) returns Error? {
