@@ -71,10 +71,13 @@ public class JwksClient {
 
     private static SSLContext getSslContext(BMap<BString, ?> secureSocket) throws Exception {
         boolean disable = secureSocket.getBooleanValue(JwtConstants.DISABLE);
-        Object cert = secureSocket.get(JwtConstants.CERT);
-        BMap<BString, BString> key = (BMap<BString, BString>) getBMapValueIfPresent(secureSocket, JwtConstants.KEY);
         if (disable) {
             return initSslContext();
+        }
+        BMap<BString, BString> key = (BMap<BString, BString>) getBMapValueIfPresent(secureSocket, JwtConstants.KEY);
+        Object cert = secureSocket.get(JwtConstants.CERT);
+        if (cert == null) {
+            throw new Exception("Need to configure 'crypto:TrustStore' or 'cert' with client SSL certificates file.");
         }
         KeyManagerFactory kmf;
         TrustManagerFactory tmf;

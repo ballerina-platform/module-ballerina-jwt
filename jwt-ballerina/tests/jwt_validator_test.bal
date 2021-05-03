@@ -160,6 +160,54 @@ isolated function testValidateJwtSignatureWithJwk() {
 }
 
 @test:Config {}
+isolated function testValidateJwtSignatureWithJwkWithSslDisabled() {
+    ValidatorConfig validatorConfig = {
+        issuer: "ballerina",
+        audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
+        signatureConfig: {
+            jwksConfig: {
+                url: "https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks",
+                clientConfig: {
+                    httpVersion: HTTP_2,
+                    secureSocket: {
+                        disable: true
+                    }
+                }
+            }
+        }
+    };
+    Payload|Error result = validate(JWT2, validatorConfig);
+    if (result is Error) {
+        string? errMsg = result.message();
+        test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
+    }
+}
+
+@test:Config {}
+isolated function testValidateJwtSignatureWithJwkWithEmptySecureSocket() {
+    ValidatorConfig validatorConfig = {
+        issuer: "ballerina",
+        audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
+        signatureConfig: {
+            jwksConfig: {
+                url: "https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks",
+                clientConfig: {
+                    httpVersion: HTTP_2,
+                    secureSocket: {
+                    }
+                }
+            }
+        }
+    };
+    Payload|Error result = validate(JWT2, validatorConfig);
+    if (result is Error) {
+        assertContains(result, "Need to configure 'crypto:TrustStore' or 'cert' with client SSL certificates file.");
+    } else {
+        test:assertFail(msg = "Error in validating JWT.");
+    }
+}
+
+@test:Config {}
 isolated function testValidateJwtSignatureWithJwkWithValidTrustStore() {
     ValidatorConfig validatorConfig = {
         issuer: "ballerina",
@@ -173,6 +221,100 @@ isolated function testValidateJwtSignatureWithJwkWithValidTrustStore() {
                         cert: {
                             path: TRUSTSTORE_PATH,
                             password: "ballerina"
+                        }
+                    }
+                }
+            }
+        }
+    };
+    Payload|Error result = validate(JWT2, validatorConfig);
+    if (result is Error) {
+        string? errMsg = result.message();
+        test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
+    }
+}
+
+@test:Config {}
+isolated function testValidateJwtSignatureWithJwkWithValidTrustStoreAndValidKeyStore() {
+    ValidatorConfig validatorConfig = {
+        issuer: "ballerina",
+        audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
+        signatureConfig: {
+            jwksConfig: {
+                url: "https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks",
+                clientConfig: {
+                    httpVersion: HTTP_2,
+                    secureSocket: {
+                        cert: {
+                            path: TRUSTSTORE_PATH,
+                            password: "ballerina"
+                        },
+                        key: {
+                            path: KEYSTORE_PATH,
+                            password: "ballerina"
+                        }
+                    }
+                }
+            }
+        }
+    };
+    Payload|Error result = validate(JWT2, validatorConfig);
+    if (result is Error) {
+        string? errMsg = result.message();
+        test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
+    }
+}
+
+@test:Config {}
+isolated function testValidateJwtSignatureWithJwkWithValidTrustStoreAndValidCertAndKey() {
+    ValidatorConfig validatorConfig = {
+        issuer: "ballerina",
+        audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
+        signatureConfig: {
+            jwksConfig: {
+                url: "https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks",
+                clientConfig: {
+                    httpVersion: HTTP_2,
+                    secureSocket: {
+                        cert: {
+                            path: TRUSTSTORE_PATH,
+                            password: "ballerina"
+                        },
+                        key: {
+                            certFile: PUBLIC_CERT_PATH,
+                            keyFile: PRIVATE_KEY_PATH
+                        }
+                    }
+                }
+            }
+        }
+    };
+    Payload|Error result = validate(JWT2, validatorConfig);
+    if (result is Error) {
+        string? errMsg = result.message();
+        test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
+    }
+}
+
+@test:Config {}
+isolated function testValidateJwtSignatureWithJwkWithValidTrustStoreAndValidCertAndEncryptedKey() {
+    ValidatorConfig validatorConfig = {
+        issuer: "ballerina",
+        audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
+        signatureConfig: {
+            jwksConfig: {
+                url: "https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks",
+                clientConfig: {
+                    httpVersion: HTTP_2,
+                    secureSocket: {
+                        cert: {
+                            path: TRUSTSTORE_PATH,
+                            password: "ballerina"
+                        },
+                        key: {
+                            certFile: PUBLIC_CERT_PATH,
+                            keyFile: ENCRYPTED_PRIVATE_KEY_PATH,
+                            keyPassword: "ballerina"
                         }
                     }
                 }
@@ -207,7 +349,7 @@ isolated function testValidateJwtSignatureWithJwkWithClientInvalidCertificate() 
     if (result is Error) {
         assertContains(result, "Failed to call JWKS endpoint 'https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks'. Failed to send the request to the endpoint.");
     } else {
-        test:assertFail(msg = "Error in validating JWT signature with invalid certificate.");
+        test:assertFail(msg = "Error in validating JWT.");
     }
 }
 
@@ -242,6 +384,6 @@ isolated function testValidateJwtSignatureWithInvalidPublicCert() {
     if (result is Error) {
         assertContains(result, "Public key certificate validity period has passed.");
     } else {
-        test:assertFail(msg = "Error in validating JWT signature with invalid public cert file.");
+        test:assertFail(msg = "Error in validating JWT.");
     }
 }
