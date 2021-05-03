@@ -35,6 +35,8 @@ import java.util.Base64;
  */
 public class JwtUtils {
 
+    private JwtUtils() {}
+
     public static BString encodeBase64Url(BArray input) {
         byte[] encodedValue = Base64.getUrlEncoder().withoutPadding().encode(input.getBytes());
         return StringUtils.fromString(new String(encodedValue, StandardCharsets.ISO_8859_1));

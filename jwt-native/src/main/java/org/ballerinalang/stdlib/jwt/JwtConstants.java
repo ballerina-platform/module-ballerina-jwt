@@ -25,6 +25,9 @@ import io.ballerina.runtime.api.values.BString;
  * Constants related to Ballerina JWT stdlib.
  */
 public class JwtConstants {
+
+    private JwtConstants() {}
+
     public static final String JWT_ERROR_TYPE = "Error";
 
     public static final BString HTTP_VERSION = StringUtils.fromString("httpVersion");

@@ -49,6 +49,8 @@ import javax.net.ssl.X509TrustManager;
  */
 public class JwksClient {
 
+    private JwksClient() {}
+
     public static Object getJwksResponse(BString url, BMap<BString, Object> clientConfig) {
         HttpRequest request = buildHttpRequest(url.getValue());
         String httpVersion = getBStringValueIfPresent(clientConfig, JwtConstants.HTTP_VERSION).getValue();
