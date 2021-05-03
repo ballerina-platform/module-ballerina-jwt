@@ -193,10 +193,3 @@ isolated function buildHeaderString(Header header) returns string|Error {
 isolated function buildPayloadString(Payload payload) returns string|Error {
     return encodeBase64Url(payload.toJsonString().toBytes());
 }
-
-isolated function appendToMap(map<json> fromMap, map<json> toMap) returns map<json> {
-    foreach json key in fromMap.keys() {
-        toMap[key] = fromMap[key];
-    }
-    return toMap;
-}

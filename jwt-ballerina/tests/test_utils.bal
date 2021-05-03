@@ -14,6 +14,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import ballerina/test;
+
 const string KEYSTORE_PATH = "tests/resources/keystore/ballerinaKeystore.p12";
 const string TRUSTSTORE_PATH = "tests/resources/keystore/ballerinaTruststore.p12";
 const string PRIVATE_KEY_PATH = "tests/resources/key/private.key";
@@ -21,13 +23,13 @@ const string ENCRYPTED_PRIVATE_KEY_PATH = "tests/resources/key/encryptedPrivate.
 const string PUBLIC_CERT_PATH = "tests/resources/cert/public.crt";
 const string INVALID_PUBLIC_CERT_PATH = "tests/resources/cert/invalidPublic.crt";
 
-// Build complete error message by evaluating all the inner causes.
-isolated function buildCompleteErrorMessage(error err) returns string {
+// Build complete error message by evaluating all the inner causes and assert the inclusion.
+isolated function assertContains(error err, string text) {
     string message = err.message();
-    error? cause = err.cause();
+    var cause = err.cause();
     while (cause is error) {
         message += " " + cause.message();
         cause = cause.cause();
     }
-    return message;
+    test:assertTrue(message.includes(text));
 }
