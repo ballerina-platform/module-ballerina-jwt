@@ -16,18 +16,21 @@
 
 // NOTE: All the tokens/credentials used in this test are dummy tokens/credentials and used only for testing purposes.
 
+import ballerina/cache;
 import ballerina/test;
 
 @test:Config {}
 isolated function testListenerJwtAuthProviderSuccess() {
-    string jwt = "eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QifQ.eyJzdWIiOiJKb2huIiwgImlzcyI6IndzbzIiLCAiZXhwIjoxOTIwOTQ0OTE" +
-                 "yLCAiYXVkIjoiYmFsbGVyaW5hIn0.f22pKKF8kVbUq0UhCo3iqfAW_k9lTp5YolQGOHWmc9gmmbcmHEYs69jpujKAZy_41gkHD" +
-                 "J4Qknu_jPNm1oZRAat8bXZ9Zynv_wFPbfVvm-im-B_waej_rtrIhGGRaaF43BLsb_9yLU897VhNNFJqJqr3KbI7pQiQFt2nJHN" +
-                 "teAqTQFU3s4Iw7C2ZwGH0knP_4LgLIicR6ex3iN37dVqazgq-jb266gENSuLXDRKRcTh219dSbFRaCE9f4Ae4jbQ5w4vNUbunY" +
-                 "qxJfnnJCOv95s2dR61Li08hdCFEZhwHJMKxYfUAAsR7G2mq0aOBsq1zIRo1aYgzLOCPmdLXliLCRw";
     ValidatorConfig jwtConfig = {
         issuer: "wso2",
         audience: "ballerina",
+        cacheConfig: {
+            capacity: 10,
+            evictionFactor: 0.25,
+            evictionPolicy: cache:LRU,
+            defaultMaxAge: -1,
+            cleanupInterval: 3600
+        },
         signatureConfig: {
             trustStoreConfig: {
                 trustStore: {
@@ -39,10 +42,65 @@ isolated function testListenerJwtAuthProviderSuccess() {
         }
     };
     ListenerJwtAuthProvider jwtAuthProvider = new(jwtConfig);
-    Payload|Error result = jwtAuthProvider.authenticate(jwt);
+    Payload|Error result = jwtAuthProvider.authenticate(JWT1);
     if (result is Payload) {
         test:assertEquals(result?.iss, "wso2");
-        test:assertEquals(result?.aud, "ballerina");
+        test:assertEquals(result?.aud, ["ballerina","ballerinaSamples"]);
+    } else {
+        string? errMsg = result.message();
+        test:assertFail(msg = errMsg is string ? errMsg : "Test Failed!");
+    }
+
+    // Authenticate the token from the cache
+    result = jwtAuthProvider.authenticate(JWT1);
+    if (result is Payload) {
+        test:assertEquals(result?.iss, "wso2");
+        test:assertEquals(result?.aud, ["ballerina","ballerinaSamples"]);
+    } else {
+        string? errMsg = result.message();
+        test:assertFail(msg = errMsg is string ? errMsg : "Test Failed!");
+    }
+}
+
+@test:Config {}
+isolated function testListenerJwtAuthProviderSuccessWithJwk() {
+    ValidatorConfig jwtConfig = {
+        issuer: "ballerina",
+        audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
+        cacheConfig: {
+            capacity: 10,
+            evictionFactor: 0.25,
+            evictionPolicy: cache:LRU,
+            defaultMaxAge: -1,
+            cleanupInterval: 3600
+        },
+        signatureConfig: {
+            jwksConfig: {
+                url: "https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks",
+                cacheConfig: {
+                    capacity: 10,
+                    evictionFactor: 0.25,
+                    evictionPolicy: cache:LRU,
+                    defaultMaxAge: -1,
+                    cleanupInterval: 3600
+                },
+                clientConfig: {
+                    httpVersion: HTTP_2,
+                    secureSocket: {
+                        cert: {
+                            path: TRUSTSTORE_PATH,
+                            password: "ballerina"
+                        }
+                    }
+                }
+            }
+        }
+    };
+    ListenerJwtAuthProvider jwtAuthProvider = new(jwtConfig);
+    Payload|Error result = jwtAuthProvider.authenticate(JWT2);
+    if (result is Payload) {
+        test:assertEquals(result?.iss, "ballerina");
+        test:assertEquals(result?.aud, ["vEwzbcasJVQm1jVYHUHCjhxZ4tYa"]);
     } else {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Test Failed!");
@@ -51,11 +109,6 @@ isolated function testListenerJwtAuthProviderSuccess() {
 
 @test:Config {}
 isolated function testListenerJwtAuthProviderFailure() {
-    string jwt = "eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QifQ.eyJzdWIiOiJKb2huIiwgImlzcyI6IndzbzIiLCAiZXhwIjoxOTIwOTQ0OTE" +
-                 "yLCAiYXVkIjoiYmFsbGVyaW5hIn0.f22pKKF8kVbUq0UhCo3iqfAW_k9lTp5YolQGOHWmc9gmmbcmHEYs69jpujKAZy_41gkHD" +
-                 "J4Qknu_jPNm1oZRAat8bXZ9Zynv_wFPbfVvm-im-B_waej_rtrIhGGRaaF43BLsb_9yLU897VhNNFJqJqr3KbI7pQiQFt2nJHN" +
-                 "teAqTQFU3s4Iw7C2ZwGH0knP_4LgLIicR6ex3iN37dVqazgq-jb266gENSuLXDRKRcTh219dSbFRaCE9f4Ae4jbQ5w4vNUbunY" +
-                 "qxJfnnJCOv95s2dR61Li08hdCFEZhwHJMKxYfUAAsR7G2mq0aOBsq1zIRo1aYgzLOCPmdLXliLCRw";
     ValidatorConfig jwtConfig = {
         issuer: "invalid",
         audience: "ballerina",
@@ -70,9 +123,33 @@ isolated function testListenerJwtAuthProviderFailure() {
         }
     };
     ListenerJwtAuthProvider jwtAuthProvider = new(jwtConfig);
-    Payload|Error result = jwtAuthProvider.authenticate(jwt);
+    Payload|Error result = jwtAuthProvider.authenticate(JWT1);
     if (result is Error) {
         test:assertEquals(result.message(), "JWT validation failed.");
+    } else {
+        test:assertFail("Test Failed!");
+    }
+}
+
+@test:Config {}
+isolated function testListenerJwtAuthProviderFailureWithInvalidCredential() {
+    ValidatorConfig jwtConfig = {
+        issuer: "wso2",
+        audience: "ballerina",
+        signatureConfig: {
+            trustStoreConfig: {
+                trustStore: {
+                    path: TRUSTSTORE_PATH,
+                    password: "ballerina"
+                },
+                certAlias: "ballerina"
+            }
+        }
+    };
+    ListenerJwtAuthProvider jwtAuthProvider = new(jwtConfig);
+    Payload|Error result = jwtAuthProvider.authenticate("invalid_credential");
+    if (result is Error) {
+        test:assertEquals(result.message(), "Credential format does not match to JWT format.");
     } else {
         test:assertFail("Test Failed!");
     }
