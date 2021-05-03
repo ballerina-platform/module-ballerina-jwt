@@ -18,34 +18,8 @@
 
 import ballerina/test;
 
-isolated function jwtDataProvider() returns string {
-    IssuerConfig issuerConfig = {
-        username: "John",
-        issuer: "wso2",
-        audience: ["ballerina", "ballerinaSamples"],
-        expTime: 600,
-        signatureConfig: {
-            config: {
-                keyStore: {
-                    path: KEYSTORE_PATH,
-                    password: "ballerina"
-                },
-                keyAlias: "ballerina",
-                keyPassword: "ballerina"
-            }
-        }
-    };
-    string|Error token = issue(issuerConfig);
-    if (token is string) {
-        return token;
-    } else {
-        panic token;
-    }
-}
-
 @test:Config {}
 isolated function testValidateJwt() {
-    string jwt = jwtDataProvider();
     ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
@@ -60,7 +34,19 @@ isolated function testValidateJwt() {
             }
         }
     };
-    Payload|Error result = validate(jwt, validatorConfig);
+    Payload|Error result = validate(JWT1, validatorConfig);
+    if (result is Error) {
+        string? errMsg = result.message();
+        test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
+    }
+
+    result = validate(JWT3, validatorConfig);
+    if (result is Error) {
+        string? errMsg = result.message();
+        test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
+    }
+
+    result = validate(JWT4, validatorConfig);
     if (result is Error) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
@@ -69,7 +55,6 @@ isolated function testValidateJwt() {
 
 @test:Config {}
 isolated function testValidateJwtWithSingleAud() {
-    string jwt = jwtDataProvider();
     ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: "ballerina",
@@ -84,7 +69,7 @@ isolated function testValidateJwtWithSingleAud() {
             }
         }
     };
-    Payload|Error result = validate(jwt, validatorConfig);
+    Payload|Error result = validate(JWT1, validatorConfig);
     if (result is Error) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
@@ -93,7 +78,6 @@ isolated function testValidateJwtWithSingleAud() {
 
 @test:Config {}
 isolated function testValidateJwtWithSingleAudAndAudAsArray() {
-    string jwt = jwtDataProvider();
     ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: "ballerina",
@@ -108,7 +92,7 @@ isolated function testValidateJwtWithSingleAudAndAudAsArray() {
             }
         }
     };
-    Payload|Error result = validate(jwt, validatorConfig);
+    Payload|Error result = validate(JWT1, validatorConfig);
     if (result is Error) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
@@ -117,7 +101,6 @@ isolated function testValidateJwtWithSingleAudAndAudAsArray() {
 
 @test:Config {}
 isolated function testValidateJwtWithNoIssOrSub() {
-    string jwt = jwtDataProvider();
     ValidatorConfig validatorConfig = {
         audience: "ballerinaSamples",
         clockSkew: 60,
@@ -131,7 +114,7 @@ isolated function testValidateJwtWithNoIssOrSub() {
             }
         }
     };
-    Payload|Error result = validate(jwt, validatorConfig);
+    Payload|Error result = validate(JWT1, validatorConfig);
     if (result is Error) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
@@ -140,7 +123,6 @@ isolated function testValidateJwtWithNoIssOrSub() {
 
 @test:Config {}
 isolated function testValidateJwtWithInvalidSignature() {
-    string jwt = jwtDataProvider();
     ValidatorConfig validatorConfig = {
         signatureConfig: {
             trustStoreConfig: {
@@ -152,7 +134,7 @@ isolated function testValidateJwtWithInvalidSignature() {
             }
         }
     };
-    Payload|Error result = validate(jwt, validatorConfig);
+    Payload|Error result = validate(JWT1, validatorConfig);
     if (result is Error) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
@@ -161,13 +143,6 @@ isolated function testValidateJwtWithInvalidSignature() {
 
 @test:Config {}
 isolated function testValidateJwtSignatureWithJwk() {
-    string jwt = "eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QiLCAia2lkIjoiTlRBeFptTXhORE15WkRnM01UVTFaR00wTXpFek9ESmhaV0k0Tk" +
-                 "RObFpEVTFPR0ZrTmpGaU1RIn0.eyJzdWIiOiJhZG1pbiIsICJpc3MiOiJiYWxsZXJpbmEiLCAiZXhwIjoxOTA3NjY1NzQ2LCAi" +
-                 "anRpIjoiMTAwMDc4MjM0YmEyMyIsICJhdWQiOlsidkV3emJjYXNKVlFtMWpWWUhVSENqaHhaNHRZYSJdfQ.E8E7VO18V6MG7Ns" +
-                 "87Y314Dqg8RYOMe0WWYlSYFhSv0mHkJQ8bSSyBJzFG0Se_7UsTWFBwzIALw6wUiP7UGraosilf8k6HGJWbTjWtLXfniJXx5Ncz" +
-                 "ikzciG8ADddksm-0AMi5uPsgAQdg7FNaH9f4vAL6SPMEYp2gN6GDnWTH7M1vnknwjOwTbQpGrPu_w2V1tbsBwSzof3Fk_cYrnt" +
-                 "u8D_pfsBu3eqFiJZD7AXUq8EYbgIxpSwvdi6_Rvw2_TAi46drouxXK2Jglz_HvheUVCERT15Y8JNJONJPJ52MsN6t297hyFV9A" +
-                 "myNPzwHxxmi753TclbapDqDnVPI1tpc-Q";
     ValidatorConfig validatorConfig = {
         issuer: "ballerina",
         audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
@@ -177,7 +152,7 @@ isolated function testValidateJwtSignatureWithJwk() {
             }
         }
     };
-    Payload|Error result = validate(jwt, validatorConfig);
+    Payload|Error result = validate(JWT2, validatorConfig);
     if (result is Error) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
@@ -186,13 +161,6 @@ isolated function testValidateJwtSignatureWithJwk() {
 
 @test:Config {}
 isolated function testValidateJwtSignatureWithJwkWithValidTrustStore() {
-    string jwt = "eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QiLCAia2lkIjoiTlRBeFptTXhORE15WkRnM01UVTFaR00wTXpFek9ESmhaV0k0Tk" +
-                 "RObFpEVTFPR0ZrTmpGaU1RIn0.eyJzdWIiOiJhZG1pbiIsICJpc3MiOiJiYWxsZXJpbmEiLCAiZXhwIjoxOTA3NjY1NzQ2LCAi" +
-                 "anRpIjoiMTAwMDc4MjM0YmEyMyIsICJhdWQiOlsidkV3emJjYXNKVlFtMWpWWUhVSENqaHhaNHRZYSJdfQ.E8E7VO18V6MG7Ns" +
-                 "87Y314Dqg8RYOMe0WWYlSYFhSv0mHkJQ8bSSyBJzFG0Se_7UsTWFBwzIALw6wUiP7UGraosilf8k6HGJWbTjWtLXfniJXx5Ncz" +
-                 "ikzciG8ADddksm-0AMi5uPsgAQdg7FNaH9f4vAL6SPMEYp2gN6GDnWTH7M1vnknwjOwTbQpGrPu_w2V1tbsBwSzof3Fk_cYrnt" +
-                 "u8D_pfsBu3eqFiJZD7AXUq8EYbgIxpSwvdi6_Rvw2_TAi46drouxXK2Jglz_HvheUVCERT15Y8JNJONJPJ52MsN6t297hyFV9A" +
-                 "myNPzwHxxmi753TclbapDqDnVPI1tpc-Q";
     ValidatorConfig validatorConfig = {
         issuer: "ballerina",
         audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
@@ -211,7 +179,7 @@ isolated function testValidateJwtSignatureWithJwkWithValidTrustStore() {
             }
         }
     };
-    Payload|Error result = validate(jwt, validatorConfig);
+    Payload|Error result = validate(JWT2, validatorConfig);
     if (result is Error) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
@@ -220,13 +188,6 @@ isolated function testValidateJwtSignatureWithJwkWithValidTrustStore() {
 
 @test:Config {}
 isolated function testValidateJwtSignatureWithJwkWithClientInvalidCertificate() {
-    string jwt = "eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QiLCAia2lkIjoiTlRBeFptTXhORE15WkRnM01UVTFaR00wTXpFek9ESmhaV0k0Tk" +
-                 "RObFpEVTFPR0ZrTmpGaU1RIn0.eyJzdWIiOiJhZG1pbiIsICJpc3MiOiJiYWxsZXJpbmEiLCAiZXhwIjoxOTA3NjY1NzQ2LCAi" +
-                 "anRpIjoiMTAwMDc4MjM0YmEyMyIsICJhdWQiOlsidkV3emJjYXNKVlFtMWpWWUhVSENqaHhaNHRZYSJdfQ.E8E7VO18V6MG7Ns" +
-                 "87Y314Dqg8RYOMe0WWYlSYFhSv0mHkJQ8bSSyBJzFG0Se_7UsTWFBwzIALw6wUiP7UGraosilf8k6HGJWbTjWtLXfniJXx5Ncz" +
-                 "ikzciG8ADddksm-0AMi5uPsgAQdg7FNaH9f4vAL6SPMEYp2gN6GDnWTH7M1vnknwjOwTbQpGrPu_w2V1tbsBwSzof3Fk_cYrnt" +
-                 "u8D_pfsBu3eqFiJZD7AXUq8EYbgIxpSwvdi6_Rvw2_TAi46drouxXK2Jglz_HvheUVCERT15Y8JNJONJPJ52MsN6t297hyFV9A" +
-                 "myNPzwHxxmi753TclbapDqDnVPI1tpc-Q";
     ValidatorConfig validatorConfig = {
         issuer: "ballerina",
         audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
@@ -242,7 +203,7 @@ isolated function testValidateJwtSignatureWithJwkWithClientInvalidCertificate() 
             }
         }
     };
-    Payload|Error result = validate(jwt, validatorConfig);
+    Payload|Error result = validate(JWT2, validatorConfig);
     if (result is Error) {
         assertContains(result, "Failed to call JWKS endpoint 'https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks'. Failed to send the request to the endpoint.");
     } else {
@@ -252,7 +213,6 @@ isolated function testValidateJwtSignatureWithJwkWithClientInvalidCertificate() 
 
 @test:Config {}
 isolated function testValidateJwtSignatureWithPublicCert() {
-    string jwt = jwtDataProvider();
     ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
@@ -261,7 +221,7 @@ isolated function testValidateJwtSignatureWithPublicCert() {
             certFile: PUBLIC_CERT_PATH
         }
     };
-    Payload|Error result = validate(jwt, validatorConfig);
+    Payload|Error result = validate(JWT1, validatorConfig);
     if (result is Error) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
@@ -270,7 +230,6 @@ isolated function testValidateJwtSignatureWithPublicCert() {
 
 @test:Config {}
 isolated function testValidateJwtSignatureWithInvalidPublicCert() {
-    string jwt = jwtDataProvider();
     ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
@@ -279,7 +238,7 @@ isolated function testValidateJwtSignatureWithInvalidPublicCert() {
             certFile: INVALID_PUBLIC_CERT_PATH
         }
     };
-    Payload|Error result = validate(jwt, validatorConfig);
+    Payload|Error result = validate(JWT1, validatorConfig);
     if (result is Error) {
         assertContains(result, "Public key certificate validity period has passed.");
     } else {
