@@ -6,6 +6,9 @@ on:
     branches-ignore:
       - master
       - "automated/dependency_version_update"
+ - "automated/dependency_version_update_tmp"
+ - "automated/dependency_version_update_tmp"
+ - "automated/dependency_version_update_tmp"
 
 jobs:
   ubuntu-build:
