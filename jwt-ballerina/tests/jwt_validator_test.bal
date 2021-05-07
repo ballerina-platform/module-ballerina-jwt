@@ -141,7 +141,9 @@ isolated function testValidateJwtWithInvalidSignature() {
     }
 }
 
-@test:Config {}
+@test:Config {
+    groups: ["jwks"]
+}
 isolated function testValidateJwtSignatureWithJwkWithoutSecureSocket() {
     ValidatorConfig validatorConfig = {
         issuer: "ballerina",
@@ -160,7 +162,9 @@ isolated function testValidateJwtSignatureWithJwkWithoutSecureSocket() {
     }
 }
 
-@test:Config {}
+@test:Config {
+    groups: ["jwks"]
+}
 isolated function testValidateJwtSignatureWithJwkWithSslDisabled() {
     ValidatorConfig validatorConfig = {
         issuer: "ballerina",
@@ -184,7 +188,9 @@ isolated function testValidateJwtSignatureWithJwkWithSslDisabled() {
     }
 }
 
-@test:Config {}
+@test:Config {
+    groups: ["jwks"]
+}
 isolated function testValidateJwtSignatureWithJwkWithEmptySecureSocket() {
     ValidatorConfig validatorConfig = {
         issuer: "ballerina",
@@ -208,7 +214,9 @@ isolated function testValidateJwtSignatureWithJwkWithEmptySecureSocket() {
     }
 }
 
-@test:Config {}
+@test:Config {
+    groups: ["jwks"]
+}
 isolated function testValidateJwtSignatureWithJwkWithValidTrustStore() {
     ValidatorConfig validatorConfig = {
         issuer: "ballerina",
@@ -235,7 +243,9 @@ isolated function testValidateJwtSignatureWithJwkWithValidTrustStore() {
     }
 }
 
-@test:Config {}
+@test:Config {
+    groups: ["jwks"]
+}
 isolated function testValidateJwtSignatureWithJwkWithValidCert() {
     ValidatorConfig validatorConfig = {
         issuer: "ballerina",
@@ -259,7 +269,9 @@ isolated function testValidateJwtSignatureWithJwkWithValidCert() {
     }
 }
 
-@test:Config {}
+@test:Config {
+    groups: ["jwks"]
+}
 isolated function testValidateJwtSignatureWithJwkWithInvalidCert() {
     ValidatorConfig validatorConfig = {
         issuer: "ballerina",
@@ -284,7 +296,9 @@ isolated function testValidateJwtSignatureWithJwkWithInvalidCert() {
     }
 }
 
-@test:Config {}
+@test:Config {
+    groups: ["jwks"]
+}
 isolated function testValidateJwtSignatureWithJwkWithValidTrustStoreAndValidKeyStore() {
     ValidatorConfig validatorConfig = {
         issuer: "ballerina",
@@ -315,7 +329,9 @@ isolated function testValidateJwtSignatureWithJwkWithValidTrustStoreAndValidKeyS
     }
 }
 
-@test:Config {}
+@test:Config {
+    groups: ["jwks"]
+}
 isolated function testValidateJwtSignatureWithJwkWithValidCertsAndKey() {
     ValidatorConfig validatorConfig = {
         issuer: "ballerina",
@@ -343,7 +359,9 @@ isolated function testValidateJwtSignatureWithJwkWithValidCertsAndKey() {
     }
 }
 
-@test:Config {}
+@test:Config {
+    groups: ["jwks"]
+}
 isolated function testValidateJwtSignatureWithJwkWithValidCertsAndEncryptedKey() {
     ValidatorConfig validatorConfig = {
         issuer: "ballerina",

@@ -62,7 +62,9 @@ isolated function testListenerJwtAuthProviderSuccess() {
     }
 }
 
-@test:Config {}
+@test:Config {
+    groups: ["jwks"]
+}
 isolated function testListenerJwtAuthProviderSuccessWithJwk() {
     ValidatorConfig jwtConfig = {
         issuer: "ballerina",
