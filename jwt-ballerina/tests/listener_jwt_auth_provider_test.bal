@@ -62,7 +62,9 @@ isolated function testListenerJwtAuthProviderSuccess() {
     }
 }
 
-@test:Config {}
+@test:Config {
+    groups: ["jwks"]
+}
 isolated function testListenerJwtAuthProviderSuccessWithJwk() {
     ValidatorConfig jwtConfig = {
         issuer: "ballerina",
@@ -76,7 +78,7 @@ isolated function testListenerJwtAuthProviderSuccessWithJwk() {
         },
         signatureConfig: {
             jwksConfig: {
-                url: "https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks",
+                url: "https://localhost:9445/oauth2/jwks",
                 cacheConfig: {
                     capacity: 10,
                     evictionFactor: 0.25,
@@ -85,7 +87,6 @@ isolated function testListenerJwtAuthProviderSuccessWithJwk() {
                     cleanupInterval: 3600
                 },
                 clientConfig: {
-                    httpVersion: HTTP_2,
                     secureSocket: {
                         cert: {
                             path: TRUSTSTORE_PATH,

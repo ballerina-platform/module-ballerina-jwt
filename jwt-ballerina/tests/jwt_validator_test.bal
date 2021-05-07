@@ -141,32 +141,37 @@ isolated function testValidateJwtWithInvalidSignature() {
     }
 }
 
-@test:Config {}
-isolated function testValidateJwtSignatureWithJwk() {
+@test:Config {
+    groups: ["jwks"]
+}
+isolated function testValidateJwtSignatureWithJwkWithoutSecureSocket() {
     ValidatorConfig validatorConfig = {
         issuer: "ballerina",
         audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
         signatureConfig: {
             jwksConfig: {
-                url: "https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks"
+                url: "https://localhost:9445/oauth2/jwks"
             }
         }
     };
     Payload|Error result = validate(JWT2, validatorConfig);
     if (result is Error) {
-        string? errMsg = result.message();
-        test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
+        assertContains(result, "Failed to send the request to the endpoint. PKIX path building failed:");
+    } else {
+        test:assertFail(msg = "Error in validating JWT.");
     }
 }
 
-@test:Config {}
+@test:Config {
+    groups: ["jwks"]
+}
 isolated function testValidateJwtSignatureWithJwkWithSslDisabled() {
     ValidatorConfig validatorConfig = {
         issuer: "ballerina",
         audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
         signatureConfig: {
             jwksConfig: {
-                url: "https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks",
+                url: "https://localhost:9445/oauth2/jwks",
                 clientConfig: {
                     httpVersion: HTTP_2,
                     secureSocket: {
@@ -183,14 +188,16 @@ isolated function testValidateJwtSignatureWithJwkWithSslDisabled() {
     }
 }
 
-@test:Config {}
+@test:Config {
+    groups: ["jwks"]
+}
 isolated function testValidateJwtSignatureWithJwkWithEmptySecureSocket() {
     ValidatorConfig validatorConfig = {
         issuer: "ballerina",
         audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
         signatureConfig: {
             jwksConfig: {
-                url: "https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks",
+                url: "https://localhost:9445/oauth2/jwks",
                 clientConfig: {
                     httpVersion: HTTP_2,
                     secureSocket: {
@@ -207,14 +214,16 @@ isolated function testValidateJwtSignatureWithJwkWithEmptySecureSocket() {
     }
 }
 
-@test:Config {}
+@test:Config {
+    groups: ["jwks"]
+}
 isolated function testValidateJwtSignatureWithJwkWithValidTrustStore() {
     ValidatorConfig validatorConfig = {
         issuer: "ballerina",
         audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
         signatureConfig: {
             jwksConfig: {
-                url: "https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks",
+                url: "https://localhost:9445/oauth2/jwks",
                 clientConfig: {
                     httpVersion: HTTP_2,
                     secureSocket: {
@@ -234,14 +243,69 @@ isolated function testValidateJwtSignatureWithJwkWithValidTrustStore() {
     }
 }
 
-@test:Config {}
+@test:Config {
+    groups: ["jwks"]
+}
+isolated function testValidateJwtSignatureWithJwkWithValidCert() {
+    ValidatorConfig validatorConfig = {
+        issuer: "ballerina",
+        audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
+        signatureConfig: {
+            jwksConfig: {
+                url: "https://localhost:9445/oauth2/jwks",
+                clientConfig: {
+                    httpVersion: HTTP_2,
+                    secureSocket: {
+                        cert: PUBLIC_CERT_PATH
+                    }
+                }
+            }
+        }
+    };
+    Payload|Error result = validate(JWT2, validatorConfig);
+    if (result is Error) {
+        string? errMsg = result.message();
+        test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
+    }
+}
+
+@test:Config {
+    groups: ["jwks"]
+}
+isolated function testValidateJwtSignatureWithJwkWithInvalidCert() {
+    ValidatorConfig validatorConfig = {
+        issuer: "ballerina",
+        audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
+        signatureConfig: {
+            jwksConfig: {
+                url: "https://localhost:9445/oauth2/jwks",
+                clientConfig: {
+                    httpVersion: HTTP_2,
+                    secureSocket: {
+                        cert: INVALID_PUBLIC_CERT_PATH
+                    }
+                }
+            }
+        }
+    };
+    Payload|Error result = validate(JWT2, validatorConfig);
+    if (result is Error) {
+        assertContains(result, "Failed to send the request to the endpoint. PKIX path building failed:");
+    } else {
+        test:assertFail(msg = "Error in validating JWT.");
+    }
+}
+
+@test:Config {
+    groups: ["jwks"]
+}
 isolated function testValidateJwtSignatureWithJwkWithValidTrustStoreAndValidKeyStore() {
     ValidatorConfig validatorConfig = {
         issuer: "ballerina",
         audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
         signatureConfig: {
             jwksConfig: {
-                url: "https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks",
+                url: "https://localhost:9445/oauth2/jwks",
                 clientConfig: {
                     httpVersion: HTTP_2,
                     secureSocket: {
@@ -265,21 +329,20 @@ isolated function testValidateJwtSignatureWithJwkWithValidTrustStoreAndValidKeyS
     }
 }
 
-@test:Config {}
-isolated function testValidateJwtSignatureWithJwkWithValidTrustStoreAndValidCertAndKey() {
+@test:Config {
+    groups: ["jwks"]
+}
+isolated function testValidateJwtSignatureWithJwkWithValidCertsAndKey() {
     ValidatorConfig validatorConfig = {
         issuer: "ballerina",
         audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
         signatureConfig: {
             jwksConfig: {
-                url: "https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks",
+                url: "https://localhost:9445/oauth2/jwks",
                 clientConfig: {
                     httpVersion: HTTP_2,
                     secureSocket: {
-                        cert: {
-                            path: TRUSTSTORE_PATH,
-                            password: "ballerina"
-                        },
+                        cert: PUBLIC_CERT_PATH,
                         key: {
                             certFile: PUBLIC_CERT_PATH,
                             keyFile: PRIVATE_KEY_PATH
@@ -296,21 +359,20 @@ isolated function testValidateJwtSignatureWithJwkWithValidTrustStoreAndValidCert
     }
 }
 
-@test:Config {}
-isolated function testValidateJwtSignatureWithJwkWithValidTrustStoreAndValidCertAndEncryptedKey() {
+@test:Config {
+    groups: ["jwks"]
+}
+isolated function testValidateJwtSignatureWithJwkWithValidCertsAndEncryptedKey() {
     ValidatorConfig validatorConfig = {
         issuer: "ballerina",
         audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
         signatureConfig: {
             jwksConfig: {
-                url: "https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks",
+                url: "https://localhost:9445/oauth2/jwks",
                 clientConfig: {
                     httpVersion: HTTP_2,
                     secureSocket: {
-                        cert: {
-                            path: TRUSTSTORE_PATH,
-                            password: "ballerina"
-                        },
+                        cert: PUBLIC_CERT_PATH,
                         key: {
                             certFile: PUBLIC_CERT_PATH,
                             keyFile: ENCRYPTED_PRIVATE_KEY_PATH,
@@ -325,31 +387,6 @@ isolated function testValidateJwtSignatureWithJwkWithValidTrustStoreAndValidCert
     if (result is Error) {
         string? errMsg = result.message();
         test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
-    }
-}
-
-@test:Config {}
-isolated function testValidateJwtSignatureWithJwkWithClientInvalidCertificate() {
-    ValidatorConfig validatorConfig = {
-        issuer: "ballerina",
-        audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
-        signatureConfig: {
-            jwksConfig: {
-                url: "https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks",
-                clientConfig: {
-                    httpVersion: HTTP_2,
-                    secureSocket: {
-                        cert: PUBLIC_CERT_PATH
-                    }
-                }
-            }
-        }
-    };
-    Payload|Error result = validate(JWT2, validatorConfig);
-    if (result is Error) {
-        assertContains(result, "Failed to call JWKS endpoint 'https://asb0zigfg2.execute-api.us-west-2.amazonaws.com/v1/jwks'. Failed to send the request to the endpoint.");
-    } else {
-        test:assertFail(msg = "Error in validating JWT.");
     }
 }
 
