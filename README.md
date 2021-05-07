@@ -40,6 +40,8 @@ This repository only contains the source code for the module.
     export packagePAT=<Personal Access Token>
     ```
 
+3. Download and install [Docker](https://www.docker.com/).
+
 ### Building the Source
 
 Execute the commands below to build from the source.

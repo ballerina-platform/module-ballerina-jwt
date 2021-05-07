@@ -299,11 +299,65 @@ publishing {
     }
 }
 
+task startBallerinaSTS() {
+    doLast {
+        // This check is added to prevent starting the server in Windows OS, since the Docker image does not support
+        // for Windows OS.
+        if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
+            def stdOut = new ByteArrayOutputStream()
+            exec {
+                commandLine 'sh', '-c', "docker ps --filter name=ballerina-sts"
+                standardOutput = stdOut
+            }
+            if (!stdOut.toString().contains("ballerina-sts")) {
+                println "Starting Ballerina STS."
+                exec {
+                    commandLine 'sh', '-c', "docker run --rm -d -p 9445:9445 --name ballerina-sts ldclakmal/ballerina-sts:latest"
+                    standardOutput = stdOut
+                }
+                println stdOut.toString()
+                println "Waiting 10s until the Ballerina STS get initiated."
+                sleep(10 * 1000)
+            } else {
+                println "Ballerina STS is already started."
+            }
+        }
+    }
+}
+
+task stopBallerinaSTS() {
+    doLast {
+        // This check is added to prevent trying to stop the server in Windows OS, since the Docker image not started
+        // in Windows OS.
+        if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
+            def stdOut = new ByteArrayOutputStream()
+            exec {
+                commandLine 'sh', '-c', "docker ps --filter name=ballerina-sts"
+                standardOutput = stdOut
+            }
+            if (stdOut.toString().contains("ballerina-sts")) {
+                println "Stopping Ballerina STS."
+                exec {
+                    commandLine 'sh', '-c', "docker stop ballerina-sts"
+                    standardOutput = stdOut
+                }
+                println stdOut.toString()
+                println "Waiting 15s until the Ballerina STS get stopped."
+                sleep(15 * 1000)
+            } else {
+                println "Ballerina STS is not started."
+            }
+        }
+    }
+}
+
 unpackStdLibs.dependsOn unpackJballerinaTools
 copyStdlibs.dependsOn unpackStdLibs
 updateTomlVersions.dependsOn copyStdlibs
 
 ballerinaBuild.finalizedBy revertTomlFile
+ballerinaBuild.finalizedBy stopBallerinaSTS
+ballerinaBuild.dependsOn startBallerinaSTS
 ballerinaBuild.dependsOn initializeVariables
 ballerinaBuild.dependsOn updateTomlVersions
 ballerinaBuild.dependsOn ":${packageName}-native:build"
