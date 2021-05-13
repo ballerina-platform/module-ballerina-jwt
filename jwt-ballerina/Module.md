@@ -1,4 +1,4 @@
-## Module Overview
+## Overview
 
 This module provides a framework for authentication/authorization with JWTs and generation/validation of JWTs as specified in [RFC 7519](https://datatracker.ietf.org/doc/html/rfc7519), [RFC 7515](https://datatracker.ietf.org/doc/html/rfc7515) and [RFC 7517](https://datatracker.ietf.org/doc/html/rfc7517).
 
