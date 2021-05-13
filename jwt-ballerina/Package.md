@@ -1,9 +1,21 @@
 ## Package Overview
 
-This package provides a listener JWT authentication provider, which can be used to authenticate the provided credentials against the provided JWT validator configurations, and a client self-signed JWT authentication provider, which can be used to authenticate against an external endpoint with a self-signed JWT issued against the provided JWT issuer configurations. Also, this module provides the functionality related to issuing and validating a JWT.
+The JWT library is one of the standard library modules of the [Ballerina](https://ballerina.io/) language.
 
-For information on the operations, which you can perform with this module, see the below **Functions**. For examples on the usage of the operations, see the following.
- * [JWT Issue/Validate Example](https://ballerina.io/learn/by-example/jwt-issue-validate.html)
- * [HTTP Service with JWT Auth Example](https://ballerina.io/learn/by-example/http-service-with-jwt-auth.html)
- * [HTTP Client with Self Signed JWT Auth Example](https://ballerina.io/learn/by-example/http-client-with-self-signed-jwt-auth.html)
- * [HTTP Client with Bearer Token Auth Example](https://ballerina.io/learn/by-example/http-client-with-bearer-token-auth.html)
+This module provides a framework for authentication/authorization with JWTs and generation/validation of JWTs as specified in [RFC 7519](https://datatracker.ietf.org/doc/html/rfc7519), [RFC 7515](https://datatracker.ietf.org/doc/html/rfc7515) and [RFC 7517](https://datatracker.ietf.org/doc/html/rfc7517).
+
+JSON Web Token (JWT) is a compact, URL-safe means of representing claims to be transferred between two parties. The claims in a JWT are encoded as a JSON object that is used as the payload of a JSON Web Signature (JWS) structure or as the plaintext of a JSON Web Encryption (JWE) structure, enabling the claims to be digitally signed or integrity protected with a Message Authentication Code(MAC) and/or encrypted.
+
+The Ballerina JWT module facilitates auth providers that is to be used by the clients and listeners of different protocol connectors. Also, it provides the APIs for issuing a self-signed JWT and validating a JWT.
+
+For more information go to [The JWT Module](https://docs.central.ballerina.io/ballerina/jwt/latest).
+
+### Report Issues
+
+To report bugs, request new features, start new discussions, view project boards, etc. please visit Ballerina
+[Standard Library parent repository](https://github.com/ballerina-platform/ballerina-standard-library).
+
+### Useful Links
+- Discuss the code changes of the Ballerina project in [ballerina-dev@googlegroups.com](mailto:ballerina-dev@googlegroups.com).
+- Chat live with us via our [Slack channel](https://ballerina.io/community/slack/).
+- Post all technical questions on Stack Overflow with the [#ballerina](https://stackoverflow.com/questions/tagged/ballerina) tag.
