@@ -57,11 +57,11 @@ public type IssuerSignatureConfig record {|
 # Issues a JWT based on the provided configurations. JWT will be signed (JWS) if `crypto:KeyStore` information is
 # provided in the `jwt:KeyStoreConfig` and the `jwt:SigningAlgorithm` is not `jwt:NONE`.
 # ```ballerina
-# string|jwt:Error jwt = jwt:issue(issuerConfig);
+# string jwt = check jwt:issue(issuerConfig);
 # ```
 #
 # + issuerConfig - JWT issuer configurations
-# + return - JWT as a `string` or else a `jwt:Error` if token issuing fails
+# + return - JWT as a `string` or else a `jwt:Error` if an error occurred
 public isolated function issue(IssuerConfig issuerConfig) returns string|Error {
     Header header = prepareHeader(issuerConfig);
     Payload payload = preparePayload(issuerConfig);

@@ -95,12 +95,12 @@ public type CertKey record {|
 
 # Validates the provided JWT, against the provided configurations.
 #```ballerina
-# jwt:Payload|jwt:Error result = jwt:validate(jwt, validatorConfig);
+# jwt:Payload result = check jwt:validate(jwt, validatorConfig);
 # ```
 #
 # + jwt - JWT that needs to be validated
 # + validatorConfig - JWT validator configurations
-# + return - `jwt:Payload` or else a `jwt:Error` if token validation fails
+# + return - `jwt:Payload` or else a `jwt:Error` if an error occurred
 public isolated function validate(string jwt, ValidatorConfig validatorConfig) returns Payload|Error {
     return validateJwt(jwt, validatorConfig);
 }
@@ -116,13 +116,13 @@ isolated function validateJwt(string jwt, ValidatorConfig validatorConfig, cache
     return payload;
 }
 
-# Decodes the provided JWT string.
+# Decodes the provided JWT.
 # ```ballerina
-# [jwt:Header, jwt:Payload]|jwt:Error [header, payload] = jwt:decode(jwt);
+# [jwt:Header, jwt:Payload] [header, payload] = check jwt:decode(jwt);
 # ```
 #
 # + jwt - JWT that needs to be decoded
-# + return - The `jwt:Header` and `jwt:Payload` as a  tuple or else a `jwt:Error` if token decoding fails
+# + return - The `jwt:Header` and `jwt:Payload` as a tuple or else a `jwt:Error` if an error occurred
 public isolated function decode(string jwt) returns [Header, Payload]|Error {
     string[] encodedJwtComponents = check getJwtComponents(jwt);
     Header header = check getHeader(encodedJwtComponents[0]);

@@ -19,7 +19,8 @@ import ballerina/log;
 import ballerina/regex;
 import ballerina/time;
 
-# Represents the listener JWT Auth provider, which authenticates by validating a JWT.
+# Represents the listener JWT Auth provider, which is used to authenticate the provided credentials (JWT) against
+# the provided JWT validator configurations.
 # ```ballerina
 # jwt:ListenerJwtAuthProvider provider = new({
 #     issuer: "example",
@@ -33,7 +34,6 @@ import ballerina/time;
 #     }
 # });
 # ```
-#
 public class ListenerJwtAuthProvider {
 
     ValidatorConfig validatorConfig;
@@ -64,13 +64,13 @@ public class ListenerJwtAuthProvider {
         }
     }
 
-    # Authenticates provided JWT against `jwt:ValidatorConfig`.
+    # Authenticates the provided JWT.
     #```ballerina
-    # boolean|auth:Error result = provider.authenticate("<credential>");
+    # boolean result = check provider.authenticate("<credential>");
     # ```
     #
     # + credential - JWT to be authenticated
-    # + return - `jwt:Payload` if authentication is successful or else an `auth:Error` if JWT validation failed
+    # + return - `jwt:Payload` if authentication is successful or else an `jwt:Error` if an error occurred
     public isolated function authenticate(string credential) returns Payload|Error {
         string[] jwtComponents = regex:split(credential, "\\.");
         if (jwtComponents.length() != 3) {

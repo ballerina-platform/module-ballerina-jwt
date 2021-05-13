@@ -15,11 +15,11 @@
 // under the License.
 
 # Represents the client JWT Auth provider, which is used to authenticate with an external endpoint by issuing a
-# self-signed JWT.
+# self-signed JWT against the provided JWT issuer configurations.
 # ```ballerina
 # jwt:ClientSelfSignedJwtAuthProvider provider = new({
-#     issuer: "example",
-#     audience: ["ballerina"],
+#     issuer: "wso2",
+#     audience: "ballerina",
 #     keyStoreConfig: {
 #         keyAlias: "ballerina",
 #         keyPassword: "ballerina",
@@ -43,10 +43,10 @@ public class ClientSelfSignedJwtAuthProvider {
 
     # Issues a self-signed JWT for authentication.
     # ```ballerina
-    # string|auth:Error token = provider.generateToken();
+    # string token = check provider.generateToken();
     # ```
     #
-    # + return - Generated token or else an `auth:Error` if token can't be generated
+    # + return - Generated token or else an `jwt:Error` if an error occurred
     public isolated function generateToken() returns string|Error {
         string|Error result = issue(self.issuerConfig);
         if (result is string) {

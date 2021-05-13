@@ -16,8 +16,8 @@
 
 import ballerina/log;
 
-# Represents the JWT error. This will be returned if an error occurred while issuing/validating a JWT or any operation
-# related to JWT.
+# Represents the error type of the module. This will be returned if an error occurred while issuing/validating a JWT
+# or any operation related to JWT auth providers.
 public type Error distinct error;
 
 // Logs and prepares the `error` as an `jwt:Error`.
