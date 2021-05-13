@@ -8,8 +8,6 @@ JSON Web Token (JWT) is a compact, URL-safe means of representing claims to be t
 
 The Ballerina JWT module facilitates auth providers that is to be used by the clients and listeners of different protocol connectors. Also, it provides the APIs for issuing a self-signed JWT and validating a JWT.
 
-For more information go to [The JWT Module](https://docs.central.ballerina.io/ballerina/jwt/latest).
-
 ### Report Issues
 
 To report bugs, request new features, start new discussions, view project boards, etc. please visit Ballerina
