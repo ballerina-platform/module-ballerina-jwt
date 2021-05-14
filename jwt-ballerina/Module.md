@@ -31,7 +31,7 @@ jwt:IssuerConfig issuerConfig = {
     }
 };
 
-string|jwt:Error jwt = jwt:issue(issuerConfig);
+string jwt = check jwt:issue(issuerConfig);
 ```
 
 ### JWT Validator
@@ -50,5 +50,5 @@ jwt:ValidatorConfig validatorConfig = {
     }
 };
 
-jwt:Payload|jwt:Error result = jwt:validate(jwt, validatorConfig);
+jwt:Payload result = check jwt:validate(jwt, validatorConfig);
 ```
