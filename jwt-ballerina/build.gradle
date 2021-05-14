@@ -166,14 +166,6 @@ task initializeVariables {
         needPublishToCentral = true
     }
 
-    // This check is added to disable the 'jwks' group tests in Windows OS since the Docker image does not support
-    // for Windows OS.
-    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        if (disableGroups == "") {
-            disableGroups = "--disable-groups"
-        }
-        disableGroups += " jwks"
-    }
     gradle.taskGraph.whenReady { graph ->
         if (graph.hasTask(":${packageName}-ballerina:build") || graph.hasTask(":${packageName}-ballerina:publish") ||
                 graph.hasTask(":${packageName}-ballerina:publishToMavenLocal")) {
@@ -311,7 +303,25 @@ task startBallerinaSTS() {
     doLast {
         // This check is added to prevent starting the server in Windows OS, since the Docker image does not support
         // for Windows OS.
-        if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            def stdOut = new ByteArrayOutputStream()
+            exec {
+                commandLine 'cmd', '/c', "docker ps --filter name=ballerina-sts"
+                standardOutput = stdOut
+            }
+            if (!stdOut.toString().contains("ballerina-sts")) {
+                println "Starting Ballerina STS."
+                exec {
+                    commandLine 'cmd', '/c', "docker run --rm -d -p 9445:9445 --name ballerina-sts ldclakmal/ballerina-sts:latest"
+                    standardOutput = stdOut
+                }
+                println stdOut.toString()
+                println "Waiting 10s until the Ballerina STS get initiated."
+                sleep(10 * 1000)
+            } else {
+                println "Ballerina STS is already started."
+            }
+        } else {
             def stdOut = new ByteArrayOutputStream()
             exec {
                 commandLine 'sh', '-c', "docker ps --filter name=ballerina-sts"
@@ -337,7 +347,25 @@ task stopBallerinaSTS() {
     doLast {
         // This check is added to prevent trying to stop the server in Windows OS, since the Docker image not started
         // in Windows OS.
-        if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            def stdOut = new ByteArrayOutputStream()
+            exec {
+                commandLine 'cmd', '/c', "docker ps --filter name=ballerina-sts"
+                standardOutput = stdOut
+            }
+            if (stdOut.toString().contains("ballerina-sts")) {
+                println "Stopping Ballerina STS."
+                exec {
+                    commandLine 'cmd', '/c', "docker stop ballerina-sts"
+                    standardOutput = stdOut
+                }
+                println stdOut.toString()
+                println "Waiting 15s until the Ballerina STS get stopped."
+                sleep(15 * 1000)
+            } else {
+                println "Ballerina STS is not started."
+            }
+        } else {
             def stdOut = new ByteArrayOutputStream()
             exec {
                 commandLine 'sh', '-c', "docker ps --filter name=ballerina-sts"
