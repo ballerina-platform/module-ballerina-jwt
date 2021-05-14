@@ -145,7 +145,7 @@ def needSeparateTest = false
 def needBuildWithTest = false
 def needPublishToCentral = false
 def needPublishToLocalCentral = false
-def testCoverageParam = "--code-coverage --jacoco-xml --includes=org.ballerinalang.stdlib.jwt.*:ballerina.jwt.*"
+def testCoverageParam = "--code-coverage --jacoco-xml --includes=*"
 
 task initializeVariables {
     if (project.hasProperty("groups")) {
@@ -167,14 +167,6 @@ task initializeVariables {
         needPublishToCentral = true
     }
 
-    // This check is added to disable the 'jwks' group tests in Windows OS since the Docker image does not support
-    // for Windows OS.
-    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        if (disableGroups == "") {
-            disableGroups = "--disable-groups"
-        }
-        disableGroups += " jwks"
-    }
     gradle.taskGraph.whenReady { graph ->
         if (graph.hasTask(":${packageName}-ballerina:build") || graph.hasTask(":${packageName}-ballerina:publish") ||
                 graph.hasTask(":${packageName}-ballerina:publishToMavenLocal")) {

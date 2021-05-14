@@ -45,4 +45,4 @@ jobs:
         env:
           packageUser: ${{ github.actor }}
           packagePAT: ${{ secrets.GITHUB_TOKEN }}
-        run: ./gradlew.bat test
+        run: ./gradlew.bat test -Pdisable=jwks
