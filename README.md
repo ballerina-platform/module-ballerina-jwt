@@ -9,13 +9,13 @@ Ballerina JWT Library
 
 The `jwt` library is one of the standard library modules of the [Ballerina](https://ballerina.io/) language.
 
-This module provides a framework for authentication/authorization with JWTs and generation/validation of JWTs as specified in [RFC 7519](https://datatracker.ietf.org/doc/html/rfc7519), [RFC 7515](https://datatracker.ietf.org/doc/html/rfc7515), and [RFC 7517](https://datatracker.ietf.org/doc/html/rfc7517).
+This module provides a framework for authentication/authorization with JWTs and generation/validation of JWTs as specified in the [RFC 7519](https://datatracker.ietf.org/doc/html/rfc7519), [RFC 7515](https://datatracker.ietf.org/doc/html/rfc7515), and [RFC 7517](https://datatracker.ietf.org/doc/html/rfc7517).
 
-JSON Web Token (JWT) is a compact, URL-safe means of representing claims to be transferred between two parties. The claims in a JWT are encoded as a JSON object that is used as the payload of a JSON Web Signature (JWS) structure or as the plaintext of a JSON Web Encryption (JWE) structure, enabling the claims to be digitally signed or integrity protected with a Message Authentication Code(MAC) and/or encrypted.
+JSON Web Token (JWT) is a compact, URL-safe means of representing claims to be transferred between two parties. The claims in a JWT are encoded as a JSON object that is used as the payload of a JSON Web Signature (JWS) structure or as the plaintext of a JSON Web Encryption (JWE) structure enabling the claims to be signed digitally or protecting the integrity with a Message Authentication Code(MAC) and/or encrypted.
 
 The Ballerina `jwt` module facilitates auth providers that are to be used by the clients and listeners of different protocol connectors. Also, it provides the APIs for issuing a self-signed JWT and validating a JWT.
 
-For more information go to the [`jwt` module](https://docs.central.ballerina.io/ballerina/jwt/latest).
+For more information, go to the [`jwt` module](https://docs.central.ballerina.io/ballerina/jwt/latest).
 
 For example demonstrations of the usage, go to [Ballerina By Examples](https://ballerina.io/learn/by-example/).
 
@@ -35,9 +35,9 @@ This repository only contains the source code for the module.
    
    * [OpenJDK](https://adoptopenjdk.net)
    
-        > **Note:** Set the JAVA_HOME environment variable to the path name of the directory into which you installed JDK.
+        > **Note:** Set the `JAVA_HOME` environment variable to the path name of the directory into which you installed JDK.
 
-2. Export GitHub Personal Access Token (PAT) with 'read package' permission as follows:
+2. Export your GitHub Personal Access Token (PAT) with the `read package` permission as follows:
 
     ```
     export packageUser=<Username>

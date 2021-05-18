@@ -46,7 +46,7 @@ public class ClientSelfSignedJwtAuthProvider {
     # string token = check provider.generateToken();
     # ```
     #
-    # + return - Generated token or else an `jwt:Error` if an error occurred
+    # + return - Generated token or else a `jwt:Error` if an error occurred
     public isolated function generateToken() returns string|Error {
         string|Error result = issue(self.issuerConfig);
         if (result is string) {

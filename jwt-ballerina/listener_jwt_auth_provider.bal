@@ -70,7 +70,7 @@ public class ListenerJwtAuthProvider {
     # ```
     #
     # + credential - JWT to be authenticated
-    # + return - `jwt:Payload` if authentication is successful or else an `jwt:Error` if an error occurred
+    # + return - `jwt:Payload` if authentication is successful or else a `jwt:Error` if an error occurred
     public isolated function authenticate(string credential) returns Payload|Error {
         string[] jwtComponents = regex:split(credential, "\\.");
         if (jwtComponents.length() != 3) {

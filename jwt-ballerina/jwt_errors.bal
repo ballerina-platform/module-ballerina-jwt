@@ -20,7 +20,7 @@ import ballerina/log;
 # or any operation related to JWT auth providers.
 public type Error distinct error;
 
-// Logs and prepares the `error` as an `jwt:Error`.
+// Logs and prepares the `error` as a `jwt:Error`.
 isolated function prepareError(string message, error? err = ()) returns Error {
     log:printError(message, 'error = err);
     if (err is error) {
