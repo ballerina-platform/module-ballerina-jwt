@@ -110,10 +110,10 @@ const string JWT4 = "eyJhbGciOiJSUzUxMiIsICJ0eXAiOiJKV1QifQ.eyJpc3MiOiJ3c28yIiwg
                     "VvO0_xTlFs4381lTXRjkK2G1XMjZQQZK7Px4qSBLqvr9uVPHbezlVKwQs4b1jIgwsE4Fx-bjti6tWCV4NhcU4WhoYB8pYkv" +
                     "f4WrBpKhcaZQeAiCUA6bUsqSkewvDwtjL9mUs0OkCw";
 
-// Build complete error message by evaluating all the inner causes and assert the inclusion.
+// Builds the complete error message by evaluating all the inner causes and asserts the inclusion.
 isolated function assertContains(error err, string text) {
     string message = err.message();
-    var cause = err.cause();
+    error? cause = err.cause();
     while (cause is error) {
         message += " " + cause.message();
         cause = cause.cause();
