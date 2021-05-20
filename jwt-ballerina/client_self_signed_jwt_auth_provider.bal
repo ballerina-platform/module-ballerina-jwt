@@ -30,15 +30,15 @@
 #     }
 # });
 # ```
-public class ClientSelfSignedJwtAuthProvider {
+public isolated class ClientSelfSignedJwtAuthProvider {
 
-    IssuerConfig issuerConfig;
+    private final IssuerConfig & readonly issuerConfig;
 
     # Provides authentication based on the provided JWT configurations.
     #
     # + issuerConfig - JWT issuer configurations
     public isolated function init(IssuerConfig issuerConfig) {
-        self.issuerConfig = issuerConfig;
+        self.issuerConfig = issuerConfig.cloneReadOnly();
     }
 
     # Issues a self-signed JWT for authentication.

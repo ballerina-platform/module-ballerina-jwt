@@ -34,34 +34,37 @@ import ballerina/time;
 #     }
 # });
 # ```
-public class ListenerJwtAuthProvider {
+public isolated class ListenerJwtAuthProvider {
 
-    ValidatorConfig validatorConfig;
-    cache:Cache? jwtCache = ();
-    cache:Cache? jwksCache = ();
+    private final ValidatorConfig & readonly validatorConfig;
+    private final cache:Cache? jwtCache;
+    private final cache:Cache? jwksCache;
 
     # Provides authentication based on the provided JWT.
     #
     # + validatorConfig - JWT validator configurations
     public isolated function init(ValidatorConfig validatorConfig) {
-        self.validatorConfig = validatorConfig;
-        cache:CacheConfig? jwtCacheConfig = validatorConfig?.cacheConfig;
+        self.validatorConfig = validatorConfig.cloneReadOnly();
+        cache:CacheConfig? jwtCacheConfig = self.validatorConfig?.cacheConfig;
         if (jwtCacheConfig is cache:CacheConfig) {
             self.jwtCache = new(jwtCacheConfig);
+        } else {
+            self.jwtCache = ();
         }
-        var jwksConfig = validatorConfig?.signatureConfig?.jwksConfig;
+        var jwksConfig = self.validatorConfig?.signatureConfig?.jwksConfig;
         if !(jwksConfig is ()) {
-            string url = <string> jwksConfig?.url;
-            ClientConfiguration clientConfig = <ClientConfiguration> jwksConfig?.clientConfig;
+            ClientConfiguration clientConfig = jwksConfig.clientConfig;
             cache:CacheConfig? jwksCacheConfig = jwksConfig?.cacheConfig;
             if (jwksCacheConfig is cache:CacheConfig) {
                 self.jwksCache = new(jwksCacheConfig);
-                Error? result = preloadJwksToCache(<cache:Cache> (self.jwksCache), url, clientConfig);
+                Error? result = preloadJwksToCache(<cache:Cache> (self.jwksCache), jwksConfig.url, clientConfig);
                 if (result is Error) {
                     panic result;
                 }
+                return;
             }
         }
+        self.jwksCache = ();
     }
 
     # Authenticates the provided JWT.
