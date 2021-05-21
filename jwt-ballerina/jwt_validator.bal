@@ -65,7 +65,7 @@ public type ClientConfiguration record {|
     SecureSocket secureSocket?;
 |};
 
-# Represents HTTP versions.
+# Represents the HTTP versions.
 public enum HttpVersion {
     HTTP_1_1,
     HTTP_2
