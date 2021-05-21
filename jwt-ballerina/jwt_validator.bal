@@ -65,7 +65,7 @@ public type ClientConfiguration record {|
     SecureSocket secureSocket?;
 |};
 
-# Represents HTTP versions.
+# Represents the HTTP versions.
 public enum HttpVersion {
     HTTP_1_1,
     HTTP_2
@@ -82,7 +82,7 @@ public type SecureSocket record {|
     crypto:KeyStore|CertKey key?;
 |};
 
-# Represents combination of certificate, private key and private key password if encrypted.
+# Represents the combination of the certificate file path, private key file path, and private key password if encrypted.
 #
 # + certFile - A file containing the certificate
 # + keyFile - A file containing the private key
@@ -116,7 +116,7 @@ isolated function validateJwt(string jwt, ValidatorConfig validatorConfig, cache
     return payload;
 }
 
-# Decodes the provided JWT.
+# Decodes the provided JWT into the header and payload.
 # ```ballerina
 # [jwt:Header, jwt:Payload] [header, payload] = check jwt:decode(jwt);
 # ```

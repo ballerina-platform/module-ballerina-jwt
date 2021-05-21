@@ -16,7 +16,7 @@
 
 import ballerina/jballerina.java;
 
-# The cryptographic algorithms used to secure the JWS.
+# Represents the cryptographic algorithms used to secure the JWS.
 public type SigningAlgorithm RS256|RS384|RS512|NONE;
 
 # The `RSA-SHA256` algorithm.
