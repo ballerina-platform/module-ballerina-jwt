@@ -10,7 +10,7 @@ The Ballerina `jwt` module facilitates auth providers that are to be used by the
 
 Represents the listener JWT Auth provider, which is used to authenticate the provided credentials (JWT) against the provided JWT validator configurations.
 
-### Client OAuth2 Provider
+### Client JWT Auth Provider
 
 Represents the client JWT Auth provider, which is used to authenticate with an external endpoint by issuing a self-signed JWT against the provided JWT issuer configurations.
 
