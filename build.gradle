@@ -52,50 +52,7 @@ allprojects {
             url = 'https://repo.maven.apache.org/maven2'
         }
         maven {
-            url = 'https://maven.pkg.github.com/ballerina-platform/ballerina-lang'
-            credentials {
-                username System.getenv("packageUser")
-                password System.getenv("packagePAT")
-            }
-        }
-        maven {
-            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-cache'
-            credentials {
-                username System.getenv("packageUser")
-                password System.getenv("packagePAT")
-            }
-        }
-        maven {
-            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-crypto'
-            credentials {
-                username System.getenv("packageUser")
-                password System.getenv("packagePAT")
-            }
-        }
-        maven {
-            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-log'
-            credentials {
-                username System.getenv("packageUser")
-                password System.getenv("packagePAT")
-            }
-        }
-        maven {
-            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-regex'
-            credentials {
-                username System.getenv("packageUser")
-                password System.getenv("packagePAT")
-            }
-        }
-        maven {
-            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-time'
-            credentials {
-                username System.getenv("packageUser")
-                password System.getenv("packagePAT")
-            }
-        }
-        // Transitive dependencies
-        maven {
-            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-task'
+            url = 'https://maven.pkg.github.com/ballerina-platform/*'
             credentials {
                 username System.getenv("packageUser")
                 password System.getenv("packagePAT")
