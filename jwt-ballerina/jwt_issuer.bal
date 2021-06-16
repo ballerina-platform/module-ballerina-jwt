@@ -177,7 +177,7 @@ isolated function preparePayload(IssuerConfig issuerConfig) returns Payload {
     map<json>? customClaims = issuerConfig?.customClaims;
     if (customClaims is map<json>) {
         foreach string key in customClaims.keys() {
-            payload[key] = customClaims[key].toJsonString();
+            payload[key] = customClaims[key];
         }
     }
     return payload;

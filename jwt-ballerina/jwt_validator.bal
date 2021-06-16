@@ -191,27 +191,27 @@ isolated function parseHeader(map<json> headerMap) returns Header|Error {
     foreach string key in keys {
         match (key) {
             ALG => {
-                if (headerMap[key].toJsonString() == "RS256") {
+                if (headerMap[key] == "RS256") {
                     header.alg = RS256;
-                } else if (headerMap[key].toJsonString() == "RS384") {
+                } else if (headerMap[key] == "RS384") {
                     header.alg = RS384;
-                } else if (headerMap[key].toJsonString() == "RS512") {
+                } else if (headerMap[key] == "RS512") {
                     header.alg = RS512;
                 } else {
-                    return prepareError("Unsupported signing algorithm '" + headerMap[key].toJsonString() + "'.");
+                    return prepareError("Unsupported signing algorithm '" + headerMap[key].toString() + "'.");
                 }
             }
             TYP => {
-                header.typ = headerMap[key].toJsonString();
+                header.typ = <string>headerMap[key];
             }
             CTY => {
-                header.cty = headerMap[key].toJsonString();
+                header.cty = <string>headerMap[key];
             }
             KID => {
-                header.kid = headerMap[key].toJsonString();
+                header.kid = <string>headerMap[key];
             }
             _ => {
-                header[key] = headerMap[key].toJsonString();
+                header[key] = headerMap[key];
             }
         }
     }
@@ -224,19 +224,19 @@ isolated function parsePayload(map<json> payloadMap) returns Payload|Error {
     foreach string key in keys {
         match (key) {
             ISS => {
-                payload.iss = payloadMap[key].toJsonString();
+                payload.iss = <string>payloadMap[key];
             }
             SUB => {
-                payload.sub = payloadMap[key].toJsonString();
+                payload.sub = <string>payloadMap[key];
             }
             AUD => {
-                payload.aud = payloadMap[key] is json[] ? check convertToStringArray(<json[]>payloadMap[key]) : payloadMap[key].toJsonString();
+                payload.aud = payloadMap[key] is json[] ? check convertToStringArray(<json[]>payloadMap[key]) : <string>payloadMap[key];
             }
             JTI => {
-                payload.jti = payloadMap[key].toJsonString();
+                payload.jti = <string>payloadMap[key];
             }
             EXP => {
-                string exp = payloadMap[key].toJsonString();
+                string exp = payloadMap[key].toString();
                 int|error value = 'int:fromString(exp);
                 if (value is int) {
                     payload.exp = value;
@@ -245,7 +245,7 @@ isolated function parsePayload(map<json> payloadMap) returns Payload|Error {
                 }
             }
             NBF => {
-                string nbf = payloadMap[key].toJsonString();
+                string nbf = payloadMap[key].toString();
                 int|error value = 'int:fromString(nbf);
                 if (value is int) {
                     payload.nbf = value;
@@ -254,7 +254,7 @@ isolated function parsePayload(map<json> payloadMap) returns Payload|Error {
                 }
             }
             IAT => {
-                string iat = payloadMap[key].toJsonString();
+                string iat = payloadMap[key].toString();
                 int|error value = 'int:fromString(iat);
                 if (value is int) {
                     payload.iat = value;
@@ -263,7 +263,7 @@ isolated function parsePayload(map<json> payloadMap) returns Payload|Error {
                 }
             }
             _ => {
-                payload[key] = payloadMap[key].toJsonString();
+                payload[key] = payloadMap[key];
             }
         }
     }
@@ -391,15 +391,19 @@ isolated function validateCertificate(crypto:PublicKey publicKey) returns boolea
 isolated function getPublicKeyByJwks(json jwk) returns crypto:PublicKey|Error {
     json|error modulus = jwk.n;
     json|error exponent = jwk.e;
-    if (modulus is json && exponent is json) {
-        crypto:PublicKey|crypto:Error publicKey = crypto:buildRsaPublicKey(modulus.toJsonString(), exponent.toJsonString());
+    if (modulus is string && exponent is string) {
+        crypto:PublicKey|crypto:Error publicKey = crypto:buildRsaPublicKey(modulus, exponent);
         if (publicKey is crypto:PublicKey) {
             return publicKey;
         } else {
             return prepareError("Public key generation failed.", publicKey);
         }
+    } else if (modulus is error) {
+        return prepareError("Failed to access modulus from the JWK '" + jwk.toString() + "'.");
+    } else if (exponent is error) {
+        return prepareError("Failed to access exponent from the JWK '" + jwk.toString() + "'.");
     } else {
-        return prepareError("Failed to access modulus and exponent from the JWK '" + jwk.toJsonString() + "'.");
+        return prepareError("Failed to access modulus or exponent as a 'string' property from the JWK '" + jwk.toString() + "'.");
     }
 }
 
@@ -435,7 +439,7 @@ isolated function getJwksArray(string stringResponse) returns json[]|Error {
         if (jwks is json) {
             return <json[]> jwks;
         } else {
-            return prepareError("Failed to access 'keys' property from the JSON '" + jsonResponse.toJsonString() + "'.", jwks);
+            return prepareError("Failed to access 'keys' property from the JSON '" + jsonResponse.toString() + "'.", jwks);
         }
     } else {
         return prepareError("Failed to convert '" + stringResponse + "' to JSON.", jsonResponse);
@@ -547,7 +551,7 @@ isolated function convertToStringArray(json[] jsonData) returns string[]|Error {
     string[] values = [];
     int i = 0;
     foreach json jsonVal in jsonData {
-        values[i] = jsonVal.toJsonString();
+        values[i] = jsonVal.toString();
         i = i + 1;
     }
     return values;
