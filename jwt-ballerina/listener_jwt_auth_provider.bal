@@ -106,13 +106,15 @@ isolated function preloadJwksToCache(cache:Cache jwksCache, string url, ClientCo
         json[] jwksArray = check getJwksArray(stringResponse);
         foreach json jwk in jwksArray {
             json|error kid = jwk.kid;
-            if (kid is json) {
-                cache:Error? cachedResult = jwksCache.put(kid.toJsonString(), jwk);
+            if (kid is string) {
+                cache:Error? cachedResult = jwksCache.put(kid, jwk);
                 if (cachedResult is cache:Error) {
-                    return prepareError("Failed to put JWK for the kid '" + kid.toJsonString() + "' to the cache.", cachedResult);
+                    return prepareError("Failed to put JWK for the kid '" + kid + "' to the cache.", cachedResult);
                 }
+            } else if (kid is error) {
+                return prepareError("Failed to access 'kid' property from the JSON '" + jwk.toString() + "'.", kid);
             } else {
-                return prepareError("Failed to access 'kid' property from the JSON '" + jwk.toJsonString() + "'.", kid);
+                return prepareError("Failed to extract 'kid' property as a 'string' from the JSON '" + jwk.toString() + "'.");
             }
         }
     } else {
