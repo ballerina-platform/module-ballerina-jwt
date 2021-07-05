@@ -46,7 +46,7 @@ isolated function testIssueJwt() {
     if (result is string) {
         test:assertTrue(result.startsWith("eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QiLCAia2lkIjoiNWEwYjc1NC04OTVmLTQyNzktODg0My1iNzQ1ZTExYTU3ZTkifQ."));
         string header = "{\"alg\":\"RS256\", \"typ\":\"JWT\", \"kid\":\"5a0b754-895f-4279-8843-b745e11a57e9\"}";
-        string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"], \"jti\":\"JlbmMiOiJBMTI4Q0JDLUhTMjU2In\",";
+        string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"],";
         assertDecodedJwt(result, header, payload);
     } else {
         string? errMsg = result.message();

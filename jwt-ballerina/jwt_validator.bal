@@ -25,8 +25,8 @@ import ballerina/time;
 
 # Represents JWT validator configurations.
 #
-# + username - Expected username, which is mapped to the `sub`
 # + issuer - Expected issuer, which is mapped to the `iss`
+# + username - Expected username, which is mapped to the `sub`
 # + audience - Expected audience, which is mapped to the `aud`
 # + jwtId - Expected JWT ID, which is mapped to the `jti`
 # + keyId - Expected JWT key ID, which is mapped the `kid`
@@ -35,8 +35,8 @@ import ballerina/time;
 # + signatureConfig - JWT signature configurations
 # + cacheConfig - Configurations related to the cache, which are used to store parsed JWT information
 public type ValidatorConfig record {
-    string username?;
     string issuer?;
+    string username?;
     string|string[] audience?;
     string jwtId?;
     string keyId?;
@@ -231,17 +231,14 @@ isolated function parsePayload(map<json> payloadMap) returns Payload|Error {
     string[] keys = payloadMap.keys();
     foreach string key in keys {
         match (key) {
-            SUB => {
-                payload.sub = <string>payloadMap[key];
-            }
             ISS => {
                 payload.iss = <string>payloadMap[key];
             }
+            SUB => {
+                payload.sub = <string>payloadMap[key];
+            }
             AUD => {
                 payload.aud = payloadMap[key] is json[] ? check convertToStringArray(<json[]>payloadMap[key]) : <string>payloadMap[key];
-            }
-            JTI => {
-                payload.jti = <string>payloadMap[key];
             }
             EXP => {
                 string exp = payloadMap[key].toString();
@@ -269,6 +266,9 @@ isolated function parsePayload(map<json> payloadMap) returns Payload|Error {
                 } else {
                     payload.iat = 0;
                 }
+            }
+            JTI => {
+                payload.jti = <string>payloadMap[key];
             }
             _ => {
                 payload[key] = payloadMap[key];

@@ -72,10 +72,10 @@ public type Payload record {
     string iss?;
     string sub?;
     string|string[] aud?;
-    string jti?;
     int exp?;
     int nbf?;
     int iat?;
+    string jti?;
 };
 
 isolated function encodeBase64Url(byte[] input) returns string = @java:Method {
