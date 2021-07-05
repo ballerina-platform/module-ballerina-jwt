@@ -122,6 +122,33 @@ isolated function testValidateJwtWithNoIssOrSub() {
 }
 
 @test:Config {}
+isolated function testValidateJwtWithAllFields() {
+    ValidatorConfig validatorConfig = {
+        username: "John",
+        issuer: "wso2",
+        audience: ["ballerina", "ballerinaSamples"],
+        jwtId: "JlbmMiOiJBMTI4Q0JDLUhTMjU2In",
+        keyId: "5a0b754-895f-4279-8843-b745e11a57e9",
+        customClaims: { "scp": "hello" },
+        clockSkew: 60,
+        signatureConfig: {
+            trustStoreConfig: {
+                trustStore: {
+                    path: TRUSTSTORE_PATH,
+                    password: "ballerina"
+                },
+                certAlias: "ballerina"
+            }
+        }
+    };
+    Payload|Error result = validate(JWT5, validatorConfig);
+    if (result is Error) {
+        string? errMsg = result.message();
+        test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
+    }
+}
+
+@test:Config {}
 isolated function testValidateJwtWithInvalidSignature() {
     ValidatorConfig validatorConfig = {
         signatureConfig: {

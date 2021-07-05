@@ -25,14 +25,22 @@ import ballerina/time;
 
 # Represents JWT validator configurations.
 #
+# + username - Expected username, which is mapped to the `sub`
 # + issuer - Expected issuer, which is mapped to the `iss`
 # + audience - Expected audience, which is mapped to the `aud`
+# + jwtId - Expected JWT ID, which is mapped to the `jti`
+# + keyId - Expected JWT key ID, which is mapped the `kid`
+# + customClaims - Expected map of custom claims
 # + clockSkew - Clock skew (in seconds) that can be used to avoid token validation failures due to clock synchronization problems
 # + signatureConfig - JWT signature configurations
 # + cacheConfig - Configurations related to the cache, which are used to store parsed JWT information
 public type ValidatorConfig record {
+    string username?;
     string issuer?;
     string|string[] audience?;
+    string jwtId?;
+    string keyId?;
+    map<json> customClaims?;
     decimal clockSkew = 0;
     ValidatorSignatureConfig signatureConfig?;
     cache:CacheConfig cacheConfig?;
@@ -223,11 +231,11 @@ isolated function parsePayload(map<json> payloadMap) returns Payload|Error {
     string[] keys = payloadMap.keys();
     foreach string key in keys {
         match (key) {
-            ISS => {
-                payload.iss = <string>payloadMap[key];
-            }
             SUB => {
                 payload.sub = <string>payloadMap[key];
+            }
+            ISS => {
+                payload.iss = <string>payloadMap[key];
             }
             AUD => {
                 payload.aud = payloadMap[key] is json[] ? check convertToStringArray(<json[]>payloadMap[key]) : <string>payloadMap[key];
@@ -348,6 +356,10 @@ isolated function validateSignature(string jwt, Header header, Payload payload, 
 }
 
 isolated function validateJwtRecords(Header header, Payload payload, ValidatorConfig validatorConfig) returns Error? {
+    string? sub = validatorConfig?.username;
+    if (sub is string) {
+        _ = check validateUsername(payload, sub);
+    }
     string? iss = validatorConfig?.issuer;
     if (iss is string) {
         _ = check validateIssuer(payload, iss);
@@ -355,6 +367,18 @@ isolated function validateJwtRecords(Header header, Payload payload, ValidatorCo
     string|string[]? aud = validatorConfig?.audience;
     if (aud is string || aud is string[]) {
         _ = check validateAudience(payload, aud);
+    }
+    string? jwtId = validatorConfig?.jwtId;
+    if (jwtId is string) {
+        _ = check validateJwtId(payload, jwtId);
+    }
+    string? keyId = validatorConfig?.keyId;
+    if (keyId is string) {
+        _ = check validateKeyId(header, keyId);
+    }
+    map<json>? customClaims = validatorConfig?.customClaims;
+    if (customClaims is map<json>) {
+        _ = check validateCustomClaims(payload, customClaims);
     }
     int? exp = payload?.exp;
     if (exp is int) {
@@ -481,6 +505,17 @@ isolated function assertSignature(SigningAlgorithm alg, byte[] assertion, byte[]
     return prepareError("Unsupported JWS algorithm '" + alg.toString() + "'.");
 }
 
+isolated function validateUsername(Payload payload, string usernameConfig) returns Error? {
+    string? usernamePayload = payload?.sub;
+    if (usernamePayload is string) {
+        if (usernamePayload != usernameConfig) {
+            return prepareError("JWT contained invalid username '" + usernamePayload + "'");
+        }
+    } else {
+        return prepareError("JWT must contain a valid username.");
+    }
+}
+
 isolated function validateIssuer(Payload payload, string issuerConfig) returns Error? {
     string? issuePayload = payload?.iss;
     if (issuePayload is string) {
@@ -526,6 +561,41 @@ isolated function validateAudience(Payload payload, string|string[] audienceConf
         return prepareError("Invalid audience.");
     } else {
         return prepareError("JWT must contain a valid audience.");
+    }
+}
+
+isolated function validateJwtId(Payload payload, string jwtIdConfig) returns Error? {
+    string? jwtIdPayload = payload?.jti;
+    if (jwtIdPayload is string) {
+        if (jwtIdPayload != jwtIdConfig) {
+            return prepareError("JWT contained invalid JWT ID '" + jwtIdPayload + "'");
+        }
+    } else {
+        return prepareError("JWT must contain a valid JWT ID.");
+    }
+}
+
+isolated function validateKeyId(Header header, string keyIdConfig) returns Error? {
+    string? keyIdHeader = header?.kid;
+    if (keyIdHeader is string) {
+        if (keyIdHeader != keyIdConfig) {
+            return prepareError("JWT contained invalid Key ID '" + keyIdHeader + "'");
+        }
+    } else {
+        return prepareError("JWT must contain a valid Key ID.");
+    }
+}
+
+isolated function validateCustomClaims(Payload payload, map<json> customClaims) returns Error? {
+    foreach string key in customClaims.keys() {
+        json customClaimPayload = payload[key].toJson();
+        if (customClaimPayload is ()) {
+            return prepareError("JWT must contain a '" + key + "' custom claim.");
+        }
+        json customClaimConfig = customClaims[key];
+        if (customClaimPayload.toString() != customClaimConfig.toString()) {
+            return prepareError("JWT contained invalid custom claim '" + customClaimPayload.toString() + "'");
+        }
     }
 }
 
