@@ -541,7 +541,7 @@ isolated function validateAudience(Payload payload, string|string[] audienceConf
                 }
             }
         }
-        return prepareError("Invalid audience.");
+        return prepareError("JWT contained invalid audience.");
     } else if (audiencePayload is string[]) {
         if (audienceConfig is string) {
             foreach string audience in audiencePayload {
@@ -558,7 +558,7 @@ isolated function validateAudience(Payload payload, string|string[] audienceConf
                 }
             }
         }
-        return prepareError("Invalid audience.");
+        return prepareError("JWT contained invalid audience.");
     } else {
         return prepareError("JWT must contain a valid audience.");
     }
@@ -579,10 +579,10 @@ isolated function validateKeyId(Header header, string keyIdConfig) returns Error
     string? keyIdHeader = header?.kid;
     if (keyIdHeader is string) {
         if (keyIdHeader != keyIdConfig) {
-            return prepareError("JWT contained invalid Key ID '" + keyIdHeader + "'");
+            return prepareError("JWT contained invalid key ID '" + keyIdHeader + "'");
         }
     } else {
-        return prepareError("JWT must contain a valid Key ID.");
+        return prepareError("JWT must contain a valid key ID.");
     }
 }
 
@@ -594,7 +594,7 @@ isolated function validateCustomClaims(Payload payload, map<json> customClaims) 
         }
         json customClaimConfig = customClaims[key];
         if (customClaimPayload.toString() != customClaimConfig.toString()) {
-            return prepareError("JWT contained invalid custom claim '" + customClaimPayload.toString() + "'");
+            return prepareError("JWT contained invalid custom claim '" + key + ": " + customClaimPayload.toString() + "'");
         }
     }
 }
