@@ -122,6 +122,201 @@ isolated function testValidateJwtWithNoIssOrSub() {
 }
 
 @test:Config {}
+isolated function testValidateJwtWithAllFields() {
+    ValidatorConfig validatorConfig = {
+        username: "John",
+        issuer: "wso2",
+        audience: ["ballerina", "ballerinaSamples"],
+        jwtId: "JlbmMiOiJBMTI4Q0JDLUhTMjU2In",
+        keyId: "5a0b754-895f-4279-8843-b745e11a57e9",
+        customClaims: { "scp": "hello" },
+        clockSkew: 60,
+        signatureConfig: {
+            trustStoreConfig: {
+                trustStore: {
+                    path: TRUSTSTORE_PATH,
+                    password: "ballerina"
+                },
+                certAlias: "ballerina"
+            }
+        }
+    };
+    Payload|Error result = validate(JWT5, validatorConfig);
+    if (result is Error) {
+        string? errMsg = result.message();
+        test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
+    }
+}
+
+@test:Config {}
+isolated function testValidateJwtWithInvalidSubject() {
+    ValidatorConfig validatorConfig = {
+        username: "invalid",
+        issuer: "wso2",
+        audience: ["ballerina", "ballerinaSamples"],
+        jwtId: "JlbmMiOiJBMTI4Q0JDLUhTMjU2In",
+        keyId: "5a0b754-895f-4279-8843-b745e11a57e9",
+        customClaims: { "scp": "hello" },
+        clockSkew: 60,
+        signatureConfig: {
+            trustStoreConfig: {
+                trustStore: {
+                    path: TRUSTSTORE_PATH,
+                    password: "ballerina"
+                },
+                certAlias: "ballerina"
+            }
+        }
+    };
+    Payload|Error result = validate(JWT5, validatorConfig);
+    if (result is Error) {
+        assertContains(result, "JWT contained invalid username 'John'");
+    } else {
+        test:assertFail(msg = "Error in validating JWT.");
+    }
+}
+
+@test:Config {}
+isolated function testValidateJwtWithInvalidIssuer() {
+    ValidatorConfig validatorConfig = {
+        username: "John",
+        issuer: "invalid",
+        audience: ["ballerina", "ballerinaSamples"],
+        jwtId: "JlbmMiOiJBMTI4Q0JDLUhTMjU2In",
+        keyId: "5a0b754-895f-4279-8843-b745e11a57e9",
+        customClaims: { "scp": "hello" },
+        clockSkew: 60,
+        signatureConfig: {
+            trustStoreConfig: {
+                trustStore: {
+                    path: TRUSTSTORE_PATH,
+                    password: "ballerina"
+                },
+                certAlias: "ballerina"
+            }
+        }
+    };
+    Payload|Error result = validate(JWT5, validatorConfig);
+    if (result is Error) {
+        assertContains(result, "JWT contained invalid issuer name 'wso2'");
+    } else {
+        test:assertFail(msg = "Error in validating JWT.");
+    }
+}
+
+@test:Config {}
+isolated function testValidateJwtWithInvalidAudience() {
+    ValidatorConfig validatorConfig = {
+        username: "John",
+        issuer: "wso2",
+        audience: "invalid",
+        jwtId: "JlbmMiOiJBMTI4Q0JDLUhTMjU2In",
+        keyId: "5a0b754-895f-4279-8843-b745e11a57e9",
+        customClaims: { "scp": "hello" },
+        clockSkew: 60,
+        signatureConfig: {
+            trustStoreConfig: {
+                trustStore: {
+                    path: TRUSTSTORE_PATH,
+                    password: "ballerina"
+                },
+                certAlias: "ballerina"
+            }
+        }
+    };
+    Payload|Error result = validate(JWT5, validatorConfig);
+    if (result is Error) {
+        assertContains(result, "JWT contained invalid audience.");
+    } else {
+        test:assertFail(msg = "Error in validating JWT.");
+    }
+}
+
+@test:Config {}
+isolated function testValidateJwtWithInvalidJwtId() {
+    ValidatorConfig validatorConfig = {
+        username: "John",
+        issuer: "wso2",
+        audience: ["ballerina", "ballerinaSamples"],
+        jwtId: "invalid",
+        keyId: "5a0b754-895f-4279-8843-b745e11a57e9",
+        customClaims: { "scp": "hello" },
+        clockSkew: 60,
+        signatureConfig: {
+            trustStoreConfig: {
+                trustStore: {
+                    path: TRUSTSTORE_PATH,
+                    password: "ballerina"
+                },
+                certAlias: "ballerina"
+            }
+        }
+    };
+    Payload|Error result = validate(JWT5, validatorConfig);
+    if (result is Error) {
+        assertContains(result, "JWT contained invalid JWT ID 'JlbmMiOiJBMTI4Q0JDLUhTMjU2In'");
+    } else {
+        test:assertFail(msg = "Error in validating JWT.");
+    }
+}
+
+@test:Config {}
+isolated function testValidateJwtWithInvalidKeyId() {
+    ValidatorConfig validatorConfig = {
+        username: "John",
+        issuer: "wso2",
+        audience: ["ballerina", "ballerinaSamples"],
+        jwtId: "JlbmMiOiJBMTI4Q0JDLUhTMjU2In",
+        keyId: "invalid",
+        customClaims: { "scp": "hello" },
+        clockSkew: 60,
+        signatureConfig: {
+            trustStoreConfig: {
+                trustStore: {
+                    path: TRUSTSTORE_PATH,
+                    password: "ballerina"
+                },
+                certAlias: "ballerina"
+            }
+        }
+    };
+    Payload|Error result = validate(JWT5, validatorConfig);
+    if (result is Error) {
+        assertContains(result, "JWT contained invalid key ID '5a0b754-895f-4279-8843-b745e11a57e9'");
+    } else {
+        test:assertFail(msg = "Error in validating JWT.");
+    }
+}
+
+@test:Config {}
+isolated function testValidateJwtWithInvalidCustomClaims() {
+    ValidatorConfig validatorConfig = {
+        username: "John",
+        issuer: "wso2",
+        audience: ["ballerina", "ballerinaSamples"],
+        jwtId: "JlbmMiOiJBMTI4Q0JDLUhTMjU2In",
+        keyId: "5a0b754-895f-4279-8843-b745e11a57e9",
+        customClaims: { "scp": "invalid" },
+        clockSkew: 60,
+        signatureConfig: {
+            trustStoreConfig: {
+                trustStore: {
+                    path: TRUSTSTORE_PATH,
+                    password: "ballerina"
+                },
+                certAlias: "ballerina"
+            }
+        }
+    };
+    Payload|Error result = validate(JWT5, validatorConfig);
+    if (result is Error) {
+        assertContains(result, "JWT contained invalid custom claim 'scp: hello'");
+    } else {
+        test:assertFail(msg = "Error in validating JWT.");
+    }
+}
+
+@test:Config {}
 isolated function testValidateJwtWithInvalidSignature() {
     ValidatorConfig validatorConfig = {
         signatureConfig: {

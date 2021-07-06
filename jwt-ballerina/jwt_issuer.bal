@@ -19,8 +19,8 @@ import ballerina/time;
 
 # Represents JWT issuer configurations.
 #
-# + username - JWT username, which is mapped to the `sub`
 # + issuer - JWT issuer, which is mapped to the `iss`
+# + username - JWT username, which is mapped to the `sub`
 # + audience - JWT audience, which is mapped to the `aud`
 # + jwtId - JWT ID, which is mapped to the `jti`
 # + keyId - JWT key ID, which is mapped the `kid`
@@ -28,8 +28,8 @@ import ballerina/time;
 # + expTime - Expiry time in seconds
 # + signatureConfig - JWT signature configurations
 public type IssuerConfig record {|
-    string username?;
     string issuer?;
+    string username?;
     string|string[] audience?;
     string jwtId?;
     string keyId?;
@@ -157,13 +157,13 @@ isolated function preparePayload(IssuerConfig issuerConfig) returns Payload {
         nbf: currentTime[0]
     };
 
-    string? sub = issuerConfig?.username;
-    if (sub is string) {
-        payload.sub = sub;
-    }
     string? iss = issuerConfig?.issuer;
     if (iss is string) {
         payload.iss = iss;
+    }
+    string? sub = issuerConfig?.username;
+    if (sub is string) {
+        payload.sub = sub;
     }
     string|string[]? aud = issuerConfig?.audience;
     if (aud is string || aud is string[]) {

@@ -110,6 +110,33 @@ const string JWT4 = "eyJhbGciOiJSUzUxMiIsICJ0eXAiOiJKV1QifQ.eyJpc3MiOiJ3c28yIiwg
                     "VvO0_xTlFs4381lTXRjkK2G1XMjZQQZK7Px4qSBLqvr9uVPHbezlVKwQs4b1jIgwsE4Fx-bjti6tWCV4NhcU4WhoYB8pYkv" +
                     "f4WrBpKhcaZQeAiCUA6bUsqSkewvDwtjL9mUs0OkCw";
 
+// {
+//  "alg": "RS256",
+//  "typ": "JWT",
+//  "kid": "5a0b754-895f-4279-8843-b745e11a57e9"
+// }
+// {
+//  "iss": "wso2",
+//  "sub": "John",
+//  "aud": [
+//    "ballerina",
+//    "ballerinaSamples"
+//  ],
+//  "jti": "JlbmMiOiJBMTI4Q0JDLUhTMjU2In",
+//  "exp": 1940845451,
+//  "nbf": 1625485451,
+//  "iat": 1625485451,
+//  "scp": "hello"
+// }
+const string JWT5 = "eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QiLCAia2lkIjoiNWEwYjc1NC04OTVmLTQyNzktODg0My1iNzQ1ZTExYTU3ZTk" +
+                    "ifQ.eyJpc3MiOiJ3c28yIiwgInN1YiI6IkpvaG4iLCAiYXVkIjpbImJhbGxlcmluYSIsICJiYWxsZXJpbmFTYW1wbGVzIl0" +
+                    "sICJqdGkiOiJKbGJtTWlPaUpCTVRJNFEwSkRMVWhUTWpVMkluIiwgImV4cCI6MTk0MDg0NTQ1MSwgIm5iZiI6MTYyNTQ4NT" +
+                    "Q1MSwgImlhdCI6MTYyNTQ4NTQ1MSwgInNjcCI6ImhlbGxvIn0.G0c9t9AE7BmYhKCNY4DsYmypk4XDQ-lNqpENYUouugWXn" +
+                    "t3-d2rpLHxnXNqcIqPBWRV6QuxO-0jcp6LjkjO2khgZ5jMVNFtlyUN4cQ9UEHfwiPAjSlkwT7sAEHPUd8S8wp714eWtkdjo" +
+                    "ysgpcdEE3VJi1OgI1SeVDiN6l7jkt-xxhMsbHGYIeTc1lTLgwNtCJaNJKHvi0uJu5x9YfUznett8Dw465DbADhBLMoSBYAT" +
+                    "t4flzCBsTGWC7XZaFnwT4mUlX7WpTOgv1Nsq5GVLszvsnzs6BE__Mvr4zl5pdChVbkMXX3US6fYguK268XKjzgtpMVxUpL3" +
+                    "CrzwQpIRyI-Q";
+
 // Builds the complete error message by evaluating all the inner causes and asserts the inclusion.
 isolated function assertContains(error err, string text) {
     string message = err.message();
