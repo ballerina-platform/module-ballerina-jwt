@@ -1,0 +1,7 @@
+[package]
+org = "ballerina"
+name = "jwt"
+version = "@toml.version@"
+
+[[platform.java11.dependency]]
+path = "../native/build/libs/jwt-native-@project.version@.jar"

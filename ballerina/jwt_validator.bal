@@ -471,7 +471,7 @@ isolated function getJwksArray(string stringResponse) returns json[]|Error {
 }
 
 isolated function getJwksResponse(string url, ClientConfiguration clientConfig) returns string|Error = @java:Method {
-    'class: "org.ballerinalang.stdlib.jwt.JwksClient"
+    'class: "io.ballerina.stdlib.jwt.JwksClient"
 } external;
 
 isolated function assertSignature(SigningAlgorithm alg, byte[] assertion, byte[] signaturePart,

@@ -79,9 +79,9 @@ public type Payload record {
 };
 
 isolated function encodeBase64Url(byte[] input) returns string = @java:Method {
-    'class: "org.ballerinalang.stdlib.jwt.JwtUtils"
+    'class: "io.ballerina.stdlib.jwt.JwtUtils"
 } external;
 
 isolated function decodeBase64Url(string input) returns byte[]|Error = @java:Method {
-    'class: "org.ballerinalang.stdlib.jwt.JwtUtils"
+    'class: "io.ballerina.stdlib.jwt.JwtUtils"
 } external;
