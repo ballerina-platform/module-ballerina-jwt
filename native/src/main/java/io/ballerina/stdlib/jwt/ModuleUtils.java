@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.ballerinalang.stdlib.jwt;
+package io.ballerina.stdlib.jwt;
 
 import io.ballerina.runtime.api.Environment;
 import io.ballerina.runtime.api.Module;

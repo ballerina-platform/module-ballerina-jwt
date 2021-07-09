@@ -24,11 +24,11 @@ plugins {
 description = 'Ballerina - JWT Java Utils'
 
 dependencies {
-    checkstyle project(':build-config:checkstyle')
+    checkstyle project(':checkstyle')
     checkstyle "com.puppycrawl.tools:checkstyle:${puppycrawlCheckstyleVersion}"
 
     implementation group: 'org.ballerinalang', name: 'ballerina-runtime', version: "${ballerinaLangVersion}"
-    implementation group: 'org.ballerinalang', name: 'crypto-native', version: "${stdlibCryptoVersion}"
+    implementation group: 'io.ballerina.stdlib', name: 'crypto-native', version: "${stdlibCryptoVersion}"
 }
 
 checkstyle {
@@ -37,7 +37,7 @@ checkstyle {
     configProperties = ["suppressionFile" : file("${rootDir}/build-config/checkstyle/build/suppressions.xml")]
 }
 
-checkstyleMain.dependsOn(":build-config:checkstyle:downloadMultipleFiles")
+checkstyleMain.dependsOn(":checkstyle:downloadCheckstyleRuleFiles")
 
 spotbugsMain {
     effort "max"

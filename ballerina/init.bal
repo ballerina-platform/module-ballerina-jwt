@@ -21,5 +21,5 @@ isolated function init() {
 }
 
 isolated function setModule() = @java:Method {
-    'class: "org.ballerinalang.stdlib.jwt.ModuleUtils"
+    'class: "io.ballerina.stdlib.jwt.ModuleUtils"
 } external;

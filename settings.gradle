@@ -12,8 +12,14 @@ plugins {
 }
 
 rootProject.name = 'jwt'
-include(':build-config:checkstyle')
-include ':jwt-native', ':jwt-ballerina'
+
+include ':checkstyle'
+include ':jwt-native'
+include ':jwt-ballerina'
+
+project(':checkstyle').projectDir = file("build-config${File.separator}checkstyle")
+project(':jwt-native').projectDir = file('native')
+project(':jwt-ballerina').projectDir = file('ballerina')
 
 gradleEnterprise {
     buildScan {
