@@ -23,7 +23,7 @@ import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.values.BError;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BString;
-import org.ballerinalang.stdlib.crypto.nativeimpl.Decode;
+import io.ballerina.stdlib.crypto.nativeimpl.Decode;
 
 import java.io.FileInputStream;
 import java.io.IOException;
