@@ -170,6 +170,7 @@ test.finalizedBy stopBallerinaSTS
 test.dependsOn startBallerinaSTS
 test.dependsOn ":${packageName}-native:build"
 
+build.dependsOn "generatePomFileForMavenPublication"
 build.finalizedBy stopBallerinaSTS
 build.dependsOn startBallerinaSTS
 build.dependsOn ":${packageName}-native:build"
