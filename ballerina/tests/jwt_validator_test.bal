@@ -619,3 +619,90 @@ isolated function testValidateJwtSignatureWithInvalidPublicCert() {
         test:assertFail(msg = "Error in validating JWT.");
     }
 }
+
+@test:Config {}
+isolated function testValidateJwtSignatureWithHS256SharedSecret() {
+    ValidatorConfig validatorConfig = {
+        issuer: "wso2",
+        audience: ["ballerina", "ballerinaSamples"],
+        clockSkew: 60,
+        signatureConfig: {
+            secret: "s3cr3t"
+        }
+    };
+    Payload|Error result = validate(JWT6, validatorConfig);
+    if (result is Error) {
+        string? errMsg = result.message();
+        test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
+    }
+}
+
+@test:Config {}
+isolated function testValidateJwtSignatureWithHS384SharedSecret() {
+    ValidatorConfig validatorConfig = {
+        issuer: "wso2",
+        audience: ["ballerina", "ballerinaSamples"],
+        clockSkew: 60,
+        signatureConfig: {
+            secret: "s3cr3t"
+        }
+    };
+    Payload|Error result = validate(JWT7, validatorConfig);
+    if (result is Error) {
+        string? errMsg = result.message();
+        test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
+    }
+}
+
+@test:Config {}
+isolated function testValidateJwtSignatureWithHS512SharedSecret() {
+    ValidatorConfig validatorConfig = {
+        issuer: "wso2",
+        audience: ["ballerina", "ballerinaSamples"],
+        clockSkew: 60,
+        signatureConfig: {
+            secret: "s3cr3t"
+        }
+    };
+    Payload|Error result = validate(JWT8, validatorConfig);
+    if (result is Error) {
+        string? errMsg = result.message();
+        test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
+    }
+}
+
+@test:Config {}
+isolated function testValidateJwtSignatureWithInvalidSharedSecret() {
+    ValidatorConfig validatorConfig = {
+        issuer: "wso2",
+        audience: ["ballerina", "ballerinaSamples"],
+        clockSkew: 60,
+        signatureConfig: {
+            secret: "!nva1id"
+        }
+    };
+    Payload|Error result = validate(JWT6, validatorConfig);
+    if (result is Error) {
+        assertContains(result, "JWT signature validation with shared secret has failed.");
+    } else {
+        test:assertFail(msg = "Error in validating JWT.");
+    }
+}
+
+@test:Config {}
+isolated function testValidateJwtSignatureWithInvalidAlgorithm() {
+    ValidatorConfig validatorConfig = {
+        issuer: "wso2",
+        audience: ["ballerina", "ballerinaSamples"],
+        clockSkew: 60,
+        signatureConfig: {
+            certFile: PUBLIC_CERT_PATH
+        }
+    };
+    Payload|Error result = validate(JWT6, validatorConfig);
+    if (result is Error) {
+        assertContains(result, "Unsupported RSA algorithm 'HS256'.");
+    } else {
+        test:assertFail(msg = "Error in validating JWT.");
+    }
+}

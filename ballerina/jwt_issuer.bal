@@ -41,7 +41,7 @@ public type IssuerConfig record {|
 # Represents JWT signature configurations.
 #
 # + algorithm - Cryptographic signing algorithm for JWS
-# + config - KeyStore configurations or private key configurations
+# + config - KeyStore configurations, private key configurations or shared key configurations
 public type IssuerSignatureConfig record {|
     SigningAlgorithm algorithm = RS256;
     record {|
@@ -51,7 +51,7 @@ public type IssuerSignatureConfig record {|
     |} | record {|
         string keyFile;
         string keyPassword?;
-    |} config?;
+    |} | string config?;
 |};
 
 # Issues a JWT based on the provided configurations. JWT will be signed (JWS) if `crypto:KeyStore` information is
@@ -81,6 +81,8 @@ public isolated function issue(IssuerConfig issuerConfig) returns string|Error {
     var config = signatureConfig?.config;
     if (config is ()) {
         return prepareError("Signing JWT requires keystore information or private key information.");
+    } else if (config is string) {
+        return hmacJwtAssertion(jwtAssertion, algorithm, config);
     } else if (config?.keyStore is crypto:KeyStore) {
         crypto:KeyStore keyStore = <crypto:KeyStore> config?.keyStore;
         string keyAlias = <string> config?.keyAlias;
@@ -111,7 +113,7 @@ isolated function signJwtAssertion(string jwtAssertion, SigningAlgorithm alg, cr
             if (signature is byte[]) {
                 return (jwtAssertion + "." + encodeBase64Url(signature));
             } else {
-                return prepareError("Private key signing failed for SHA256 algorithm.", signature);
+                return prepareError("RSA private key signing failed for SHA256 algorithm.", signature);
             }
         }
         RS384 => {
@@ -119,7 +121,7 @@ isolated function signJwtAssertion(string jwtAssertion, SigningAlgorithm alg, cr
             if (signature is byte[]) {
                 return (jwtAssertion + "." + encodeBase64Url(signature));
             } else {
-                return prepareError("Private key signing failed for SHA384 algorithm.", signature);
+                return prepareError("RSA private key signing failed for SHA384 algorithm.", signature);
             }
         }
         RS512 => {
@@ -127,7 +129,40 @@ isolated function signJwtAssertion(string jwtAssertion, SigningAlgorithm alg, cr
             if (signature is byte[]) {
                 return (jwtAssertion + "." + encodeBase64Url(signature));
             } else {
-                return prepareError("Private key signing failed for SHA512 algorithm.", signature);
+                return prepareError("RSA private key signing failed for SHA512 algorithm.", signature);
+            }
+        }
+        _ => {
+            return prepareError("Unsupported signing algorithm '" + alg.toString() + "'.");
+        }
+    }
+}
+
+isolated function hmacJwtAssertion(string jwtAssertion, SigningAlgorithm alg, string secret)
+                                   returns string|Error {
+    match (alg) {
+        HS256 => {
+            byte[]|crypto:Error signature = crypto:hmacSha256(jwtAssertion.toBytes(), secret.toBytes());
+            if (signature is byte[]) {
+                return (jwtAssertion + "." + encodeBase64Url(signature));
+            } else {
+                return prepareError("HMAC secret key signing failed for SHA256 algorithm.", signature);
+            }
+        }
+        HS384 => {
+            byte[]|crypto:Error signature = crypto:hmacSha384(jwtAssertion.toBytes(), secret.toBytes());
+            if (signature is byte[]) {
+                return (jwtAssertion + "." + encodeBase64Url(signature));
+            } else {
+                return prepareError("HMAC secret key signing failed for SHA384 algorithm.", signature);
+            }
+        }
+        HS512 => {
+            byte[]|crypto:Error signature = crypto:hmacSha512(jwtAssertion.toBytes(), secret.toBytes());
+            if (signature is byte[]) {
+                return (jwtAssertion + "." + encodeBase64Url(signature));
+            } else {
+                return prepareError("HMAC secret key signing failed for SHA512 algorithm.", signature);
             }
         }
         _ => {

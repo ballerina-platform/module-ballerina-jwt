@@ -17,7 +17,7 @@
 import ballerina/jballerina.java;
 
 # Represents the cryptographic algorithms used to secure the JWS.
-public type SigningAlgorithm RS256|RS384|RS512|NONE;
+public type SigningAlgorithm RS256|RS384|RS512|HS256|HS384|HS512|NONE;
 
 # The `RSA-SHA256` algorithm.
 public const RS256 = "RS256";
@@ -27,6 +27,15 @@ public const RS384 = "RS384";
 
 # The `RSA-SHA512` algorithm.
 public const RS512 = "RS512";
+
+# The `HMAC-SHA256` algorithm.
+public const HS256 = "HS256";
+
+# The `HMAC-SHA384` algorithm.
+public const HS384 = "HS384";
+
+# The `HMAC-SHA512` algorithm.
+public const HS512 = "HS512";
 
 # Unsecured JWS (no signing).
 public const NONE = "none";

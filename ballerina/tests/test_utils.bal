@@ -137,6 +137,64 @@ const string JWT5 = "eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QiLCAia2lkIjoiNWEwYjc1NC0
                     "t4flzCBsTGWC7XZaFnwT4mUlX7WpTOgv1Nsq5GVLszvsnzs6BE__Mvr4zl5pdChVbkMXX3US6fYguK268XKjzgtpMVxUpL3" +
                     "CrzwQpIRyI-Q";
 
+// {
+//  "alg": "HS256",
+//  "typ": "JWT"
+// }
+// {
+//  "iss": "wso2",
+//  "sub": "John",
+//  "aud": [
+//    "ballerina",
+//    "ballerinaSamples"
+//  ],
+//  "exp": 1943255429,
+//  "nbf": 1627895429,
+//  "iat": 1627895429
+// }
+const string JWT6 = "eyJhbGciOiJIUzI1NiIsICJ0eXAiOiJKV1QifQ.eyJpc3MiOiJ3c28yIiwgInN1YiI6IkpvaG4iLCAiYXVkIjpbImJhbGxl" +
+                    "cmluYSIsICJiYWxsZXJpbmFTYW1wbGVzIl0sICJleHAiOjE5NDMyNTU0MjksICJuYmYiOjE2Mjc4OTU0MjksICJpYXQiOjE" +
+                    "2Mjc4OTU0Mjl9.BqFvZtKFj4KiVGkSkbXAcG4mpmSnGM0f60GYMw7dj4k";
+
+// {
+//  "alg": "HS384",
+//  "typ": "JWT"
+// }
+// {
+//  "iss": "wso2",
+//  "sub": "John",
+//  "aud": [
+//    "ballerina",
+//    "ballerinaSamples"
+//  ],
+//  "exp": 1943257494,
+//  "nbf": 1627897494,
+//  "iat": 1627897494
+// }
+const string JWT7 = "eyJhbGciOiJIUzM4NCIsICJ0eXAiOiJKV1QifQ.eyJpc3MiOiJ3c28yIiwgInN1YiI6IkpvaG4iLCAiYXVkIjpbImJhbGxl" +
+                    "cmluYSIsICJiYWxsZXJpbmFTYW1wbGVzIl0sICJleHAiOjE5NDMyNTc0OTQsICJuYmYiOjE2Mjc4OTc0OTQsICJpYXQiOjE" +
+                    "2Mjc4OTc0OTR9.gwyn7kbaX-AQi0SQQmPoKfazehSsr7XUTnxewKny2qcOOVJrIqlLVyCoyacFlPel";
+
+// {
+//  "alg": "HS512",
+//  "typ": "JWT"
+// }
+// {
+//  "iss": "wso2",
+//  "sub": "John",
+//  "aud": [
+//    "ballerina",
+//    "ballerinaSamples"
+//  ],
+//  "exp": 1627899452,
+//  "nbf": 1627898852,
+//  "iat": 1627898852
+// }
+const string JWT8 = "eyJhbGciOiJIUzUxMiIsICJ0eXAiOiJKV1QifQ.eyJpc3MiOiJ3c28yIiwgInN1YiI6IkpvaG4iLCAiYXVkIjpbImJhbGxl" +
+                    "cmluYSIsICJiYWxsZXJpbmFTYW1wbGVzIl0sICJleHAiOjE2Mjc4OTk0NTIsICJuYmYiOjE2Mjc4OTg4NTIsICJpYXQiOjE" +
+                    "2Mjc4OTg4NTJ9.Y-71DT1OnESuDkXmzParDgJ_iJ65DqTGvT3aNj1GVPJaHV8UPpD44O3nAgrXGFXpszWmeMoPz99BmUAHA" +
+                    "azszA";
+
 // Builds the complete error message by evaluating all the inner causes and asserts the inclusion.
 isolated function assertContains(error err, string text) {
     string message = err.message();
