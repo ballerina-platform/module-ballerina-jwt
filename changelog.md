@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 
 ### Added
+- [Add HMAC signature support for JWT](https://github.com/ballerina-platform/ballerina-standard-library/issues/1645)
+
+## [1.1.0-beta2] - 2021-07-06
+
+### Added
 - [Improve JWT validation for all the fields of JWT issuer configuration](https://github.com/ballerina-platform/ballerina-standard-library/issues/1240)
 
 ## [1.1.0-alpha8] - 2021-04-22

@@ -312,6 +312,81 @@ isolated function testIssueJwtWithSigningAlgorithmRS512() {
 }
 
 @test:Config {}
+isolated function testIssueJwtWithSigningAlgorithmHS256() {
+    IssuerConfig issuerConfig = {
+        username: "John",
+        issuer: "wso2",
+        audience: ["ballerina", "ballerinaSamples"],
+        expTime: 600,
+        signatureConfig: {
+            algorithm: HS256,
+            config: "s3cr3t"
+        }
+    };
+
+    string|Error result = issue(issuerConfig);
+    if (result is string) {
+        test:assertTrue(result.startsWith("eyJhbGciOiJIUzI1NiIsICJ0eXAiOiJKV1QifQ."));
+        string header = "{\"alg\":\"HS256\", \"typ\":\"JWT\"}";
+        string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]";
+        assertDecodedJwt(result, header, payload);
+    } else {
+        string? errMsg = result.message();
+        test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT.");
+    }
+}
+
+@test:Config {}
+isolated function testIssueJwtWithSigningAlgorithmHS384() {
+    IssuerConfig issuerConfig = {
+        username: "John",
+        issuer: "wso2",
+        audience: ["ballerina", "ballerinaSamples"],
+        expTime: 600,
+        signatureConfig: {
+            algorithm: HS384,
+            config: "s3cr3t"
+        }
+    };
+
+    string|Error result = issue(issuerConfig);
+    if (result is string) {
+        test:assertTrue(result.startsWith("eyJhbGciOiJIUzM4NCIsICJ0eXAiOiJKV1QifQ."));
+        string header = "{\"alg\":\"HS384\", \"typ\":\"JWT\"}";
+        string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]";
+        assertDecodedJwt(result, header, payload);
+    } else {
+        string? errMsg = result.message();
+        test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT.");
+    }
+}
+
+@test:Config {}
+isolated function testIssueJwtWithSigningAlgorithmHS512() {
+    IssuerConfig issuerConfig = {
+        username: "John",
+        issuer: "wso2",
+        audience: ["ballerina", "ballerinaSamples"],
+        expTime: 600,
+        signatureConfig: {
+            algorithm: HS512,
+            config: "s3cr3t"
+        }
+    };
+
+    string|Error result = issue(issuerConfig);
+    if (result is string) {
+        test:assertTrue(result.startsWith("eyJhbGciOiJIUzUxMiIsICJ0eXAiOiJKV1QifQ."));
+        string header = "{\"alg\":\"HS512\", \"typ\":\"JWT\"}";
+        string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]";
+        assertDecodedJwt(result, header, payload);
+    } else {
+        string? errMsg = result.message();
+        test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT.");
+    }
+}
+
+@test:Config {}
 isolated function testIssueJwtWithoutSigningKeyInformation() {
     IssuerConfig issuerConfig = {
         username: "John",

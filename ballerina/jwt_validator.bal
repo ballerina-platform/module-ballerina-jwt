@@ -51,6 +51,7 @@ public type ValidatorConfig record {
 # + jwksConfig - JWKS configurations
 # + certFile - Public certificate file
 # + trustStoreConfig - JWT TrustStore configurations
+# + secret - HMAC secret configuration
 public type ValidatorSignatureConfig record {|
     record {|
         string url;
@@ -62,6 +63,7 @@ public type ValidatorSignatureConfig record {|
         crypto:TrustStore trustStore;
         string certAlias;
     |} trustStoreConfig?;
+    string secret?;
 |};
 
 # Represents the configurations of the client used to call the JWKS endpoint.
@@ -205,6 +207,12 @@ isolated function parseHeader(map<json> headerMap) returns Header|Error {
                     header.alg = RS384;
                 } else if (headerMap[key] == "RS512") {
                     header.alg = RS512;
+                } else if (headerMap[key] == "HS256") {
+                    header.alg = HS256;
+                } else if (headerMap[key] == "HS384") {
+                    header.alg = HS384;
+                } else if (headerMap[key] == "HS512") {
+                    header.alg = HS512;
                 } else {
                     return prepareError("Unsupported signing algorithm '" + headerMap[key].toString() + "'.");
                 }
@@ -306,6 +314,7 @@ isolated function validateSignature(string jwt, Header header, Payload payload, 
         var jwksConfig = validatorSignatureConfig?.jwksConfig;
         string? certFile = validatorSignatureConfig?.certFile;
         var trustStoreConfig = validatorSignatureConfig?.trustStoreConfig;
+        string? secret = validatorSignatureConfig?.secret;
         if !(jwksConfig is ()) {
             string? kid = header?.kid;
             if (kid is string) {
@@ -316,7 +325,7 @@ isolated function validateSignature(string jwt, Header header, Payload payload, 
                     return prepareError("No JWK found for kid '" + kid + "'.");
                 }
                 crypto:PublicKey publicKey = check getPublicKeyByJwks(jwk);
-                boolean signatureValidation = check assertSignature(alg, assertion, signature, publicKey);
+                boolean signatureValidation = check assertRsaSignature(alg, assertion, signature, publicKey);
                 if (!signatureValidation) {
                    return prepareError("JWT signature validation with JWKS configurations has failed.");
                 }
@@ -329,7 +338,7 @@ isolated function validateSignature(string jwt, Header header, Payload payload, 
                 if (!validateCertificate(publicKey)) {
                    return prepareError("Public key certificate validity period has passed.");
                 }
-                boolean signatureValidation = check assertSignature(alg, assertion, signature, publicKey);
+                boolean signatureValidation = check assertRsaSignature(alg, assertion, signature, publicKey);
                 if (!signatureValidation) {
                    return prepareError("JWT signature validation with public key configurations has failed.");
                 }
@@ -344,12 +353,17 @@ isolated function validateSignature(string jwt, Header header, Payload payload, 
                 if (!validateCertificate(publicKey)) {
                    return prepareError("Public key certificate validity period has passed.");
                 }
-                boolean signatureValidation = check assertSignature(alg, assertion, signature, publicKey);
+                boolean signatureValidation = check assertRsaSignature(alg, assertion, signature, publicKey);
                 if (!signatureValidation) {
                    return prepareError("JWT signature validation with TrustStore configurations has failed.");
                 }
             } else {
                 return prepareError("Failed to decode public key.", publicKey);
+            }
+        } else if !(secret is ()) {
+            boolean signatureValidation = check assertHmacSignature(alg, assertion, signature, secret);
+            if (!signatureValidation) {
+               return prepareError("JWT signature validation with shared secret has failed.");
             }
         }
     }
@@ -474,8 +488,8 @@ isolated function getJwksResponse(string url, ClientConfiguration clientConfig) 
     'class: "io.ballerina.stdlib.jwt.JwksClient"
 } external;
 
-isolated function assertSignature(SigningAlgorithm alg, byte[] assertion, byte[] signaturePart,
-                                  crypto:PublicKey publicKey) returns boolean|Error {
+isolated function assertRsaSignature(SigningAlgorithm alg, byte[] assertion, byte[] signaturePart,
+                                     crypto:PublicKey publicKey) returns boolean|Error {
     match (alg) {
         RS256 => {
             boolean|crypto:Error result = crypto:verifyRsaSha256Signature(assertion, signaturePart, publicKey);
@@ -502,7 +516,38 @@ isolated function assertSignature(SigningAlgorithm alg, byte[] assertion, byte[]
             }
         }
     }
-    return prepareError("Unsupported JWS algorithm '" + alg.toString() + "'.");
+    return prepareError("Unsupported RSA algorithm '" + alg.toString() + "'.");
+}
+
+isolated function assertHmacSignature(SigningAlgorithm alg, byte[] assertion, byte[] signaturePart,
+                                      string secret) returns boolean|Error {
+    match (alg) {
+        HS256 => {
+            byte[]|crypto:Error signature = crypto:hmacSha256(assertion, secret.toBytes());
+            if (signature is byte[]) {
+                return signature == signaturePart;
+            } else {
+                return prepareError("HMAC secret key validation failed for SHA256 algorithm.", signature);
+            }
+        }
+        HS384 => {
+            byte[]|crypto:Error signature = crypto:hmacSha384(assertion, secret.toBytes());
+            if (signature is byte[]) {
+                return signature == signaturePart;
+            } else {
+                return prepareError("HMAC secret key validation failed for SHA384 algorithm.", signature);
+            }
+        }
+        HS512 => {
+            byte[]|crypto:Error signature = crypto:hmacSha512(assertion, secret.toBytes());
+            if (signature is byte[]) {
+                return signature == signaturePart;
+            } else {
+                return prepareError("HMAC secret key validation failed for SHA512 algorithm.", signature);
+            }
+        }
+    }
+    return prepareError("Unsupported HMAC algorithm '" + alg.toString() + "'.");
 }
 
 isolated function validateUsername(Payload payload, string usernameConfig) returns Error? {
