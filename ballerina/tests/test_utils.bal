@@ -186,14 +186,14 @@ const string JWT7 = "eyJhbGciOiJIUzM4NCIsICJ0eXAiOiJKV1QifQ.eyJpc3MiOiJ3c28yIiwg
 //    "ballerina",
 //    "ballerinaSamples"
 //  ],
-//  "exp": 1627899452,
-//  "nbf": 1627898852,
-//  "iat": 1627898852
+//  "exp": 1944016504,
+//  "nbf": 1628656504,
+//  "iat": 1628656504
 // }
 const string JWT8 = "eyJhbGciOiJIUzUxMiIsICJ0eXAiOiJKV1QifQ.eyJpc3MiOiJ3c28yIiwgInN1YiI6IkpvaG4iLCAiYXVkIjpbImJhbGxl" +
-                    "cmluYSIsICJiYWxsZXJpbmFTYW1wbGVzIl0sICJleHAiOjE2Mjc4OTk0NTIsICJuYmYiOjE2Mjc4OTg4NTIsICJpYXQiOjE" +
-                    "2Mjc4OTg4NTJ9.Y-71DT1OnESuDkXmzParDgJ_iJ65DqTGvT3aNj1GVPJaHV8UPpD44O3nAgrXGFXpszWmeMoPz99BmUAHA" +
-                    "azszA";
+                    "cmluYSIsICJiYWxsZXJpbmFTYW1wbGVzIl0sICJleHAiOjE5NDQwMTY1MDQsICJuYmYiOjE2Mjg2NTY1MDQsICJpYXQiOjE" +
+                    "2Mjg2NTY1MDR9.pXPpwlNyqvNdkmDhYYwhKGArcZXbMz9sqXpv-I05Nox65Q0tMDkzSIK-jpkrp-yag737v4GckS8MuZuym" +
+                    "ee43Q";
 
 // Builds the complete error message by evaluating all the inner causes and asserts the inclusion.
 isolated function assertContains(error err, string text) {
