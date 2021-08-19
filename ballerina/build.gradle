@@ -39,9 +39,7 @@ def packageName = "jwt"
 def packageOrg = "ballerina"
 def tomlVersion = stripBallerinaExtensionVersion("${project.version}")
 def ballerinaConfigFile = new File("$project.projectDir/Ballerina.toml")
-def ballerinaDependencyFile = new File("$project.projectDir/Dependencies.toml")
 def originalConfig = ballerinaConfigFile.text
-def originalDependencyConfig = ballerinaDependencyFile.text
 
 def stripBallerinaExtensionVersion(String extVersion) {
     if (extVersion.matches(project.ext.timestampedVersionRegex)) {
@@ -67,29 +65,15 @@ ballerina {
 
 task updateTomlFiles {
     doLast {
-        def stdlibDependentCacheVersion = stripBallerinaExtensionVersion(project.stdlibCacheVersion)
-        def stdlibDependentCryptoVersion = stripBallerinaExtensionVersion(project.stdlibCryptoVersion)
-        def stdlibDependentLogVersion = stripBallerinaExtensionVersion(project.stdlibLogVersion)
-        def stdlibDependentRegexVersion = stripBallerinaExtensionVersion(project.stdlibRegexVersion)
-        def stdlibDependentTimeVersion = stripBallerinaExtensionVersion(project.stdlibTimeVersion)
-
         def newConfig = ballerinaConfigFile.text.replace("@project.version@", project.version)
         newConfig = newConfig.replace("@toml.version@", tomlVersion)
         ballerinaConfigFile.text = newConfig
-
-        def newDependencyConfig = ballerinaDependencyFile.text.replace("@stdlib.cache.version@", stdlibDependentCacheVersion)
-        newDependencyConfig = newDependencyConfig.replace("@stdlib.crypto.version@", stdlibDependentCryptoVersion)
-        newDependencyConfig = newDependencyConfig.replace("@stdlib.log.version@", stdlibDependentLogVersion)
-        newDependencyConfig = newDependencyConfig.replace("@stdlib.regex.version@", stdlibDependentRegexVersion)
-        newDependencyConfig = newDependencyConfig.replace("@stdlib.time.version@", stdlibDependentTimeVersion)
-        ballerinaDependencyFile.text = newDependencyConfig
     }
 }
 
 task revertTomlFiles {
     doLast {
         ballerinaConfigFile.text = originalConfig
-        ballerinaDependencyFile.text = originalDependencyConfig
     }
 }
 
