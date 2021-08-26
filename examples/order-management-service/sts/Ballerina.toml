@@ -1,0 +1,7 @@
+[package]
+org = "jwt"
+name = "sts"
+version = "1.0.0"
+
+[build-options]
+observabilityIncluded = true
