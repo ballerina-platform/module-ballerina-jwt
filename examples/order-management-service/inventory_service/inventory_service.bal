@@ -15,19 +15,10 @@
 // under the License.
 
 import ballerina/http;
+import inventory_service.inventory as inv;
+import inventory_service.representations as rep;
 
-type UpdateRequest record {|
-    string code;
-    int qty;
-|};
-
-type OrderItem record {|
-    string category;
-    string code;
-    int qty;
-|};
-
-listener http:Listener inventoryEP = new(9091,
+listener http:Listener inventoryEP = new (9091,
     secureSocket = {
         key: {
             certFile: "./resources/public.crt",
@@ -41,24 +32,17 @@ listener http:Listener inventoryEP = new(9091,
 );
 
 service /inventory on inventoryEP {
-    resource function put .(@http:Payload OrderItem[] orderItems) returns http:Ok {
-        foreach OrderItem orderItem in orderItems {
-            InventoryItem item = filterInventoryItem(orderItem.category, orderItem.code);
-            item.qty -= orderItem.qty;
+    resource function put decrease(@http:Payload rep:OrderItem[] orderItems) returns rep:InventoryUpdated {
+        foreach rep:OrderItem orderItem in orderItems {
+            inv:decreaseQty(orderItem.category, orderItem.code, orderItem.qty);
         }
         return {};
     }
 
-    resource function put reverse(@http:Payload OrderItem[] orderItems) returns http:Ok {
-        foreach OrderItem orderItem in orderItems {
-            InventoryItem item = filterInventoryItem(orderItem.category, orderItem.code);
-            item.qty += orderItem.qty;
+    resource function put increase(@http:Payload rep:OrderItem[] orderItems) returns rep:InventoryUpdated {
+        foreach rep:OrderItem orderItem in orderItems {
+            inv:increaseQty(orderItem.category, orderItem.code, orderItem.qty);
         }
         return {};
     }
-}
-
-function filterInventoryItem(string itemCategory, string itemCode) returns InventoryItem {
-    table<InventoryItem> key(code) inventoryTable = <table<InventoryItem> key(code)>inventory[itemCategory];
-    return inventoryTable.get(itemCode);
 }

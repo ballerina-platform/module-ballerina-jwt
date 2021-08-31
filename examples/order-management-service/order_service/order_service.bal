@@ -15,27 +15,12 @@
 // under the License.
 
 import ballerina/http;
+import order_service.representations as rep;
 
-type OrderItem record {|
-    string category;
-    string code;
-    int qty;
-|};
+// In memory storage used to store the orders
+map<rep:Order> ordersMap = {};
 
-type Order record {|
-    string id;
-    string name;
-    OrderItem[] items;
-|};
-
-type UpdateOrder record {|
-    string name;
-    OrderItem[] items;
-|};
-
-map<Order> ordersMap = {};
-
-http:Client inventoryClient = check new("https://localhost:9091",
+http:Client inventoryClient = check new ("https://localhost:9091",
     secureSocket = {
         cert: "./resources/public.crt",
         key: {
@@ -60,7 +45,7 @@ http:JwtValidatorConfig config = {
     }
 };
 
-listener http:Listener orderEP = new(9090,
+listener http:Listener orderEP = new (9090, 
     secureSocket = {
         key: {
             certFile: "./resources/public.crt",
@@ -79,17 +64,12 @@ service /ordermgt on orderEP {
             }
         ]
     }
-    resource function post 'order(@http:Payload Order 'order) returns http:Created|http:InternalServerError {
+    resource function post 'order(@http:Payload rep:Order 'order) returns rep:OrderCreated|error {
         string orderId = 'order.id;
         ordersMap[orderId] = 'order;
-        http:InternalServerError? result = updateInventory('order.items);
-        if result is http:InternalServerError {
-            return result;
-        }
-        return <http:Created>{
-            body: {
-                status: "Order '" + orderId + "' created."
-            },
+        _ = check updateInventoryQty('order.items, rep:DECREASE);
+        return {
+            body: {status: "Order '" + orderId + "' created."},
             headers: {"Location": "http://localhost:9090/ordermgt/order/" + orderId}
         };
     }
@@ -102,31 +82,21 @@ service /ordermgt on orderEP {
             }
         ]
     }
-    resource function put 'order/[string orderId](@http:Payload UpdateOrder updateOrder)
-                                           returns http:Ok|http:BadRequest|http:InternalServerError {
-        Order? existingOrder = ordersMap[orderId];
-        if existingOrder is Order {
-            http:InternalServerError? result = reverseInventoryUpdate(existingOrder.items);
-            if result is http:InternalServerError {
-                return result;
-            }
+    resource function put 'order/[string orderId](@http:Payload rep:UpdateOrder updateOrder) 
+                                            returns rep:OrderUpdated|rep:OrderNotFound|error {
+        rep:Order? existingOrder = ordersMap[orderId];
+        if existingOrder is rep:Order {
+            _ = check updateInventoryQty(existingOrder.items, rep:INCREASE);
             existingOrder.name = updateOrder.name;
             existingOrder.items = updateOrder.items;
             ordersMap[orderId] = existingOrder;
-            result = updateInventory(existingOrder.items);
-            if result is http:InternalServerError {
-                return result;
-            }
-            return <http:Ok>{
-                body: {
-                    status: "Order '" + orderId + "' updated."
-                }
+            _ = check updateInventoryQty(existingOrder.items, rep:DECREASE);
+            return <rep:OrderUpdated>{
+                body: {status: "Order '" + orderId + "' updated."}
             };
         }
-        return <http:BadRequest>{
-            body: {
-                status: "Order '" + orderId + "' cannot be found."
-            }
+        return <rep:OrderNotFound>{
+            body: {status: "Order '" + orderId + "' cannot be found."}
         };
     }
 
@@ -138,53 +108,30 @@ service /ordermgt on orderEP {
             }
         ]
     }
-    resource function delete 'order/[string orderId]() returns http:Ok|http:InternalServerError {
-        Order 'order = ordersMap.remove(orderId);
-        http:InternalServerError? result = reverseInventoryUpdate('order.items);
-        if result is http:InternalServerError {
-            return result;
-        }
-        return <http:Ok>{
-            body: {
-                status: "Order '" + orderId + "' removed."
-            }
-        };
-    }
-
-    resource function get 'order/[string orderId]() returns http:Ok|http:NotFound {
+    resource function delete 'order/[string orderId]() returns rep:OrderCanceled|rep:OrderNotFound|error {
         if ordersMap.hasKey(orderId) {
-            return <http:Ok>{
-                body: {
-                    'order: ordersMap[orderId].toJson()
-                }
+            rep:Order 'order = ordersMap.remove(orderId);
+            _ = check updateInventoryQty('order.items, rep:INCREASE);
+            return <rep:OrderCanceled>{
+                body: {status: "Order '" + orderId + "' removed."}
             };
         }
-        return <http:NotFound>{
-            body: {
-                status: "Order '" + orderId + "' cannot be found."
-            }
+        return <rep:OrderNotFound>{
+            body: {status: "Order '" + orderId + "' cannot be found."}
         };
+    }
+
+    resource function get 'order/[string orderId]() returns rep:Order|http:NotFound {
+        if ordersMap.hasKey(orderId) {
+            return <rep:Order>ordersMap[orderId];
+        }
+        return {body: {status: "Order '" + orderId + "' cannot be found."}};
     }
 }
 
-function updateInventory(OrderItem[] items) returns http:InternalServerError? {
-    http:Response|http:ClientError response = inventoryClient->put("/inventory", items);
+function updateInventoryQty(rep:OrderItem[] items, rep:InventoryOperation operation) returns error? {
+    json|http:ClientError response = inventoryClient->put("/inventory/" + operation, items);
     if response is http:ClientError {
-        return {
-            body: {
-                status: "Failed to update the inventory." + response.message()
-            }
-        };
-    }
-}
-
-function reverseInventoryUpdate(OrderItem[] items) returns http:InternalServerError? {
-    http:Response|http:ClientError response = inventoryClient->put("/inventory/reverse", items);
-    if response is http:ClientError {
-        return {
-            body: {
-                status: "Failed to update the inventory." + response.message()
-            }
-        };
+        return error("Failed to " + operation + " the inventory quantity.", response);
     }
 }

@@ -157,7 +157,7 @@ Output:
 < server: ballerina
 < date: Tue, 24 Aug 2021 06:34:20 +0530
 
-{"order":{"id":"100500", "name":"Sample order", "items":[{"category":"electronics", "code":"SOWH1000XM4", "qty":2}, {"category":"books", "code":"978-1617295959", "qty":1}]}}
+{"id":"100500", "name":"Sample order", "items":[{"category":"electronics", "code":"SOWH1000XM4", "qty":2}, {"category":"books", "code":"978-1617295959", "qty":1}]}
 ```
 
 ### Update Order

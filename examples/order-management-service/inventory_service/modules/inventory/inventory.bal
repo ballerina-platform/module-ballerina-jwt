@@ -22,6 +22,14 @@ type ElectronicItem record {|
     int qty;
 |};
 
+type BookItem record {|
+    readonly string code;
+    string title;
+    string authors;
+    string price;
+    int qty;
+|};
+
 table<ElectronicItem> key(code) electronicsTable = table [
     {
         "code": "APMBA132021",
@@ -38,14 +46,6 @@ table<ElectronicItem> key(code) electronicsTable = table [
         "qty": 75
     }
 ];
-
-type BookItem record {|
-    readonly string code;
-    string title;
-    string authors;
-    string price;
-    int qty;
-|};
 
 table<BookItem> key(code) booksTable = table [
     {
@@ -64,9 +64,24 @@ table<BookItem> key(code) booksTable = table [
     }
 ];
 
-type InventoryItem ElectronicItem|BookItem;
+public type InventoryItem ElectronicItem|BookItem;
 
-map<table<InventoryItem>> inventory = {
+public map<table<InventoryItem>> inventory = {
     electronics: electronicsTable,
     books: booksTable
 };
+
+public function increaseQty(string itemCategory, string itemCode, int qty) {
+    InventoryItem item = filterInventoryItem(itemCategory, itemCode);
+    item.qty += qty;
+}
+
+public function decreaseQty(string itemCategory, string itemCode, int qty) {
+    InventoryItem item = filterInventoryItem(itemCategory, itemCode);
+    item.qty -= qty;
+}
+
+function filterInventoryItem(string itemCategory, string itemCode) returns InventoryItem {
+    table<InventoryItem> key(code) inventoryTable = <table<InventoryItem> key(code)>inventory[itemCategory];
+    return inventoryTable.get(itemCode);
+}
