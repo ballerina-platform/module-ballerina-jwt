@@ -54,7 +54,7 @@ listener http:Listener orderEP = new (9090,
     }
 );
 
-service /ordermgt on orderEP {
+service /'order on orderEP {
 
     @http:ResourceConfig {
         auth: [
@@ -64,13 +64,13 @@ service /ordermgt on orderEP {
             }
         ]
     }
-    resource function post 'order(@http:Payload rep:Order 'order) returns rep:OrderCreated|error {
+    resource function post .(@http:Payload rep:Order 'order) returns rep:OrderCreated|error {
         string orderId = 'order.id;
         ordersMap[orderId] = 'order;
         _ = check updateInventoryQty('order.items, rep:DECREASE);
         return {
             body: {status: "Order '" + orderId + "' created."},
-            headers: {"Location": "http://localhost:9090/ordermgt/order/" + orderId}
+            headers: {"Location": "http://localhost:9090/order/" + orderId}
         };
     }
 
@@ -82,7 +82,7 @@ service /ordermgt on orderEP {
             }
         ]
     }
-    resource function put 'order/[string orderId](@http:Payload rep:UpdateOrder updateOrder) 
+    resource function put [string orderId](@http:Payload rep:UpdateOrder updateOrder)
                                             returns rep:OrderUpdated|rep:OrderNotFound|error {
         rep:Order? existingOrder = ordersMap[orderId];
         if existingOrder is rep:Order {
@@ -108,7 +108,7 @@ service /ordermgt on orderEP {
             }
         ]
     }
-    resource function delete 'order/[string orderId]() returns rep:OrderCanceled|rep:OrderNotFound|error {
+    resource function delete [string orderId]() returns rep:OrderCanceled|rep:OrderNotFound|error {
         if ordersMap.hasKey(orderId) {
             rep:Order 'order = ordersMap.remove(orderId);
             _ = check updateInventoryQty('order.items, rep:INCREASE);
@@ -121,7 +121,7 @@ service /ordermgt on orderEP {
         };
     }
 
-    resource function get 'order/[string orderId]() returns rep:Order|http:NotFound {
+    resource function get [string orderId]() returns rep:Order|http:NotFound {
         if ordersMap.hasKey(orderId) {
             return <rep:Order>ordersMap[orderId];
         }
