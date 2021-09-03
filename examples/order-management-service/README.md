@@ -7,9 +7,14 @@ The following figure illustrates a high-level design diagram of the complete use
 
 ![Securing Microservice with JWT](./order-management-service.png)
 
-**NOTE**: For this guide, we are focussing on the security of 'Order Service' only.
+The end-user (customer), in this example, Alice and Bob, interacts with the system using the web/mobile app provided.
+This web/mobile app acts as a 'Client' on behalf of the user’s actions and calls to the 'API Gateway'. The 'API Gateway'
+routes the requests to 'Order Service', which is responsible for processing the order for the customer. The 'Inventory 
+Service' is called by the 'Order Service' to process the inventory-related operations.
 
-Here, the 'Order Service' receives the traffic only from the 'API Gateway'.
+**NOTE**: For this guide, since we are discussing the JWT security aspects, we are focussing on the network 
+interactions once the 'API Gateway' receives a request.
+
 - The 'API Gateway' intercepts the request from the end-user, extracts the token, and then talks to the 'STS' connected 
   to validate the token.
 - After validating the token, the 'STS' issues a new JWT signed by itself. This JWT includes the user details.
