@@ -1,0 +1,7 @@
+[package]
+org = "jwt"
+name = "order_service"
+version = "1.0.0"
+
+[build-options]
+observabilityIncluded = true
