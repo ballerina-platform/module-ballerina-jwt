@@ -32,6 +32,7 @@ ext.stdlibRegexVersion = project.stdlibRegexVersion
 ext.stdlibTimeVersion = project.stdlibTimeVersion
 // Transitive dependencies
 ext.stdlibTaskVersion = project.stdlibTaskVersion
+ext.stdlibIoVersion = project.stdlibIoVersion
 
 allprojects {
     group = project.group
@@ -80,6 +81,7 @@ subprojects {
         ballerinaStdLibs "io.ballerina.stdlib:time-ballerina:${stdlibTimeVersion}"
         // Transitive dependencies
         ballerinaStdLibs "io.ballerina.stdlib:task-ballerina:${stdlibTaskVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:io-ballerina:${stdlibIoVersion}"
     }
 }
 
