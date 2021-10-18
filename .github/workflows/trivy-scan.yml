@@ -28,4 +28,5 @@ jobs:
           scan-ref: '/github/workspace/ballerina'
           skip-dirs: 'build'
           format: 'table'
+          timeout: '10m0s'
           exit-code: '1'
