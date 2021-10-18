@@ -1,8 +1,8 @@
 [package]
 org = "ballerina"
 name = "jwt"
-version = "2.0.0"
+version = "2.0.1"
 distribution = "slbeta3"
 
 [[platform.java11.dependency]]
-path = "../native/build/libs/jwt-native-2.0.0.jar"
+path = "../native/build/libs/jwt-native-2.0.1-SNAPSHOT.jar"
