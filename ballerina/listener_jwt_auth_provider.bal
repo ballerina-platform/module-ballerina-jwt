@@ -117,6 +117,7 @@ isolated function preloadJwksToCache(cache:Cache jwksCache, string url, ClientCo
                 return prepareError("Failed to extract 'kid' property as a 'string' from the JSON '" + jwk.toString() + "'.");
             }
         }
+        return;
     } else {
         return prepareError("Failed to call JWKS endpoint to preload JWKS to the cache.", stringResponse);
     }
@@ -140,6 +141,7 @@ isolated function validateFromCache(cache:Cache jwtCache, string jwt) returns Pa
     } else {
         log:printError("Failed to retrieve JWT entry from the cache.", 'error = cachedResult);
     }
+    return;
 }
 
 isolated function addToCache(cache:Cache jwtCache, string jwt, Payload payload) {

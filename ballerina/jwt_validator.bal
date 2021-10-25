@@ -367,6 +367,7 @@ isolated function validateSignature(string jwt, Header header, Payload payload, 
             }
         }
     }
+    return;
 }
 
 isolated function validateJwtRecords(Header header, Payload payload, ValidatorConfig validatorConfig) returns Error? {
@@ -406,6 +407,7 @@ isolated function validateJwtRecords(Header header, Payload payload, ValidatorCo
             return prepareError("JWT is used before not-before-time (nbf).");
         }
     }
+    return;
 }
 
 isolated function validateMandatoryHeaderFields(Header header) returns boolean {
@@ -556,6 +558,7 @@ isolated function validateUsername(Payload payload, string usernameConfig) retur
         if (usernamePayload != usernameConfig) {
             return prepareError("JWT contained invalid username '" + usernamePayload + "'");
         }
+        return;
     } else {
         return prepareError("JWT must contain a valid username.");
     }
@@ -567,6 +570,7 @@ isolated function validateIssuer(Payload payload, string issuerConfig) returns E
         if (issuePayload != issuerConfig) {
             return prepareError("JWT contained invalid issuer name '" + issuePayload + "'");
         }
+        return;
     } else {
         return prepareError("JWT must contain a valid issuer name.");
     }
@@ -615,6 +619,7 @@ isolated function validateJwtId(Payload payload, string jwtIdConfig) returns Err
         if (jwtIdPayload != jwtIdConfig) {
             return prepareError("JWT contained invalid JWT ID '" + jwtIdPayload + "'");
         }
+        return;
     } else {
         return prepareError("JWT must contain a valid JWT ID.");
     }
@@ -626,6 +631,7 @@ isolated function validateKeyId(Header header, string keyIdConfig) returns Error
         if (keyIdHeader != keyIdConfig) {
             return prepareError("JWT contained invalid key ID '" + keyIdHeader + "'");
         }
+        return;
     } else {
         return prepareError("JWT must contain a valid key ID.");
     }
@@ -642,6 +648,7 @@ isolated function validateCustomClaims(Payload payload, map<json> customClaims) 
             return prepareError("JWT contained invalid custom claim '" + key + ": " + customClaimPayload.toString() + "'");
         }
     }
+    return;
 }
 
 isolated function validateExpirationTime(int expTime, int clockSkew) returns boolean {
