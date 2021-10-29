@@ -2,6 +2,10 @@
 org = "ballerina"
 name = "jwt"
 version = "@toml.version@"
+authors = ["Ballerina"]
+keywords = ["security", "authentication", "jwt", "jwk", "jws"]
+repository = "https://github.com/ballerina-platform/module-ballerina-jwt"
+license = ["Apache-2.0"]
 distribution = "slbeta3"
 
 [[platform.java11.dependency]]
