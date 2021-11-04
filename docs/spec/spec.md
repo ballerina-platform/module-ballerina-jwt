@@ -1,9 +1,9 @@
 # Specification: Ballerina JWT Library
 
-_Owners_: @ldclakmal @shafreenAnfar
-_Reviewers_: @shafreenAnfar
-_Created_: 2021/10/01
-_Updated_: 2021/10/27
+_Owners_: @ldclakmal @shafreenAnfar  
+_Reviewers_: @shafreenAnfar  
+_Created_: 2021/10/01  
+_Updated_: 2021/10/27  
 _Issue_: [#2208](https://github.com/ballerina-platform/ballerina-standard-library/issues/2208)
 
 # Introduction
