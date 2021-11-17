@@ -130,7 +130,7 @@ service /'order on orderEP {
 }
 
 function updateInventoryQty(rep:OrderItem[] items, rep:InventoryOperation operation) returns error? {
-    json|http:ClientError response = inventoryClient->put("/inventory/" + operation, items);
+    http:ClientError response = inventoryClient->put("/inventory/" + operation, items);
     if response is http:ClientError {
         return error("Failed to " + operation + " the inventory quantity.", response);
     }
