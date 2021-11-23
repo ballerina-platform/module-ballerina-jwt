@@ -1,6 +1,6 @@
 [container.image]
 repository="ballerina"
-name="order-management-service"
+name="order_management_service"
 
 [cloud.deployment]
 min_memory="256Mi"
