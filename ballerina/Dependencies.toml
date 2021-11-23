@@ -51,7 +51,7 @@ modules = [
 [[package]]
 org = "ballerina"
 name = "jwt"
-version = "2.0.1"
+version = "2.0.2"
 dependencies = [
 	{org = "ballerina", name = "cache"},
 	{org = "ballerina", name = "crypto"},
