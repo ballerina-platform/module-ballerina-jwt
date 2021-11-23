@@ -1,0 +1,3 @@
+resources:
+  - order_management_service.yaml
+  - ingress.yaml
