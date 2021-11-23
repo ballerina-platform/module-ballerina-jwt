@@ -1,4 +1,4 @@
-name: Create Automated Summary PR for Load Tests
+name: Create PR for load test results
 on:
   push:
     branches:
@@ -6,8 +6,7 @@ on:
     paths:
       - 'load-tests/**/results/summary.csv'
 jobs:
-  createPullRequest:
-    name: Create Summary Update PR
+  create-pull-request:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
