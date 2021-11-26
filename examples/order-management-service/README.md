@@ -79,8 +79,6 @@ Compiling source
         jwt/sts:1.0.0
 
 Running executable
-
-[ballerina/http] started HTTPS/WSS listener 0.0.0.0:9445
 ```
 
 Now, navigate to [`examples/order-management-service/inventory_service`](./inventory_service) directory and execute the same command.
@@ -90,8 +88,6 @@ Compiling source
         jwt/inventory_service:1.0.0
 
 Running executable
-
-[ballerina/http] started HTTPS/WSS listener 0.0.0.0:9091
 ```
 
 Now, navigate to [`examples/order-management-service/order_service`](./order_service) directory and execute the same command.
@@ -101,8 +97,6 @@ Compiling source
         jwt/order_service:1.0.0
 
 Running executable
-
-[ballerina/http] started HTTPS/WSS listener 0.0.0.0:9090
 ```
 
 Now, we can test authentication and authorization checks being enforced on different functions of the 'Order Service' 
@@ -287,19 +281,6 @@ commands in order.
 $ bal run target/bin/sts.jar
 $ bal run target/bin/inventory_service.jar
 $ bal run target/bin/order_service.jar
-```
-
-The successful execution of the services will show us the following outputs in order.
-```shell
-[ballerina/http] started HTTPS/WSS listener 0.0.0.0:9445
-```
-
-```shell
-[ballerina/http] started HTTPS/WSS listener 0.0.0.0:9091
-```
-
-```shell
-[ballerina/http] started HTTPS/WSS listener 0.0.0.0:9090
 ```
 
 ### Deploying Code to Cloud
