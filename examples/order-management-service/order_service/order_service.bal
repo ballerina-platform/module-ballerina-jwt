@@ -40,8 +40,20 @@ http:JwtValidatorConfig config = {
                 secureSocket: {
                     cert: "./resources/public.crt"
                 }
+            },
+            cacheConfig: {
+                capacity: 10,
+                evictionFactor: 0.25,
+                evictionPolicy: cache:LRU,
+                defaultMaxAge: -1
             }
         }
+    },
+    cacheConfig: {
+        capacity: 10,
+        evictionFactor: 0.25,
+        evictionPolicy: cache:LRU,
+        defaultMaxAge: -1
     }
 };
 
