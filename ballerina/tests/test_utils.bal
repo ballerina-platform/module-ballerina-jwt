@@ -199,7 +199,7 @@ const string JWT8 = "eyJhbGciOiJIUzUxMiIsICJ0eXAiOiJKV1QifQ.eyJpc3MiOiJ3c28yIiwg
 isolated function assertContains(error err, string text) {
     string message = err.message();
     error? cause = err.cause();
-    while (cause is error) {
+    while cause is error {
         message += " " + cause.message();
         cause = cause.cause();
     }

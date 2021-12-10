@@ -19,7 +19,7 @@
 import ballerina/test;
 
 @test:Config {}
-isolated function testClientJwtAuthProviderSuccess() {
+isolated function testClientJwtAuthProviderSuccess() returns Error? {
     IssuerConfig jwtConfig = {
         username: "admin",
         issuer: "wso2",
@@ -36,11 +36,6 @@ isolated function testClientJwtAuthProviderSuccess() {
         }
     };
     ClientSelfSignedJwtAuthProvider jwtAuthProvider = new(jwtConfig);
-    string|Error result = jwtAuthProvider.generateToken();
-    if (result is string) {
-        test:assertTrue(result.startsWith("eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QifQ"));
-    } else {
-        string? errMsg = result.message();
-        test:assertFail(msg = errMsg is string ? errMsg : "Test Failed!");
-    }
+    string result = check jwtAuthProvider.generateToken();
+    test:assertTrue(result.startsWith("eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QifQ"));
 }

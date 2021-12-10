@@ -21,7 +21,7 @@ import ballerina/regex;
 import ballerina/test;
 
 @test:Config {}
-isolated function testIssueJwt() {
+isolated function testIssueJwt() returns Error? {
     IssuerConfig issuerConfig = {
         username: "John",
         issuer: "wso2",
@@ -41,21 +41,15 @@ isolated function testIssueJwt() {
             }
         }
     };
-
-    string|Error result = issue(issuerConfig);
-    if (result is string) {
-        test:assertTrue(result.startsWith("eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QiLCAia2lkIjoiNWEwYjc1NC04OTVmLTQyNzktODg0My1iNzQ1ZTExYTU3ZTkifQ."));
-        string header = "{\"alg\":\"RS256\", \"typ\":\"JWT\", \"kid\":\"5a0b754-895f-4279-8843-b745e11a57e9\"}";
-        string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"],";
-        assertDecodedJwt(result, header, payload);
-    } else {
-        string? errMsg = result.message();
-        test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT.");
-    }
+    string result = check issue(issuerConfig);
+    test:assertTrue(result.startsWith("eyJhbGciOiJSUzI1NiIsICJ0eXAiOiJKV1QiLCAia2lkIjoiNWEwYjc1NC04OTVmLTQyNzktODg0My1iNzQ1ZTExYTU3ZTkifQ."));
+    string header = "{\"alg\":\"RS256\", \"typ\":\"JWT\", \"kid\":\"5a0b754-895f-4279-8843-b745e11a57e9\"}";
+    string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"],";
+    assertDecodedJwt(result, header, payload);
 }
 
 @test:Config {}
-isolated function testIssueJwtWithSingleAud() {
+isolated function testIssueJwtWithSingleAud() returns Error? {
     IssuerConfig issuerConfig = {
         username: "John",
         issuer: "wso2",
@@ -72,20 +66,14 @@ isolated function testIssueJwtWithSingleAud() {
             }
         }
     };
-
-    string|Error result = issue(issuerConfig);
-    if (result is string) {
-        string header = "{\"alg\":\"RS256\", \"typ\":\"JWT\"}";
-        string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":\"ballerina\",";
-        assertDecodedJwt(result, header, payload);
-    } else {
-        string? errMsg = result.message();
-        test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT.");
-    }
+    string result = check issue(issuerConfig);
+    string header = "{\"alg\":\"RS256\", \"typ\":\"JWT\"}";
+    string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":\"ballerina\",";
+    assertDecodedJwt(result, header, payload);
 }
 
 @test:Config {}
-isolated function testIssueJwtWithSingleAudAndAudAsArray() {
+isolated function testIssueJwtWithSingleAudAndAudAsArray() returns Error? {
     IssuerConfig issuerConfig = {
         username: "John",
         issuer: "wso2",
@@ -102,20 +90,14 @@ isolated function testIssueJwtWithSingleAudAndAudAsArray() {
             }
         }
     };
-
-    string|Error result = issue(issuerConfig);
-    if (result is string) {
-        string header = "{\"alg\":\"RS256\", \"typ\":\"JWT\"}";
-        string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\"],";
-        assertDecodedJwt(result, header, payload);
-    } else {
-        string? errMsg = result.message();
-        test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT.");
-    }
+    string result = check issue(issuerConfig);
+    string header = "{\"alg\":\"RS256\", \"typ\":\"JWT\"}";
+    string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\"],";
+    assertDecodedJwt(result, header, payload);
 }
 
 @test:Config {}
-isolated function testIssueJwtWithNoIssOrSub() {
+isolated function testIssueJwtWithNoIssOrSub() returns Error? {
     IssuerConfig issuerConfig = {
         audience: ["ballerina", "ballerinaSamples"],
         expTime: 600,
@@ -130,20 +112,14 @@ isolated function testIssueJwtWithNoIssOrSub() {
             }
         }
     };
-
-    string|Error result = issue(issuerConfig);
-    if (result is string) {
-        string header = "{\"alg\":\"RS256\", \"typ\":\"JWT\"}";
-        string payload = "{\"aud\":[\"ballerina\", \"ballerinaSamples\"],";
-        assertDecodedJwt(result, header, payload);
-    } else {
-        string? errMsg = result.message();
-        test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT.");
-    }
+    string result = check issue(issuerConfig);
+    string header = "{\"alg\":\"RS256\", \"typ\":\"JWT\"}";
+    string payload = "{\"aud\":[\"ballerina\", \"ballerinaSamples\"],";
+    assertDecodedJwt(result, header, payload);
 }
 
 @test:Config {}
-isolated function testIssueJwtWithNoAudOrSub() {
+isolated function testIssueJwtWithNoAudOrSub() returns Error? {
     IssuerConfig issuerConfig = {
         username: "John",
         issuer: "wso2",
@@ -159,20 +135,14 @@ isolated function testIssueJwtWithNoAudOrSub() {
             }
         }
     };
-
-    string|Error result = issue(issuerConfig);
-    if (result is string) {
-        string header = "{\"alg\":\"RS256\", \"typ\":\"JWT\"}";
-        string payload = "{\"iss\":\"wso2\", \"sub\":\"John\",";
-        assertDecodedJwt(result, header, payload);
-    } else {
-        string? errMsg = result.message();
-        test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT.");
-    }
+    string result = check issue(issuerConfig);
+    string header = "{\"alg\":\"RS256\", \"typ\":\"JWT\"}";
+    string payload = "{\"iss\":\"wso2\", \"sub\":\"John\",";
+    assertDecodedJwt(result, header, payload);
 }
 
 @test:Config {}
-isolated function testIssueJwtWithCustomClaims() {
+isolated function testIssueJwtWithCustomClaims() returns Error? {
     IssuerConfig issuerConfig = {
         username: "John",
         issuer: "wso2",
@@ -190,41 +160,29 @@ isolated function testIssueJwtWithCustomClaims() {
             }
         }
     };
-
-    string|Error result = issue(issuerConfig);
-    if (result is string) {
-        string header = "{\"alg\":\"RS256\", \"typ\":\"JWT\"}";
-        string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"],";
-        assertDecodedJwt(result, header, payload);
-    } else {
-        string? errMsg = result.message();
-        test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT.");
-    }
+    string result = check issue(issuerConfig);
+    string header = "{\"alg\":\"RS256\", \"typ\":\"JWT\"}";
+    string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"],";
+    assertDecodedJwt(result, header, payload);
 }
 
 @test:Config {}
-isolated function testIssueJwtWithoutSignatureConfig() {
+isolated function testIssueJwtWithoutSignatureConfig() returns Error? {
     IssuerConfig issuerConfig = {
         username: "John",
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
         expTime: 600
     };
-
-    string|Error result = issue(issuerConfig);
-    if (result is string) {
-        test:assertTrue(result.startsWith("eyJhbGciOiJub25lIiwgInR5cCI6IkpXVCJ9."));
-        string header = "{\"alg\":\"none\", \"typ\":\"JWT\"}";
-        string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]";
-        assertDecodedJwt(result, header, payload);
-    } else {
-        string? errMsg = result.message();
-        test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT.");
-    }
+    string result = check issue(issuerConfig);
+    test:assertTrue(result.startsWith("eyJhbGciOiJub25lIiwgInR5cCI6IkpXVCJ9."));
+    string header = "{\"alg\":\"none\", \"typ\":\"JWT\"}";
+    string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]";
+    assertDecodedJwt(result, header, payload);
 }
 
 @test:Config {}
-isolated function testIssueJwtWithSigningAlgorithmNone() {
+isolated function testIssueJwtWithSigningAlgorithmNone() returns Error? {
     IssuerConfig issuerConfig = {
         username: "John",
         issuer: "wso2",
@@ -234,21 +192,15 @@ isolated function testIssueJwtWithSigningAlgorithmNone() {
             algorithm: NONE
         }
     };
-
-    string|Error result = issue(issuerConfig);
-    if (result is string) {
-        test:assertTrue(result.startsWith("eyJhbGciOiJub25lIiwgInR5cCI6IkpXVCJ9."));
-        string header = "{\"alg\":\"none\", \"typ\":\"JWT\"}";
-        string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]";
-        assertDecodedJwt(result, header, payload);
-    } else {
-        string? errMsg = result.message();
-        test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT.");
-    }
+    string result = check issue(issuerConfig);
+    test:assertTrue(result.startsWith("eyJhbGciOiJub25lIiwgInR5cCI6IkpXVCJ9."));
+    string header = "{\"alg\":\"none\", \"typ\":\"JWT\"}";
+    string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]";
+    assertDecodedJwt(result, header, payload);
 }
 
 @test:Config {}
-isolated function testIssueJwtWithSigningAlgorithmRS384() {
+isolated function testIssueJwtWithSigningAlgorithmRS384() returns Error? {
     IssuerConfig issuerConfig = {
         username: "John",
         issuer: "wso2",
@@ -266,21 +218,15 @@ isolated function testIssueJwtWithSigningAlgorithmRS384() {
             }
         }
     };
-
-    string|Error result = issue(issuerConfig);
-    if (result is string) {
-        test:assertTrue(result.startsWith("eyJhbGciOiJSUzM4NCIsICJ0eXAiOiJKV1QifQ."));
-        string header = "{\"alg\":\"RS384\", \"typ\":\"JWT\"}";
-        string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]";
-        assertDecodedJwt(result, header, payload);
-    } else {
-        string? errMsg = result.message();
-        test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT.");
-    }
+    string result = check issue(issuerConfig);
+    test:assertTrue(result.startsWith("eyJhbGciOiJSUzM4NCIsICJ0eXAiOiJKV1QifQ."));
+    string header = "{\"alg\":\"RS384\", \"typ\":\"JWT\"}";
+    string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]";
+    assertDecodedJwt(result, header, payload);
 }
 
 @test:Config {}
-isolated function testIssueJwtWithSigningAlgorithmRS512() {
+isolated function testIssueJwtWithSigningAlgorithmRS512() returns Error? {
     IssuerConfig issuerConfig = {
         username: "John",
         issuer: "wso2",
@@ -298,21 +244,15 @@ isolated function testIssueJwtWithSigningAlgorithmRS512() {
             }
         }
     };
-
-    string|Error result = issue(issuerConfig);
-    if (result is string) {
-        test:assertTrue(result.startsWith("eyJhbGciOiJSUzUxMiIsICJ0eXAiOiJKV1QifQ."));
-        string header = "{\"alg\":\"RS512\", \"typ\":\"JWT\"}";
-        string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]";
-        assertDecodedJwt(result, header, payload);
-    } else {
-        string? errMsg = result.message();
-        test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT.");
-    }
+    string result = check issue(issuerConfig);
+    test:assertTrue(result.startsWith("eyJhbGciOiJSUzUxMiIsICJ0eXAiOiJKV1QifQ."));
+    string header = "{\"alg\":\"RS512\", \"typ\":\"JWT\"}";
+    string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]";
+    assertDecodedJwt(result, header, payload);
 }
 
 @test:Config {}
-isolated function testIssueJwtWithSigningAlgorithmHS256() {
+isolated function testIssueJwtWithSigningAlgorithmHS256() returns Error? {
     IssuerConfig issuerConfig = {
         username: "John",
         issuer: "wso2",
@@ -323,21 +263,15 @@ isolated function testIssueJwtWithSigningAlgorithmHS256() {
             config: "s3cr3t"
         }
     };
-
-    string|Error result = issue(issuerConfig);
-    if (result is string) {
-        test:assertTrue(result.startsWith("eyJhbGciOiJIUzI1NiIsICJ0eXAiOiJKV1QifQ."));
-        string header = "{\"alg\":\"HS256\", \"typ\":\"JWT\"}";
-        string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]";
-        assertDecodedJwt(result, header, payload);
-    } else {
-        string? errMsg = result.message();
-        test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT.");
-    }
+    string result = check issue(issuerConfig);
+    test:assertTrue(result.startsWith("eyJhbGciOiJIUzI1NiIsICJ0eXAiOiJKV1QifQ."));
+    string header = "{\"alg\":\"HS256\", \"typ\":\"JWT\"}";
+    string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]";
+    assertDecodedJwt(result, header, payload);
 }
 
 @test:Config {}
-isolated function testIssueJwtWithSigningAlgorithmHS384() {
+isolated function testIssueJwtWithSigningAlgorithmHS384() returns Error? {
     IssuerConfig issuerConfig = {
         username: "John",
         issuer: "wso2",
@@ -348,21 +282,15 @@ isolated function testIssueJwtWithSigningAlgorithmHS384() {
             config: "s3cr3t"
         }
     };
-
-    string|Error result = issue(issuerConfig);
-    if (result is string) {
-        test:assertTrue(result.startsWith("eyJhbGciOiJIUzM4NCIsICJ0eXAiOiJKV1QifQ."));
-        string header = "{\"alg\":\"HS384\", \"typ\":\"JWT\"}";
-        string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]";
-        assertDecodedJwt(result, header, payload);
-    } else {
-        string? errMsg = result.message();
-        test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT.");
-    }
+    string result = check issue(issuerConfig);
+    test:assertTrue(result.startsWith("eyJhbGciOiJIUzM4NCIsICJ0eXAiOiJKV1QifQ."));
+    string header = "{\"alg\":\"HS384\", \"typ\":\"JWT\"}";
+    string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]";
+    assertDecodedJwt(result, header, payload);
 }
 
 @test:Config {}
-isolated function testIssueJwtWithSigningAlgorithmHS512() {
+isolated function testIssueJwtWithSigningAlgorithmHS512() returns Error? {
     IssuerConfig issuerConfig = {
         username: "John",
         issuer: "wso2",
@@ -373,17 +301,11 @@ isolated function testIssueJwtWithSigningAlgorithmHS512() {
             config: "s3cr3t"
         }
     };
-
-    string|Error result = issue(issuerConfig);
-    if (result is string) {
-        test:assertTrue(result.startsWith("eyJhbGciOiJIUzUxMiIsICJ0eXAiOiJKV1QifQ."));
-        string header = "{\"alg\":\"HS512\", \"typ\":\"JWT\"}";
-        string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]";
-        assertDecodedJwt(result, header, payload);
-    } else {
-        string? errMsg = result.message();
-        test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT.");
-    }
+    string result = check issue(issuerConfig);
+    test:assertTrue(result.startsWith("eyJhbGciOiJIUzUxMiIsICJ0eXAiOiJKV1QifQ."));
+    string header = "{\"alg\":\"HS512\", \"typ\":\"JWT\"}";
+    string payload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]";
+    assertDecodedJwt(result, header, payload);
 }
 
 @test:Config {}
@@ -397,17 +319,16 @@ isolated function testIssueJwtWithoutSigningKeyInformation() {
             algorithm: RS256
         }
     };
-
     string|Error result = issue(issuerConfig);
-    if (result is Error) {
+    if result is Error {
         assertContains(result, "Signing JWT requires keystore information or private key information.");
     } else {
-        test:assertFail(msg = "Test Failed! ");
+        test:assertFail("Expected error not found.");
     }
 }
 
 @test:Config {}
-isolated function testIssueJwtWithPrivateKey() {
+isolated function testIssueJwtWithPrivateKey() returns Error? {
     IssuerConfig issuerConfig = {
         username: "John",
         issuer: "wso2",
@@ -419,34 +340,14 @@ isolated function testIssueJwtWithPrivateKey() {
             }
         }
     };
-
-    string|Error result = issue(issuerConfig);
-    if (result is string) {
-        string expectedHeader = "{\"alg\":\"RS256\", \"typ\":\"JWT\"}";
-        string expectedPayload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]";
-        assertDecodedJwt(result, expectedHeader, expectedPayload);
-
-        ValidatorConfig validatorConfig = {
-            issuer: "wso2",
-            audience: ["ballerina", "ballerinaSamples"],
-            clockSkew: 60,
-            signatureConfig: {
-                certFile: PUBLIC_CERT_PATH
-            }
-        };
-        Payload|Error payload = validate(result, validatorConfig);
-        if (payload is Error) {
-            string? errMsg = payload.message();
-            test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
-        }
-    } else {
-        string? errMsg = result.message();
-        test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT.");
-    }
+    string result = check issue(issuerConfig);
+    string expectedHeader = "{\"alg\":\"RS256\", \"typ\":\"JWT\"}";
+    string expectedPayload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]";
+    assertDecodedJwt(result, expectedHeader, expectedPayload);
 }
 
 @test:Config {}
-isolated function testIssueJwtWithEncryptedPrivateKey() {
+isolated function testIssueJwtWithEncryptedPrivateKey() returns Error? {
     IssuerConfig issuerConfig = {
         username: "John",
         issuer: "wso2",
@@ -459,58 +360,36 @@ isolated function testIssueJwtWithEncryptedPrivateKey() {
             }
         }
     };
-
-    string|Error result = issue(issuerConfig);
-    if (result is string) {
-        string expectedHeader = "{\"alg\":\"RS256\", \"typ\":\"JWT\"}";
-        string expectedPayload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]";
-        assertDecodedJwt(result, expectedHeader, expectedPayload);
-
-        ValidatorConfig validatorConfig = {
-            issuer: "wso2",
-            audience: ["ballerina", "ballerinaSamples"],
-            clockSkew: 60,
-            signatureConfig: {
-                certFile: PUBLIC_CERT_PATH
-            }
-        };
-        Payload|Error payload = validate(result, validatorConfig);
-        if (payload is Error) {
-            string? errMsg = payload.message();
-            test:assertFail(msg = errMsg is string ? errMsg : "Error in validating JWT.");
-        }
-    } else {
-        string? errMsg = result.message();
-        test:assertFail(msg = errMsg is string ? errMsg : "Error in generated JWT.");
-    }
+    string result = check issue(issuerConfig);
+    string expectedHeader = "{\"alg\":\"RS256\", \"typ\":\"JWT\"}";
+    string expectedPayload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]";
+    assertDecodedJwt(result, expectedHeader, expectedPayload);
 }
 
 isolated function assertDecodedJwt(string jwt, string header, string payload) {
     string[] parts = regex:split(jwt, "\\.");
-
     // check header
     byte[]|Error headerDecodedResult = decodeBase64Url(parts[0]);
-    if (headerDecodedResult is byte[]) {
+    if headerDecodedResult is byte[] {
         string|error resultHeader = 'string:fromBytes(headerDecodedResult);
-        if (resultHeader is string) {
-            test:assertEquals(header, resultHeader, msg = "Found unexpected header.");
+        if resultHeader is string {
+            test:assertEquals(header, resultHeader);
         } else {
-            test:assertFail(msg = "Expected string, but found error.");
+            test:assertFail("Assertion failed. Expected string, but found error.");
         }
     } else {
-        test:assertFail(msg = "Expected byte[], but found error.");
+        test:assertFail("Assertion failed. Expected byte[], but found error.");
     }
-
     // check payload
     byte[]|Error payloadDecodedResult = decodeBase64Url(parts[1]);
-    if (payloadDecodedResult is byte[]) {
+    if payloadDecodedResult is byte[] {
         string|error resultPayload = 'string:fromBytes(payloadDecodedResult);
-        if (resultPayload is string) {
-            test:assertTrue(resultPayload.startsWith(payload), msg = "Found unexpected payload.");
+        if resultPayload is string {
+            test:assertTrue(resultPayload.startsWith(payload));
         } else {
-            test:assertFail(msg = "Expected string, but found error.");
+            test:assertFail("Assertion failed. Expected string, but found error.");
         }
     } else {
-        test:assertFail(msg = "Expected byte[], but found error.");
+        test:assertFail("Assertion failed. Expected byte[], but found error.");
     }
 }

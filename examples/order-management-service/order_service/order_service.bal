@@ -80,7 +80,7 @@ service /'order on orderEP {
     resource function post .(@http:Payload rep:Order 'order) returns rep:OrderCreated|error {
         string orderId = 'order.id;
         ordersMap[orderId] = 'order;
-        _ = check updateInventoryQty('order.items, rep:DECREASE);
+        check updateInventoryQty('order.items, rep:DECREASE);
         return {
             body: {status: "Order '" + orderId + "' created."},
             headers: {"Location": "http://localhost:9090/order/" + orderId}
@@ -99,11 +99,11 @@ service /'order on orderEP {
                                             returns rep:OrderUpdated|rep:OrderNotFound|error {
         rep:Order? existingOrder = ordersMap[orderId];
         if existingOrder is rep:Order {
-            _ = check updateInventoryQty(existingOrder.items, rep:INCREASE);
+            check updateInventoryQty(existingOrder.items, rep:INCREASE);
             existingOrder.name = updateOrder.name;
             existingOrder.items = updateOrder.items;
             ordersMap[orderId] = existingOrder;
-            _ = check updateInventoryQty(existingOrder.items, rep:DECREASE);
+            check updateInventoryQty(existingOrder.items, rep:DECREASE);
             return <rep:OrderUpdated>{
                 body: {status: "Order '" + orderId + "' updated."}
             };
@@ -124,7 +124,7 @@ service /'order on orderEP {
     resource function delete [string orderId]() returns rep:OrderCanceled|rep:OrderNotFound|error {
         if ordersMap.hasKey(orderId) {
             rep:Order 'order = ordersMap.remove(orderId);
-            _ = check updateInventoryQty('order.items, rep:INCREASE);
+            check updateInventoryQty('order.items, rep:INCREASE);
             return <rep:OrderCanceled>{
                 body: {status: "Order '" + orderId + "' removed."}
             };
