@@ -46,19 +46,19 @@ public isolated class ListenerJwtAuthProvider {
     public isolated function init(ValidatorConfig validatorConfig) {
         self.validatorConfig = validatorConfig.cloneReadOnly();
         cache:CacheConfig? jwtCacheConfig = self.validatorConfig?.cacheConfig;
-        if (jwtCacheConfig is cache:CacheConfig) {
+        if jwtCacheConfig is cache:CacheConfig {
             self.jwtCache = new(jwtCacheConfig);
         } else {
             self.jwtCache = ();
         }
         var jwksConfig = self.validatorConfig?.signatureConfig?.jwksConfig;
-        if !(jwksConfig is ()) {
+        if jwksConfig !is () {
             ClientConfiguration clientConfig = jwksConfig.clientConfig;
             cache:CacheConfig? jwksCacheConfig = jwksConfig?.cacheConfig;
-            if (jwksCacheConfig is cache:CacheConfig) {
+            if jwksCacheConfig is cache:CacheConfig {
                 self.jwksCache = new(jwksCacheConfig);
                 Error? result = preloadJwksToCache(<cache:Cache> (self.jwksCache), jwksConfig.url, clientConfig);
-                if (result is Error) {
+                if result is Error {
                     panic result;
                 }
                 return;
@@ -76,21 +76,21 @@ public isolated class ListenerJwtAuthProvider {
     # + return - `jwt:Payload` if authentication is successful or else a `jwt:Error` if an error occurred
     public isolated function authenticate(string credential) returns Payload|Error {
         string[] jwtComponents = regex:split(credential, "\\.");
-        if (jwtComponents.length() != 3) {
+        if jwtComponents.length() != 3 {
             return prepareError("Credential format does not match to JWT format.");
         }
 
         cache:Cache? jwtCache = self.jwtCache;
-        if (jwtCache is cache:Cache && jwtCache.hasKey(credential)) {
+        if jwtCache is cache:Cache && jwtCache.hasKey(credential) {
             Payload? payload = validateFromCache(jwtCache, credential);
-            if (payload is Payload) {
+            if payload is Payload {
                 return payload;
             }
         }
 
         Payload|Error validationResult = validateJwt(credential, self.validatorConfig, self.jwksCache);
-        if (validationResult is Payload) {
-            if (jwtCache is cache:Cache) {
+        if validationResult is Payload {
+            if jwtCache is cache:Cache {
                 addToCache(jwtCache, credential, validationResult);
             }
             return validationResult;
@@ -102,16 +102,16 @@ public isolated class ListenerJwtAuthProvider {
 
 isolated function preloadJwksToCache(cache:Cache jwksCache, string url, ClientConfiguration clientConfig) returns Error? {
     string|Error stringResponse = getJwksResponse(url, clientConfig);
-    if (stringResponse is string) {
+    if stringResponse is string {
         json[] jwksArray = check getJwksArray(stringResponse);
         foreach json jwk in jwksArray {
             json|error kid = jwk.kid;
-            if (kid is string) {
+            if kid is string {
                 cache:Error? cachedResult = jwksCache.put(kid, jwk);
-                if (cachedResult is cache:Error) {
+                if cachedResult is cache:Error {
                     return prepareError("Failed to put JWK for the kid '" + kid + "' to the cache.", cachedResult);
                 }
-            } else if (kid is error) {
+            } else if kid is error {
                 return prepareError("Failed to access 'kid' property from the JSON '" + jwk.toString() + "'.", kid);
             } else {
                 return prepareError("Failed to extract 'kid' property as a 'string' from the JSON '" + jwk.toString() + "'.");
@@ -125,18 +125,17 @@ isolated function preloadJwksToCache(cache:Cache jwksCache, string url, ClientCo
 
 isolated function validateFromCache(cache:Cache jwtCache, string jwt) returns Payload? {
     any|cache:Error cachedResult = jwtCache.get(jwt);
-    if (cachedResult is any) {
+    if cachedResult is any {
         Payload payload = <Payload> cachedResult;
         int? expTime = payload?.exp;
         // convert to current time and check the expiry time
         [int, decimal] currentTime = time:utcNow();
-        if (expTime is () || expTime > currentTime[0]) {
+        if expTime is () || expTime > currentTime[0] {
             return payload;
-        } else {
-            cache:Error? result = jwtCache.invalidate(jwt);
-            if (result is cache:Error) {
-                log:printError("Failed to invalidate JWT from the cache.", 'error = result);
-            }
+        }
+        cache:Error? result = jwtCache.invalidate(jwt);
+        if result is cache:Error {
+            log:printError("Failed to invalidate JWT from the cache.", 'error = result);
         }
     } else {
         log:printError("Failed to retrieve JWT entry from the cache.", 'error = cachedResult);
@@ -146,8 +145,7 @@ isolated function validateFromCache(cache:Cache jwtCache, string jwt) returns Pa
 
 isolated function addToCache(cache:Cache jwtCache, string jwt, Payload payload) {
     cache:Error? result = jwtCache.put(jwt, payload);
-    if (result is cache:Error) {
+    if result is cache:Error {
         log:printError("Failed to add JWT to the cache.", 'error = result);
-        return;
     }
 }

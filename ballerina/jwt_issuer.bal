@@ -70,25 +70,25 @@ public isolated function issue(IssuerConfig issuerConfig) returns string|Error {
     string jwtAssertion = headerString + "." + payloadString;
 
     IssuerSignatureConfig? issuerSignatureConfig = issuerConfig?.signatureConfig;
-    if (issuerSignatureConfig is ()) {
+    if issuerSignatureConfig is () {
         return jwtAssertion;
     }
     IssuerSignatureConfig signatureConfig = <IssuerSignatureConfig>issuerSignatureConfig;
     SigningAlgorithm algorithm = signatureConfig.algorithm;
-    if (algorithm is NONE) {
+    if algorithm is NONE {
         return jwtAssertion;
     }
     var config = signatureConfig?.config;
-    if (config is ()) {
+    if config is () {
         return prepareError("Signing JWT requires keystore information or private key information.");
-    } else if (config is string) {
+    } else if config is string {
         return hmacJwtAssertion(jwtAssertion, algorithm, config);
-    } else if (config?.keyStore is crypto:KeyStore) {
+    } else if config?.keyStore is crypto:KeyStore {
         crypto:KeyStore keyStore = <crypto:KeyStore> config?.keyStore;
         string keyAlias = <string> config?.keyAlias;
         string keyPassword = <string> config?.keyPassword;
         crypto:PrivateKey|crypto:Error privateKey = crypto:decodeRsaPrivateKeyFromKeyStore(keyStore, keyAlias, keyPassword);
-        if (privateKey is crypto:PrivateKey) {
+        if privateKey is crypto:PrivateKey {
             return signJwtAssertion(jwtAssertion, algorithm, privateKey);
         } else {
             return prepareError("Failed to decode private key.", privateKey);
@@ -97,7 +97,7 @@ public isolated function issue(IssuerConfig issuerConfig) returns string|Error {
         string keyFile = <string> config?.keyFile;
         string? keyPassword = config?.keyPassword;
         crypto:PrivateKey|crypto:Error privateKey = crypto:decodeRsaPrivateKeyFromKeyFile(keyFile, keyPassword);
-        if (privateKey is crypto:PrivateKey) {
+        if privateKey is crypto:PrivateKey {
             return signJwtAssertion(jwtAssertion, algorithm, privateKey);
         } else {
             return prepareError("Failed to decode private key.", privateKey);
@@ -107,10 +107,10 @@ public isolated function issue(IssuerConfig issuerConfig) returns string|Error {
 
 isolated function signJwtAssertion(string jwtAssertion, SigningAlgorithm alg, crypto:PrivateKey privateKey)
                                    returns string|Error {
-    match (alg) {
+    match alg {
         RS256 => {
             byte[]|crypto:Error signature = crypto:signRsaSha256(jwtAssertion.toBytes(), privateKey);
-            if (signature is byte[]) {
+            if signature is byte[] {
                 return (jwtAssertion + "." + encodeBase64Url(signature));
             } else {
                 return prepareError("RSA private key signing failed for SHA256 algorithm.", signature);
@@ -118,7 +118,7 @@ isolated function signJwtAssertion(string jwtAssertion, SigningAlgorithm alg, cr
         }
         RS384 => {
             byte[]|crypto:Error signature = crypto:signRsaSha384(jwtAssertion.toBytes(), privateKey);
-            if (signature is byte[]) {
+            if signature is byte[] {
                 return (jwtAssertion + "." + encodeBase64Url(signature));
             } else {
                 return prepareError("RSA private key signing failed for SHA384 algorithm.", signature);
@@ -126,7 +126,7 @@ isolated function signJwtAssertion(string jwtAssertion, SigningAlgorithm alg, cr
         }
         RS512 => {
             byte[]|crypto:Error signature = crypto:signRsaSha512(jwtAssertion.toBytes(), privateKey);
-            if (signature is byte[]) {
+            if signature is byte[] {
                 return (jwtAssertion + "." + encodeBase64Url(signature));
             } else {
                 return prepareError("RSA private key signing failed for SHA512 algorithm.", signature);
@@ -140,10 +140,10 @@ isolated function signJwtAssertion(string jwtAssertion, SigningAlgorithm alg, cr
 
 isolated function hmacJwtAssertion(string jwtAssertion, SigningAlgorithm alg, string secret)
                                    returns string|Error {
-    match (alg) {
+    match alg {
         HS256 => {
             byte[]|crypto:Error signature = crypto:hmacSha256(jwtAssertion.toBytes(), secret.toBytes());
-            if (signature is byte[]) {
+            if signature is byte[] {
                 return (jwtAssertion + "." + encodeBase64Url(signature));
             } else {
                 return prepareError("HMAC secret key signing failed for SHA256 algorithm.", signature);
@@ -151,7 +151,7 @@ isolated function hmacJwtAssertion(string jwtAssertion, SigningAlgorithm alg, st
         }
         HS384 => {
             byte[]|crypto:Error signature = crypto:hmacSha384(jwtAssertion.toBytes(), secret.toBytes());
-            if (signature is byte[]) {
+            if signature is byte[] {
                 return (jwtAssertion + "." + encodeBase64Url(signature));
             } else {
                 return prepareError("HMAC secret key signing failed for SHA384 algorithm.", signature);
@@ -159,7 +159,7 @@ isolated function hmacJwtAssertion(string jwtAssertion, SigningAlgorithm alg, st
         }
         HS512 => {
             byte[]|crypto:Error signature = crypto:hmacSha512(jwtAssertion.toBytes(), secret.toBytes());
-            if (signature is byte[]) {
+            if signature is byte[] {
                 return (jwtAssertion + "." + encodeBase64Url(signature));
             } else {
                 return prepareError("HMAC secret key signing failed for SHA512 algorithm.", signature);
@@ -174,11 +174,11 @@ isolated function hmacJwtAssertion(string jwtAssertion, SigningAlgorithm alg, st
 isolated function prepareHeader(IssuerConfig issuerConfig) returns Header {
     Header header = { alg: NONE, typ: "JWT" };
     IssuerSignatureConfig? issuerSignatureConfig = issuerConfig?.signatureConfig;
-    if (issuerSignatureConfig is IssuerSignatureConfig) {
+    if issuerSignatureConfig is IssuerSignatureConfig {
         header.alg = issuerSignatureConfig.algorithm;
     }
     string? kid = issuerConfig?.keyId;
-    if (kid is string) {
+    if kid is string {
         header.kid = kid;
     }
     return header;
@@ -193,24 +193,24 @@ isolated function preparePayload(IssuerConfig issuerConfig) returns Payload {
     };
 
     string? iss = issuerConfig?.issuer;
-    if (iss is string) {
+    if iss is string {
         payload.iss = iss;
     }
     string? sub = issuerConfig?.username;
-    if (sub is string) {
+    if sub is string {
         payload.sub = sub;
     }
     string|string[]? aud = issuerConfig?.audience;
-    if (aud is string || aud is string[]) {
+    if aud is string || aud is string[] {
         payload.aud = aud;
     }
     string? jti = issuerConfig?.jwtId;
-    if (jti is string) {
+    if jti is string {
         payload.jti = jti;
     }
 
     map<json>? customClaims = issuerConfig?.customClaims;
-    if (customClaims is map<json>) {
+    if customClaims is map<json> {
         foreach string key in customClaims.keys() {
             payload[key] = customClaims[key];
         }
@@ -219,7 +219,7 @@ isolated function preparePayload(IssuerConfig issuerConfig) returns Payload {
 }
 
 isolated function buildHeaderString(Header header) returns string|Error {
-    if (!validateMandatoryHeaderFields(header)) {
+    if !validateMandatoryHeaderFields(header) {
         return prepareError("Mandatory field signing algorithm (alg) is empty.");
     }
     return encodeBase64Url(header.toJsonString().toBytes());

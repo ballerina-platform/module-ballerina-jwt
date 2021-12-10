@@ -20,7 +20,7 @@ import ballerina/cache;
 import ballerina/test;
 
 @test:Config {}
-isolated function testListenerJwtAuthProviderSuccess() {
+isolated function testListenerJwtAuthProviderSuccess() returns Error? {
     ValidatorConfig jwtConfig = {
         issuer: "wso2",
         audience: "ballerina",
@@ -42,30 +42,19 @@ isolated function testListenerJwtAuthProviderSuccess() {
         }
     };
     ListenerJwtAuthProvider jwtAuthProvider = new(jwtConfig);
-    Payload|Error result = jwtAuthProvider.authenticate(JWT1);
-    if (result is Payload) {
-        test:assertEquals(result?.iss, "wso2");
-        test:assertEquals(result?.aud, ["ballerina","ballerinaSamples"]);
-    } else {
-        string? errMsg = result.message();
-        test:assertFail(msg = errMsg is string ? errMsg : "Test Failed!");
-    }
-
+    Payload result = check jwtAuthProvider.authenticate(JWT1);
+    test:assertEquals(result?.iss, "wso2");
+    test:assertEquals(result?.aud, ["ballerina","ballerinaSamples"]);
     // Authenticate the token from the cache
-    result = jwtAuthProvider.authenticate(JWT1);
-    if (result is Payload) {
-        test:assertEquals(result?.iss, "wso2");
-        test:assertEquals(result?.aud, ["ballerina","ballerinaSamples"]);
-    } else {
-        string? errMsg = result.message();
-        test:assertFail(msg = errMsg is string ? errMsg : "Test Failed!");
-    }
+    result = check jwtAuthProvider.authenticate(JWT1);
+    test:assertEquals(result?.iss, "wso2");
+    test:assertEquals(result?.aud, ["ballerina","ballerinaSamples"]);
 }
 
 @test:Config {
     groups: ["jwks"]
 }
-isolated function testListenerJwtAuthProviderSuccessWithJwk() {
+isolated function testListenerJwtAuthProviderSuccessWithJwk() returns Error? {
     ValidatorConfig jwtConfig = {
         issuer: "ballerina",
         audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
@@ -98,14 +87,9 @@ isolated function testListenerJwtAuthProviderSuccessWithJwk() {
         }
     };
     ListenerJwtAuthProvider jwtAuthProvider = new(jwtConfig);
-    Payload|Error result = jwtAuthProvider.authenticate(JWT2);
-    if (result is Payload) {
-        test:assertEquals(result?.iss, "ballerina");
-        test:assertEquals(result?.aud, ["vEwzbcasJVQm1jVYHUHCjhxZ4tYa"]);
-    } else {
-        string? errMsg = result.message();
-        test:assertFail(msg = errMsg is string ? errMsg : "Test Failed!");
-    }
+    Payload result = check jwtAuthProvider.authenticate(JWT2);
+    test:assertEquals(result?.iss, "ballerina");
+    test:assertEquals(result?.aud, ["vEwzbcasJVQm1jVYHUHCjhxZ4tYa"]);
 }
 
 @test:Config {}
@@ -125,10 +109,10 @@ isolated function testListenerJwtAuthProviderFailure() {
     };
     ListenerJwtAuthProvider jwtAuthProvider = new(jwtConfig);
     Payload|Error result = jwtAuthProvider.authenticate(JWT1);
-    if (result is Error) {
+    if result is Error {
         test:assertEquals(result.message(), "JWT validation failed.");
     } else {
-        test:assertFail("Test Failed!");
+        test:assertFail("Expected error not found.");
     }
 }
 
@@ -149,9 +133,9 @@ isolated function testListenerJwtAuthProviderFailureWithInvalidCredential() {
     };
     ListenerJwtAuthProvider jwtAuthProvider = new(jwtConfig);
     Payload|Error result = jwtAuthProvider.authenticate("invalid_credential");
-    if (result is Error) {
+    if result is Error {
         test:assertEquals(result.message(), "Credential format does not match to JWT format.");
     } else {
-        test:assertFail("Test Failed!");
+        test:assertFail("Expected error not found.");
     }
 }

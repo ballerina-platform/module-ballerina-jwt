@@ -118,11 +118,11 @@ public isolated function validate(string jwt, ValidatorConfig validatorConfig) r
 isolated function validateJwt(string jwt, ValidatorConfig validatorConfig, cache:Cache? jwksCache = ())
                               returns Payload|Error {
     [Header, Payload] [header, payload] = check decode(jwt);
-    if (!validateMandatoryHeaderFields(header)) {
+    if !validateMandatoryHeaderFields(header) {
         return prepareError("Mandatory field signing algorithm (alg) is not provided in JOSE header.");
     }
-    _ = check validateJwtRecords(header, payload, validatorConfig);
-    _ = check validateSignature(jwt, header, payload, validatorConfig, jwksCache);
+    check validateJwtRecords(header, payload, validatorConfig);
+    check validateSignature(jwt, header, payload, validatorConfig, jwksCache);
     return payload;
 }
 
@@ -142,7 +142,7 @@ public isolated function decode(string jwt) returns [Header, Payload]|Error {
 
 isolated function getJwtComponents(string jwt) returns string[]|Error {
     string[] jwtComponents = regex:split(jwt, "\\.");
-    if (jwtComponents.length() < 2 || jwtComponents.length() > 3) {
+    if jwtComponents.length() < 2 || jwtComponents.length() > 3 {
         return prepareError("Invalid JWT.");
     }
     return jwtComponents;
@@ -150,11 +150,11 @@ isolated function getJwtComponents(string jwt) returns string[]|Error {
 
 isolated function getHeader(string encodedHeader) returns Header|Error {
     byte[]|Error decodedHeader = decodeBase64Url(encodedHeader);
-    if (decodedHeader is byte[]) {
+    if decodedHeader is byte[] {
         string|error result = 'string:fromBytes(decodedHeader);
-        if (result is string) {
+        if result is string {
             json|error jsonHeader = result.fromJsonString();
-            if (jsonHeader is json) {
+            if jsonHeader is json {
                 return parseHeader(<map<json>> jsonHeader);
             } else {
                 return prepareError("String to JSON conversion failed for JWT header.", jsonHeader);
@@ -169,11 +169,11 @@ isolated function getHeader(string encodedHeader) returns Header|Error {
 
 isolated function getPayload(string encodedPayload) returns Payload|Error {
     byte[]|Error decodedPayload = decodeBase64Url(encodedPayload);
-    if (decodedPayload is byte[]) {
+    if decodedPayload is byte[] {
         string|error result = 'string:fromBytes(decodedPayload);
-        if (result is string) {
+        if result is string {
             json|error jsonPayload = result.fromJsonString();
-            if (jsonPayload is json) {
+            if jsonPayload is json {
                 return parsePayload(<map<json>> jsonPayload);
             } else {
                 return prepareError("String to JSON conversion failed for JWT paylaod.", jsonPayload);
@@ -188,7 +188,7 @@ isolated function getPayload(string encodedPayload) returns Payload|Error {
 
 isolated function getJwtSignature(string encodedSignature) returns byte[]|Error {
     byte[]|Error signature = decodeBase64Url(encodedSignature);
-    if (signature is byte[]) {
+    if signature is byte[] {
         return signature;
     } else {
         return prepareError("Base64 URL decode failed for JWT signature.", signature);
@@ -199,19 +199,19 @@ isolated function parseHeader(map<json> headerMap) returns Header|Error {
     Header header = {};
     string[] keys = headerMap.keys();
     foreach string key in keys {
-        match (key) {
+        match key {
             ALG => {
-                if (headerMap[key] == "RS256") {
+                if headerMap[key] == "RS256" {
                     header.alg = RS256;
-                } else if (headerMap[key] == "RS384") {
+                } else if headerMap[key] == "RS384" {
                     header.alg = RS384;
-                } else if (headerMap[key] == "RS512") {
+                } else if headerMap[key] == "RS512" {
                     header.alg = RS512;
-                } else if (headerMap[key] == "HS256") {
+                } else if headerMap[key] == "HS256" {
                     header.alg = HS256;
-                } else if (headerMap[key] == "HS384") {
+                } else if headerMap[key] == "HS384" {
                     header.alg = HS384;
-                } else if (headerMap[key] == "HS512") {
+                } else if headerMap[key] == "HS512" {
                     header.alg = HS512;
                 } else {
                     return prepareError("Unsupported signing algorithm '" + headerMap[key].toString() + "'.");
@@ -238,7 +238,7 @@ isolated function parsePayload(map<json> payloadMap) returns Payload|Error {
     Payload payload = {};
     string[] keys = payloadMap.keys();
     foreach string key in keys {
-        match (key) {
+        match key {
             ISS => {
                 payload.iss = <string>payloadMap[key];
             }
@@ -251,7 +251,7 @@ isolated function parsePayload(map<json> payloadMap) returns Payload|Error {
             EXP => {
                 string exp = payloadMap[key].toString();
                 int|error value = 'int:fromString(exp);
-                if (value is int) {
+                if value is int {
                     payload.exp = value;
                 } else {
                     payload.exp = 0;
@@ -260,7 +260,7 @@ isolated function parsePayload(map<json> payloadMap) returns Payload|Error {
             NBF => {
                 string nbf = payloadMap[key].toString();
                 int|error value = 'int:fromString(nbf);
-                if (value is int) {
+                if value is int {
                     payload.nbf = value;
                 } else {
                     payload.nbf = 0;
@@ -269,7 +269,7 @@ isolated function parsePayload(map<json> payloadMap) returns Payload|Error {
             IAT => {
                 string iat = payloadMap[key].toString();
                 int|error value = 'int:fromString(iat);
-                if (value is int) {
+                if value is int {
                     payload.iat = value;
                 } else {
                     payload.iat = 0;
@@ -291,17 +291,17 @@ isolated function validateSignature(string jwt, Header header, Payload payload, 
     SigningAlgorithm alg = <SigningAlgorithm>header?.alg;  // The `()` value is already validated.
     ValidatorSignatureConfig? validatorSignatureConfig = validatorConfig?.signatureConfig;
 
-    if (alg == NONE && validatorSignatureConfig is ()) {
+    if alg == NONE && validatorSignatureConfig is () {
         return;
     }
 
-    if (alg == NONE && (validatorSignatureConfig is ValidatorSignatureConfig)) {
+    if alg == NONE && (validatorSignatureConfig is ValidatorSignatureConfig) {
         return prepareError("Not a valid JWS. Signing algorithm is 'NONE'.");
     }
 
     string[] encodedJwtComponents = check getJwtComponents(jwt);
-    if (alg != NONE && (validatorSignatureConfig is ValidatorSignatureConfig)) {
-        if (encodedJwtComponents.length() == 2) {
+    if alg != NONE && (validatorSignatureConfig is ValidatorSignatureConfig) {
+        if encodedJwtComponents.length() == 2 {
             return prepareError("Not a valid JWS. Signature part is required.");
         }
     }
@@ -310,100 +310,99 @@ isolated function validateSignature(string jwt, Header header, Payload payload, 
     byte[] assertion = headerPayloadPart.toBytes();
     byte[] signature = check getJwtSignature(encodedJwtComponents[2]);
 
-    if (validatorSignatureConfig is ValidatorSignatureConfig) {
+    if validatorSignatureConfig is ValidatorSignatureConfig {
         var jwksConfig = validatorSignatureConfig?.jwksConfig;
         string? certFile = validatorSignatureConfig?.certFile;
         var trustStoreConfig = validatorSignatureConfig?.trustStoreConfig;
         string? secret = validatorSignatureConfig?.secret;
-        if !(jwksConfig is ()) {
+        if jwksConfig !is () {
             string? kid = header?.kid;
-            if (kid is string) {
+            if kid is string {
                 string url = <string> jwksConfig?.url;
                 ClientConfiguration clientConfig = <ClientConfiguration> jwksConfig?.clientConfig;
                 json jwk = check getJwk(kid, url, clientConfig, jwksCache);
-                if (jwk is ()) {
+                if jwk is () {
                     return prepareError("No JWK found for kid '" + kid + "'.");
                 }
                 crypto:PublicKey publicKey = check getPublicKeyByJwks(jwk);
                 boolean signatureValidation = check assertRsaSignature(alg, assertion, signature, publicKey);
-                if (!signatureValidation) {
+                if !signatureValidation {
                    return prepareError("JWT signature validation with JWKS configurations has failed.");
                 }
             } else {
                 return prepareError("Key ID (kid) is not provided in JOSE header.");
             }
-        } else if (certFile is string) {
+        } else if certFile is string {
             crypto:PublicKey|crypto:Error publicKey = crypto:decodeRsaPublicKeyFromCertFile(certFile);
-            if (publicKey is crypto:PublicKey) {
-                if (!validateCertificate(publicKey)) {
+            if publicKey is crypto:PublicKey {
+                if !validateCertificate(publicKey) {
                    return prepareError("Public key certificate validity period has passed.");
                 }
                 boolean signatureValidation = check assertRsaSignature(alg, assertion, signature, publicKey);
-                if (!signatureValidation) {
+                if !signatureValidation {
                    return prepareError("JWT signature validation with public key configurations has failed.");
                 }
             } else {
                 return prepareError("Failed to decode public key.", publicKey);
             }
-        } else if !(trustStoreConfig is ()) {
+        } else if trustStoreConfig !is () {
             crypto:TrustStore trustStore = <crypto:TrustStore> trustStoreConfig?.trustStore;
             string certAlias = <string> trustStoreConfig?.certAlias;
             crypto:PublicKey|crypto:Error publicKey = crypto:decodeRsaPublicKeyFromTrustStore(trustStore, certAlias);
-            if (publicKey is crypto:PublicKey) {
-                if (!validateCertificate(publicKey)) {
+            if publicKey is crypto:PublicKey {
+                if !validateCertificate(publicKey) {
                    return prepareError("Public key certificate validity period has passed.");
                 }
                 boolean signatureValidation = check assertRsaSignature(alg, assertion, signature, publicKey);
-                if (!signatureValidation) {
+                if !signatureValidation {
                    return prepareError("JWT signature validation with TrustStore configurations has failed.");
                 }
             } else {
                 return prepareError("Failed to decode public key.", publicKey);
             }
-        } else if !(secret is ()) {
+        } else if secret !is () {
             boolean signatureValidation = check assertHmacSignature(alg, assertion, signature, secret);
-            if (!signatureValidation) {
+            if !signatureValidation {
                return prepareError("JWT signature validation with shared secret has failed.");
             }
         }
     }
-    return;
 }
 
 isolated function validateJwtRecords(Header header, Payload payload, ValidatorConfig validatorConfig) returns Error? {
     string? sub = validatorConfig?.username;
-    if (sub is string) {
-        _ = check validateUsername(payload, sub);
+    if sub is string {
+        check validateUsername(payload, sub);
     }
     string? iss = validatorConfig?.issuer;
-    if (iss is string) {
-        _ = check validateIssuer(payload, iss);
+    if iss is string {
+        check validateIssuer(payload, iss);
     }
     string|string[]? aud = validatorConfig?.audience;
-    if (aud is string || aud is string[]) {
-        _ = check validateAudience(payload, aud);
+    if aud is string || aud is string[] {
+        check validateAudience(payload, aud);
     }
     string? jwtId = validatorConfig?.jwtId;
-    if (jwtId is string) {
-        _ = check validateJwtId(payload, jwtId);
+    if jwtId is string {
+        check validateJwtId(payload, jwtId);
     }
     string? keyId = validatorConfig?.keyId;
-    if (keyId is string) {
-        _ = check validateKeyId(header, keyId);
+    if keyId is string {
+        check validateKeyId(header, keyId);
     }
     map<json>? customClaims = validatorConfig?.customClaims;
-    if (customClaims is map<json>) {
-        _ = check validateCustomClaims(payload, customClaims);
+    if customClaims is map<json> {
+        check validateCustomClaims(payload, customClaims);
     }
     int? exp = payload?.exp;
-    if (exp is int) {
-        if (!validateExpirationTime(exp, <int> validatorConfig.clockSkew)) {
+    if exp is int {
+        if !validateExpirationTime(exp, <int> validatorConfig.clockSkew) {
             return prepareError("JWT is expired.");
         }
     }
     int? nbf = payload?.nbf;
-    if (nbf is int) {
-        if (!validateNotBeforeTime(nbf, <int> validatorConfig.clockSkew)) {
+    if nbf is int {
+        if !validateNotBeforeTime(nbf, <int> validatorConfig.clockSkew) {
             return prepareError("JWT is used before not-before-time (nbf).");
         }
     }
@@ -418,10 +417,10 @@ isolated function validateMandatoryHeaderFields(Header header) returns boolean {
 isolated function validateCertificate(crypto:PublicKey publicKey) returns boolean {
     [int, decimal] currentTime = time:utcNow();
     crypto:Certificate? certificate = publicKey?.certificate;
-    if (certificate is crypto:Certificate) {
+    if certificate is crypto:Certificate {
         [int, decimal] notBefore = certificate.notBefore;
         [int, decimal] notAfter = certificate.notAfter;
-        if (currentTime[0] >= notBefore[0] && currentTime[0] <= notAfter[0]) {
+        if currentTime[0] >= notBefore[0] && currentTime[0] <= notAfter[0] {
             return true;
         }
     }
@@ -431,16 +430,16 @@ isolated function validateCertificate(crypto:PublicKey publicKey) returns boolea
 isolated function getPublicKeyByJwks(json jwk) returns crypto:PublicKey|Error {
     json|error modulus = jwk.n;
     json|error exponent = jwk.e;
-    if (modulus is string && exponent is string) {
+    if modulus is string && exponent is string {
         crypto:PublicKey|crypto:Error publicKey = crypto:buildRsaPublicKey(modulus, exponent);
-        if (publicKey is crypto:PublicKey) {
+        if publicKey is crypto:PublicKey {
             return publicKey;
         } else {
             return prepareError("Public key generation failed.", publicKey);
         }
-    } else if (modulus is error) {
+    } else if modulus is error {
         return prepareError("Failed to access modulus from the JWK '" + jwk.toString() + "'.");
-    } else if (exponent is error) {
+    } else if exponent is error {
         return prepareError("Failed to access exponent from the JWK '" + jwk.toString() + "'.");
     } else {
         return prepareError("Failed to access modulus or exponent as a 'string' property from the JWK '" + jwk.toString() + "'.");
@@ -448,10 +447,10 @@ isolated function getPublicKeyByJwks(json jwk) returns crypto:PublicKey|Error {
 }
 
 isolated function getJwk(string kid, string url, ClientConfiguration clientConfig, cache:Cache? jwksCache) returns json|Error {
-    if (jwksCache is cache:Cache) {
-        if (jwksCache.hasKey(kid)) {
+    if jwksCache is cache:Cache {
+        if jwksCache.hasKey(kid) {
             any|cache:Error jwk = jwksCache.get(kid);
-            if (jwk is json) {
+            if jwk is json {
                 return jwk;
             } else {
                 log:printDebug("Failed to retrieve JWK for the kid '" + kid + "' from the cache.");
@@ -459,11 +458,11 @@ isolated function getJwk(string kid, string url, ClientConfiguration clientConfi
         }
     }
     string|Error stringResponse = getJwksResponse(url, clientConfig);
-    if (stringResponse is string) {
+    if stringResponse is string {
         json[] jwksArray = check getJwksArray(stringResponse);
         foreach json jwk in jwksArray {
             json|error responseKid = jwk.kid;
-            if (responseKid is json && responseKid == kid) {
+            if responseKid is json && responseKid == kid {
                 return jwk;
             }
         }
@@ -474,9 +473,9 @@ isolated function getJwk(string kid, string url, ClientConfiguration clientConfi
 
 isolated function getJwksArray(string stringResponse) returns json[]|Error {
     json|error jsonResponse = stringResponse.fromJsonString();
-    if (jsonResponse is json) {
+    if jsonResponse is json {
         json|error jwks = jsonResponse.keys;
-        if (jwks is json) {
+        if jwks is json {
             return <json[]> jwks;
         } else {
             return prepareError("Failed to access 'keys' property from the JSON '" + jsonResponse.toString() + "'.", jwks);
@@ -492,10 +491,10 @@ isolated function getJwksResponse(string url, ClientConfiguration clientConfig) 
 
 isolated function assertRsaSignature(SigningAlgorithm alg, byte[] assertion, byte[] signaturePart,
                                      crypto:PublicKey publicKey) returns boolean|Error {
-    match (alg) {
+    match alg {
         RS256 => {
             boolean|crypto:Error result = crypto:verifyRsaSha256Signature(assertion, signaturePart, publicKey);
-            if (result is boolean) {
+            if result is boolean {
                 return result;
             } else {
                 return prepareError("SHA256 signature verification failed.", result);
@@ -503,7 +502,7 @@ isolated function assertRsaSignature(SigningAlgorithm alg, byte[] assertion, byt
         }
         RS384 => {
             boolean|crypto:Error result = crypto:verifyRsaSha384Signature(assertion, signaturePart, publicKey);
-            if (result is boolean) {
+            if result is boolean {
                 return result;
             } else {
                 return prepareError("SHA384 signature verification failed.", result);
@@ -511,7 +510,7 @@ isolated function assertRsaSignature(SigningAlgorithm alg, byte[] assertion, byt
         }
         RS512 => {
             boolean|crypto:Error result = crypto:verifyRsaSha512Signature(assertion, signaturePart, publicKey);
-            if (result is boolean) {
+            if result is boolean {
                 return result;
             } else {
                 return prepareError("SHA512 signature verification failed.", result);
@@ -523,10 +522,10 @@ isolated function assertRsaSignature(SigningAlgorithm alg, byte[] assertion, byt
 
 isolated function assertHmacSignature(SigningAlgorithm alg, byte[] assertion, byte[] signaturePart,
                                       string secret) returns boolean|Error {
-    match (alg) {
+    match alg {
         HS256 => {
             byte[]|crypto:Error signature = crypto:hmacSha256(assertion, secret.toBytes());
-            if (signature is byte[]) {
+            if signature is byte[] {
                 return signature == signaturePart;
             } else {
                 return prepareError("HMAC secret key validation failed for SHA256 algorithm.", signature);
@@ -534,7 +533,7 @@ isolated function assertHmacSignature(SigningAlgorithm alg, byte[] assertion, by
         }
         HS384 => {
             byte[]|crypto:Error signature = crypto:hmacSha384(assertion, secret.toBytes());
-            if (signature is byte[]) {
+            if signature is byte[] {
                 return signature == signaturePart;
             } else {
                 return prepareError("HMAC secret key validation failed for SHA384 algorithm.", signature);
@@ -542,7 +541,7 @@ isolated function assertHmacSignature(SigningAlgorithm alg, byte[] assertion, by
         }
         HS512 => {
             byte[]|crypto:Error signature = crypto:hmacSha512(assertion, secret.toBytes());
-            if (signature is byte[]) {
+            if signature is byte[] {
                 return signature == signaturePart;
             } else {
                 return prepareError("HMAC secret key validation failed for SHA512 algorithm.", signature);
@@ -554,8 +553,8 @@ isolated function assertHmacSignature(SigningAlgorithm alg, byte[] assertion, by
 
 isolated function validateUsername(Payload payload, string usernameConfig) returns Error? {
     string? usernamePayload = payload?.sub;
-    if (usernamePayload is string) {
-        if (usernamePayload != usernameConfig) {
+    if usernamePayload is string {
+        if usernamePayload != usernameConfig {
             return prepareError("JWT contained invalid username '" + usernamePayload + "'");
         }
         return;
@@ -566,8 +565,8 @@ isolated function validateUsername(Payload payload, string usernameConfig) retur
 
 isolated function validateIssuer(Payload payload, string issuerConfig) returns Error? {
     string? issuePayload = payload?.iss;
-    if (issuePayload is string) {
-        if (issuePayload != issuerConfig) {
+    if issuePayload is string {
+        if issuePayload != issuerConfig {
             return prepareError("JWT contained invalid issuer name '" + issuePayload + "'");
         }
         return;
@@ -578,30 +577,30 @@ isolated function validateIssuer(Payload payload, string issuerConfig) returns E
 
 isolated function validateAudience(Payload payload, string|string[] audienceConfig) returns Error? {
     string|string[]? audiencePayload = payload?.aud;
-    if (audiencePayload is string) {
-        if (audienceConfig is string) {
-            if (audiencePayload == audienceConfig) {
+    if audiencePayload is string {
+        if audienceConfig is string {
+            if audiencePayload == audienceConfig {
                 return;
             }
         } else {
             foreach string audience in audienceConfig {
-                if (audience == audiencePayload) {
+                if audience == audiencePayload {
                     return;
                 }
             }
         }
         return prepareError("JWT contained invalid audience.");
-    } else if (audiencePayload is string[]) {
-        if (audienceConfig is string) {
+    } else if audiencePayload is string[] {
+        if audienceConfig is string {
             foreach string audience in audiencePayload {
-                if (audience == audienceConfig) {
+                if audience == audienceConfig {
                     return;
                 }
             }
         } else {
             foreach string audienceC in audienceConfig {
                 foreach string audienceP in audiencePayload {
-                    if (audienceC == audienceP) {
+                    if audienceC == audienceP {
                         return;
                     }
                 }
@@ -615,8 +614,8 @@ isolated function validateAudience(Payload payload, string|string[] audienceConf
 
 isolated function validateJwtId(Payload payload, string jwtIdConfig) returns Error? {
     string? jwtIdPayload = payload?.jti;
-    if (jwtIdPayload is string) {
-        if (jwtIdPayload != jwtIdConfig) {
+    if jwtIdPayload is string {
+        if jwtIdPayload != jwtIdConfig {
             return prepareError("JWT contained invalid JWT ID '" + jwtIdPayload + "'");
         }
         return;
@@ -627,8 +626,8 @@ isolated function validateJwtId(Payload payload, string jwtIdConfig) returns Err
 
 isolated function validateKeyId(Header header, string keyIdConfig) returns Error? {
     string? keyIdHeader = header?.kid;
-    if (keyIdHeader is string) {
-        if (keyIdHeader != keyIdConfig) {
+    if keyIdHeader is string {
+        if keyIdHeader != keyIdConfig {
             return prepareError("JWT contained invalid key ID '" + keyIdHeader + "'");
         }
         return;
@@ -640,20 +639,19 @@ isolated function validateKeyId(Header header, string keyIdConfig) returns Error
 isolated function validateCustomClaims(Payload payload, map<json> customClaims) returns Error? {
     foreach string key in customClaims.keys() {
         json customClaimPayload = payload[key].toJson();
-        if (customClaimPayload is ()) {
+        if customClaimPayload is () {
             return prepareError("JWT must contain a '" + key + "' custom claim.");
         }
         json customClaimConfig = customClaims[key];
-        if (customClaimPayload.toString() != customClaimConfig.toString()) {
+        if customClaimPayload.toString() != customClaimConfig.toString() {
             return prepareError("JWT contained invalid custom claim '" + key + ": " + customClaimPayload.toString() + "'");
         }
     }
-    return;
 }
 
 isolated function validateExpirationTime(int expTime, int clockSkew) returns boolean {
     [int, decimal] currentTime = time:utcNow();
-    if (clockSkew > 0) {
+    if clockSkew > 0 {
         return expTime + clockSkew >= currentTime[0];
     } else {
         return expTime >= currentTime[0];
@@ -662,7 +660,7 @@ isolated function validateExpirationTime(int expTime, int clockSkew) returns boo
 
 isolated function validateNotBeforeTime(int nbf, int clockSkew) returns boolean {
     [int, decimal] currentTime = time:utcNow();
-    if (clockSkew > 0) {
+    if clockSkew > 0 {
         return nbf - clockSkew <= currentTime[0];
     } else {
         return nbf <= currentTime[0];
