@@ -19,7 +19,7 @@
 import ballerina/test;
 
 @test:Config {}
-isolated function testValidateJwt() returns Error? {
+isolated function testValidateJwtWithAudAsArray() returns Error? {
     ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
@@ -63,10 +63,10 @@ isolated function testValidateJwtWithSingleAud() returns Error? {
 }
 
 @test:Config {}
-isolated function testValidateJwtWithSingleAudAndAudAsArray() returns Error? {
+isolated function testValidateJwtWithSingleAudAsArray() returns Error? {
     ValidatorConfig validatorConfig = {
         issuer: "wso2",
-        audience: "ballerina",
+        audience: ["ballerina"],
         clockSkew: 60,
         signatureConfig: {
             trustStoreConfig: {
@@ -126,7 +126,7 @@ isolated function testValidateJwtWithAllFields() returns Error? {
 }
 
 @test:Config {}
-isolated function testValidateJwtWithInvalidSubject() returns Error? {
+isolated function testValidateJwtWithInvalidSub() returns Error? {
     ValidatorConfig validatorConfig = {
         username: "invalid",
         issuer: "wso2",
@@ -154,7 +154,7 @@ isolated function testValidateJwtWithInvalidSubject() returns Error? {
 }
 
 @test:Config {}
-isolated function testValidateJwtWithInvalidIssuer() {
+isolated function testValidateJwtWithInvalidIss() {
     ValidatorConfig validatorConfig = {
         username: "John",
         issuer: "invalid",
@@ -182,11 +182,67 @@ isolated function testValidateJwtWithInvalidIssuer() {
 }
 
 @test:Config {}
-isolated function testValidateJwtWithInvalidAudience() {
+isolated function testValidateJwtWithInvalidAud() {
+    ValidatorConfig validatorConfig = {
+        username: "John",
+        issuer: "wso2",
+        audience: ["invalid1", "invalid2"],
+        jwtId: "JlbmMiOiJBMTI4Q0JDLUhTMjU2In",
+        keyId: "5a0b754-895f-4279-8843-b745e11a57e9",
+        customClaims: { "scp": "hello" },
+        clockSkew: 60,
+        signatureConfig: {
+            trustStoreConfig: {
+                trustStore: {
+                    path: TRUSTSTORE_PATH,
+                    password: "ballerina"
+                },
+                certAlias: "ballerina"
+            }
+        }
+    };
+    Payload|Error result = validate(JWT5, validatorConfig);
+    if result is Error {
+        assertContains(result, "JWT contained invalid audience.");
+    } else {
+        test:assertFail("Expected error not found.");
+    }
+}
+
+@test:Config {}
+isolated function testValidateJwtWithInvalidSingleAud() {
     ValidatorConfig validatorConfig = {
         username: "John",
         issuer: "wso2",
         audience: "invalid",
+        jwtId: "JlbmMiOiJBMTI4Q0JDLUhTMjU2In",
+        keyId: "5a0b754-895f-4279-8843-b745e11a57e9",
+        customClaims: { "scp": "hello" },
+        clockSkew: 60,
+        signatureConfig: {
+            trustStoreConfig: {
+                trustStore: {
+                    path: TRUSTSTORE_PATH,
+                    password: "ballerina"
+                },
+                certAlias: "ballerina"
+            }
+        }
+    };
+    Payload|Error result = validate(JWT5, validatorConfig);
+    if result is Error {
+        assertContains(result, "JWT contained invalid audience.");
+    } else {
+        test:assertFail("Expected error not found.");
+    }
+}
+
+@test:Config {}
+isolated function testValidateJwtWithInvalidSingleAudAsArray() {
+    ValidatorConfig validatorConfig = {
+        username: "John",
+        issuer: "wso2",
+        audience: ["invalid"],
         jwtId: "JlbmMiOiJBMTI4Q0JDLUhTMjU2In",
         keyId: "5a0b754-895f-4279-8843-b745e11a57e9",
         customClaims: { "scp": "hello" },

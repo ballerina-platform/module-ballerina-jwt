@@ -21,7 +21,7 @@ import ballerina/regex;
 import ballerina/test;
 
 @test:Config {}
-isolated function testIssueJwt() returns Error? {
+isolated function testIssueJwtWithAllFields() returns Error? {
     IssuerConfig issuerConfig = {
         username: "John",
         issuer: "wso2",
