@@ -7,17 +7,58 @@ Ballerina JWT Library
   [![GitHub issues](https://img.shields.io/github/issues/ballerina-platform/ballerina-standard-library/module/jwt.svg?label=Open%20Issues)](https://github.com/ballerina-platform/ballerina-standard-library/labels/module%2Fjwt)
   [![codecov](https://codecov.io/gh/ballerina-platform/module-ballerina-jwt/branch/master/graph/badge.svg)](https://codecov.io/gh/ballerina-platform/module-ballerina-jwt)
 
-The `jwt` library is one of the standard library modules of the [Ballerina](https://ballerina.io/) language.
-
-This module provides a framework for authentication/authorization with JWTs and generation/validation of JWTs as specified in the [RFC 7519](https://datatracker.ietf.org/doc/html/rfc7519), [RFC 7515](https://datatracker.ietf.org/doc/html/rfc7515), and [RFC 7517](https://datatracker.ietf.org/doc/html/rfc7517).
+This library provides a framework for authentication/authorization with JWTs and generation/validation of JWTs as specified in the [RFC 7519](https://datatracker.ietf.org/doc/html/rfc7519), [RFC 7515](https://datatracker.ietf.org/doc/html/rfc7515), and [RFC 7517](https://datatracker.ietf.org/doc/html/rfc7517).
 
 JSON Web Token (JWT) is a compact, URL-safe means of representing claims to be transferred between two parties. The claims in a JWT are encoded as a JSON object that is used as the payload of a JSON Web Signature (JWS) structure or as the plaintext of a JSON Web Encryption (JWE) structure enabling the claims to be signed digitally or protecting the integrity with a Message Authentication Code(MAC) and/or encrypted.
 
-The Ballerina `jwt` module facilitates auth providers that are to be used by the clients and listeners of different protocol connectors. Also, it provides the APIs for issuing a self-signed JWT and validating a JWT.
+The Ballerina `jwt` library facilitates auth providers that are to be used by the clients and listeners of different protocol connectors. Also, it provides the APIs for issuing a self-signed JWT and validating a JWT.
 
-For more information, go to the [`jwt` module](https://docs.central.ballerina.io/ballerina/jwt/latest).
+### Listener JWT Auth Provider
 
-For example demonstrations of the usage, go to [Ballerina By Examples](https://ballerina.io/learn/by-example/).
+Represents the listener JWT Auth provider, which is used to authenticate the provided credentials (JWT) against the provided JWT validator configurations.
+
+### Client JWT Auth Provider
+
+Represents the client JWT Auth provider, which is used to authenticate with an external endpoint by issuing a self-signed JWT against the provided JWT issuer configurations.
+
+### JWT Issuer
+
+A self-signed JWT can be issued with the provided configurations using this API as follows:
+
+```ballerina
+jwt:IssuerConfig issuerConfig = {
+    username: "ballerina",
+    issuer: "wso2",
+    audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
+    expTime: 3600,
+    signatureConfig: {
+        config: {
+            keyFile: "resource/path/to/private.key"
+        }
+    }
+};
+
+string jwt = check jwt:issue(issuerConfig);
+```
+
+### JWT Validator
+
+A JWT can be validated with the provided configurations using the API as follows:
+
+```ballerina
+string jwt = "eyJ0eXAiOiJKV1QiLA0KI[...omitted for brevity...]mB92K27uhbwW1gFWFOEjXk";
+
+jwt:ValidatorConfig validatorConfig = {
+    issuer: "wso2",
+    audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
+    clockSkew: 60,
+    signatureConfig: {
+        certFile: "../resource/path/to/public.crt"
+    }
+};
+
+jwt:Payload result = check jwt:validate(jwt, validatorConfig);
+```
 
 ## Issues and Projects
 
@@ -101,5 +142,7 @@ All contributors are encouraged to read the [Ballerina Code of Conduct](https://
 
 ## Useful Links
 
+* For more information go to the [`jwt` library](https://lib.ballerina.io/ballerina/jwt/latest).
+* For example demonstrations of the usage, go to [Ballerina By Examples](https://ballerina.io/learn/by-example/).
 * Chat live with us via our [Slack channel](https://ballerina.io/community/slack/).
 * Post all technical questions on Stack Overflow with the [#ballerina](https://stackoverflow.com/questions/tagged/ballerina) tag.
