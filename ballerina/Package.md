@@ -26,7 +26,7 @@ jwt:IssuerConfig issuerConfig = {
     expTime: 3600,
     signatureConfig: {
         config: {
-            keyFile: "resource/path/to/private.key"
+            keyFile: "/path/to/private.key"
         }
     }
 };
@@ -46,7 +46,7 @@ jwt:ValidatorConfig validatorConfig = {
     audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
     clockSkew: 60,
     signatureConfig: {
-        certFile: "../resource/path/to/public.crt"
+        certFile: "/path/to/public.crt"
     }
 };
 
