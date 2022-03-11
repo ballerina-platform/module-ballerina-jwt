@@ -18,10 +18,9 @@ interactions once the 'API Gateway' receives a request.
 - The 'API Gateway' intercepts the request from the end-user, extracts the token, and then talks to the 'STS' connected 
   to validate the token.
 - After validating the token, the 'STS' issues a new JWT signed by itself. This JWT includes the user details.
-- The 'API Gateway' passes the new JWT to the 'Order Management Service', and it needs only trust this STS to accept 
-  the token as valid. The 'Order Management Service' validates the signature of the JWT to make sure that it's issued 
-  by the 'STS' it trusts. Apart from the signature validation, the 'Order Management Service' also does the issuer and 
-  audience validation.
+- The 'API Gateway' passes the new JWT to the 'Order Service', and it needs only trust this STS to accept the token as 
+  valid. The 'Order Service' validates the signature of the JWT to make sure that it's issued by the 'STS' it trusts. 
+  Apart from the signature validation, the 'Order Service' also does the issuer and audience validation.
 - The 'Order Service' talks to 'Inventory Service' with mTLS (mutual TLS).
 
 In this approach, JWT helps us to achieve two things. First, it helps to pass the end-user context across microservices 
