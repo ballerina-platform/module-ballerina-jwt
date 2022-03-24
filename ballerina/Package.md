@@ -1,4 +1,4 @@
-## Package Overview
+## Package overview
 
 This package provides a framework for authentication/authorization with JWTs and generation/validation of JWTs as specified in the [RFC 7519](https://datatracker.ietf.org/doc/html/rfc7519), [RFC 7515](https://datatracker.ietf.org/doc/html/rfc7515), and [RFC 7517](https://datatracker.ietf.org/doc/html/rfc7517).
 
@@ -6,15 +6,15 @@ JSON Web Token (JWT) is a compact, URL-safe means of representing claims to be t
 
 The Ballerina `jwt` package facilitates auth providers that are to be used by the clients and listeners of different protocol connectors. Also, it provides the APIs for issuing a self-signed JWT and validating a JWT.
 
-### Listener JWT Auth Provider
+### Listener JWT Auth provider
 
 Represents the listener JWT Auth provider, which is used to authenticate the provided credentials (JWT) against the provided JWT validator configurations.
 
-### Client JWT Auth Provider
+### Client JWT Auth provider
 
 Represents the client JWT Auth provider, which is used to authenticate with an external endpoint by issuing a self-signed JWT against the provided JWT issuer configurations.
 
-### JWT Issuer
+### JWT issuer
 
 A self-signed JWT can be issued with the provided configurations using this API as follows:
 
@@ -34,7 +34,7 @@ jwt:IssuerConfig issuerConfig = {
 string jwt = check jwt:issue(issuerConfig);
 ```
 
-### JWT Validator
+### JWT validator
 
 A JWT can be validated with the provided configurations using the API as follows:
 
@@ -53,11 +53,11 @@ jwt:ValidatorConfig validatorConfig = {
 jwt:Payload result = check jwt:validate(jwt, validatorConfig);
 ```
 
-## Report Issues
+## Report issues
 
 To report bugs, request new features, start new discussions, view project boards, etc., go to the [Ballerina standard library parent repository](https://github.com/ballerina-platform/ballerina-standard-library).
 
-## Useful Links
+## Useful links
 
 - Chat live with us via our [Slack channel](https://ballerina.io/community/slack/).
 - Post all technical questions on Stack Overflow with the [#ballerina](https://stackoverflow.com/questions/tagged/ballerina) tag.

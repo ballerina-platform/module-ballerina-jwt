@@ -13,15 +13,15 @@ JSON Web Token (JWT) is a compact, URL-safe means of representing claims to be t
 
 The Ballerina `jwt` library facilitates auth providers that are to be used by the clients and listeners of different protocol connectors. Also, it provides the APIs for issuing a self-signed JWT and validating a JWT.
 
-### Listener JWT Auth Provider
+### Listener JWT Auth provider
 
 Represents the listener JWT Auth provider, which is used to authenticate the provided credentials (JWT) against the provided JWT validator configurations.
 
-### Client JWT Auth Provider
+### Client JWT Auth provider
 
 Represents the client JWT Auth provider, which is used to authenticate with an external endpoint by issuing a self-signed JWT against the provided JWT issuer configurations.
 
-### JWT Issuer
+### JWT issuer
 
 A self-signed JWT can be issued with the provided configurations using this API as follows:
 
@@ -41,7 +41,7 @@ jwt:IssuerConfig issuerConfig = {
 string jwt = check jwt:issue(issuerConfig);
 ```
 
-### JWT Validator
+### JWT validator
 
 A JWT can be validated with the provided configurations using the API as follows:
 
@@ -60,15 +60,15 @@ jwt:ValidatorConfig validatorConfig = {
 jwt:Payload result = check jwt:validate(jwt, validatorConfig);
 ```
 
-## Issues and Projects
+## Issues and projects
 
 Issues and Projects tabs are disabled for this repository as this is part of the Ballerina Standard Library. To report bugs, request new features, start new discussions, view project boards, etc., go to the [Ballerina Standard Library parent repository](https://github.com/ballerina-platform/ballerina-standard-library).
 
 This repository only contains the source code for the module.
 
-## Building from the Source
+## Build from the source
 
-### Setting Up the Prerequisites
+### Set up the prerequisites
 
 1. Download and install Java SE Development Kit (JDK) version 11 (from one of the following locations).
 
@@ -87,7 +87,7 @@ This repository only contains the source code for the module.
 
 3. Download and install [Docker](https://www.docker.com/).
 
-### Building the Source
+### Build the source
 
 Execute the commands below to build from the source.
 
@@ -130,17 +130,17 @@ Execute the commands below to build from the source.
     ./gradlew clean build -PpublishToCentral=true
     ```
 
-## Contributing to Ballerina
+## Contribute to Ballerina
 
 As an open source project, Ballerina welcomes contributions from the community.
 
 For more information, go to the [contribution guidelines](https://github.com/ballerina-platform/ballerina-lang/blob/master/CONTRIBUTING.md).
 
-## Code of Conduct
+## Code of conduct
 
 All contributors are encouraged to read the [Ballerina Code of Conduct](https://ballerina.io/code-of-conduct).
 
-## Useful Links
+## Useful links
 
 * For more information go to the [`jwt` library](https://lib.ballerina.io/ballerina/jwt/latest).
 * For example demonstrations of the usage, go to [Ballerina By Examples](https://ballerina.io/learn/by-example/).
