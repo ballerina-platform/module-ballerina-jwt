@@ -6,15 +6,15 @@ JSON Web Token (JWT) is a compact, URL-safe means of representing claims to be t
 
 The Ballerina `jwt` module facilitates auth providers that are to be used by the clients and listeners of different protocol connectors. Also, it provides the APIs for issuing a self-signed JWT and validating a JWT.
 
-### Listener JWT Auth Provider
+### Listener JWT Auth provider
 
 Represents the listener JWT Auth provider, which is used to authenticate the provided credentials (JWT) against the provided JWT validator configurations.
 
-### Client JWT Auth Provider
+### Client JWT Auth provider
 
 Represents the client JWT Auth provider, which is used to authenticate with an external endpoint by issuing a self-signed JWT against the provided JWT issuer configurations.
 
-### JWT Issuer
+### JWT issuer
 
 A self-signed JWT can be issued with the provided configurations using this API as follows:
 
@@ -34,7 +34,7 @@ jwt:IssuerConfig issuerConfig = {
 string jwt = check jwt:issue(issuerConfig);
 ```
 
-### JWT Validator
+### JWT validator
 
 A JWT can be validated with the provided configurations using the API as follows:
 
