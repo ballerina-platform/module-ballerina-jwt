@@ -44,6 +44,8 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import static java.lang.System.err;
+
 /**
  * Extern function to call JWKs endpoint using the JDK11 HttpClient and return the payload of the HTTP response.
  */
@@ -52,10 +54,11 @@ public class JwksClient {
     private JwksClient() {}
 
     public static Object getJwksResponse(BString url, BMap<BString, Object> clientConfig) {
-        HttpRequest request = buildHttpRequest(url.getValue());
         String httpVersion = getBStringValueIfPresent(clientConfig, JwtConstants.HTTP_VERSION).getValue();
         BMap<BString, Object> secureSocket =
                 (BMap<BString, Object>) getBMapValueIfPresent(clientConfig, JwtConstants.SECURE_SOCKET);
+        URI uri = buildUri(url.getValue(), secureSocket);
+        HttpRequest request = buildHttpRequest(uri);
         if (secureSocket != null) {
             try {
                 SSLContext sslContext = getSslContext(secureSocket);
@@ -67,6 +70,24 @@ public class JwksClient {
         }
         HttpClient client = buildHttpClient(httpVersion);
         return callEndpoint(client, request);
+    }
+
+    private static URI buildUri(String url, BMap<BString, Object> secureSocket) {
+        String[] urlParts = url.split(JwtConstants.SCHEME_SEPARATOR, 2);
+        if (urlParts.length == 1) {
+            if (secureSocket != null) {
+                urlParts = new String[]{JwtConstants.HTTPS_SCHEME, urlParts[0]};
+            } else {
+                urlParts = new String[]{JwtConstants.HTTP_SCHEME, urlParts[0]};
+            }
+        } else {
+            if (urlParts[0].equals(JwtConstants.HTTP_SCHEME) && secureSocket != null) {
+                err.println(JwtConstants.RUNTIME_WARNING_PREFIX + JwtConstants.HTTPS_RECOMMENDATION_ERROR);
+            }
+        }
+        urlParts[1] = urlParts[1].replaceAll(JwtConstants.DOUBLE_SLASH, JwtConstants.SINGLE_SLASH);
+        url = urlParts[0] + JwtConstants.SCHEME_SEPARATOR + urlParts[1];
+        return URI.create(url);
     }
 
     private static SSLContext getSslContext(BMap<BString, ?> secureSocket) throws Exception {
@@ -228,10 +249,8 @@ public class JwksClient {
         return HttpClient.newBuilder().version(getHttpVersion(httpVersion)).sslContext(sslContext).build();
     }
 
-    private static HttpRequest buildHttpRequest(String url) {
-        return HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .build();
+    private static HttpRequest buildHttpRequest(URI uri) {
+        return HttpRequest.newBuilder().uri(uri).build();
     }
 
     private static Object callEndpoint(HttpClient client, HttpRequest request) {
