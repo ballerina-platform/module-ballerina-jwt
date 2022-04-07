@@ -115,12 +115,12 @@ task startBallerinaSTS() {
             if (!stdOut.toString().contains("ballerina-sts")) {
                 println "Starting Ballerina STS."
                 exec {
-                    commandLine 'sh', '-c', "docker run --rm -d -p 9445:9445 --name ballerina-sts ldclakmal/ballerina-sts:latest"
+                    commandLine 'sh', '-c', "docker run --rm -d -p 9445:9445 -p 9444:9444 --name ballerina-sts ldclakmal/ballerina-sts:latest"
                     standardOutput = stdOut
                 }
                 println stdOut.toString()
                 println "Waiting 10s until the Ballerina STS get initiated."
-                sleep(10 * 1000)
+                sleep(15 * 1000)
             } else {
                 println "Ballerina STS is already started."
             }
