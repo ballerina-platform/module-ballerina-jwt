@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 
 ### Changed
-- [Append the scheme part of the HTTP client URL (JWKs) based on the client configurations](https://github.com/ballerina-platform/ballerina-standard-library/issues/2816)
+- [Append the scheme of the HTTP client URL (JWKs) based on the client configurations](https://github.com/ballerina-platform/ballerina-standard-library/issues/2816)
 
 ## [2.0.0] - 2021-10-10
 
