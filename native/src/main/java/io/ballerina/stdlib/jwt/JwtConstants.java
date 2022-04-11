@@ -30,6 +30,12 @@ public class JwtConstants {
 
     public static final String JWT_ERROR_TYPE = "Error";
 
+    public static final String SINGLE_SLASH = "/";
+    public static final String DOUBLE_SLASH = "//";
+    public static final String SCHEME_SEPARATOR = "://";
+    public static final String HTTP_SCHEME = "http";
+    public static final String HTTPS_SCHEME = "https";
+
     public static final BString HTTP_VERSION = StringUtils.fromString("httpVersion");
     public static final BString SECURE_SOCKET = StringUtils.fromString("secureSocket");
     public static final BString DISABLE = StringUtils.fromString("disable");
@@ -47,4 +53,7 @@ public class JwtConstants {
 
     public static final String NATIVE_DATA_PUBLIC_KEY_CERTIFICATE = "NATIVE_DATA_PUBLIC_KEY_CERTIFICATE";
     public static final String NATIVE_DATA_PRIVATE_KEY = "NATIVE_DATA_PRIVATE_KEY";
+
+    public static final String RUNTIME_WARNING_PREFIX = "warning: [ballerina/jwt] ";
+    public static final String HTTPS_RECOMMENDATION_ERROR = "HTTPS is recommended but using HTTP";
 }

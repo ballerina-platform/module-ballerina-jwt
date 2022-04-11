@@ -601,6 +601,84 @@ isolated function testValidateJwtSignatureWithJwkWithValidCertsAndEncryptedKey()
     test:assertEquals(result?.iss, "ballerina");
 }
 
+@test:Config {
+    groups: ["jwks"]
+}
+isolated function testJwksRequestWithoutUrlScheme() returns Error? {
+    ValidatorConfig validatorConfig = {
+        issuer: "ballerina",
+        audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
+        signatureConfig: {
+            jwksConfig: {
+                url: "localhost:9444/oauth2/jwks"
+            }
+        }
+    };
+    Payload result = check validate(JWT2, validatorConfig);
+    test:assertEquals(result?.iss, "ballerina");
+}
+
+@test:Config {
+    groups: ["jwks"]
+}
+isolated function testJwksRequestWithHttpUrlScheme() returns Error? {
+    ValidatorConfig validatorConfig = {
+        issuer: "ballerina",
+        audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
+        signatureConfig: {
+            jwksConfig: {
+                url: "http://localhost:9444/oauth2/jwks"
+            }
+        }
+    };
+    Payload result = check validate(JWT2, validatorConfig);
+    test:assertEquals(result?.iss, "ballerina");
+}
+
+@test:Config {
+    groups: ["jwks"]
+}
+isolated function testJwksRequestWithSecureSocketAndWithoutUrlScheme() returns Error? {
+    ValidatorConfig validatorConfig = {
+        issuer: "ballerina",
+        audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
+        signatureConfig: {
+            jwksConfig: {
+                url: "localhost:9445/oauth2/jwks",
+                clientConfig: {
+                    secureSocket: {
+                        cert: PUBLIC_CERT_PATH
+                    }
+                }
+            }
+        }
+    };
+    Payload result = check validate(JWT2, validatorConfig);
+    test:assertEquals(result?.iss, "ballerina");
+}
+
+@test:Config {
+    groups: ["jwks"]
+}
+isolated function testJwksRequestWithSecureSocketAndWithHttpUrlScheme() returns Error? {
+    ValidatorConfig validatorConfig = {
+        issuer: "ballerina",
+        audience: "vEwzbcasJVQm1jVYHUHCjhxZ4tYa",
+        signatureConfig: {
+            jwksConfig: {
+                url: "http://localhost:9444/oauth2/jwks",
+                clientConfig: {
+                    secureSocket: {
+                        cert: PUBLIC_CERT_PATH
+                    }
+                }
+            }
+        }
+    };
+    Payload result = check validate(JWT2, validatorConfig);
+    test:assertEquals(result?.iss, "ballerina");
+}
+
 @test:Config {}
 isolated function testValidateJwtSignatureWithPublicCert() returns Error? {
     ValidatorConfig validatorConfig = {
