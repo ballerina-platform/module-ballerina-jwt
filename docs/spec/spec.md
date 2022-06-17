@@ -6,7 +6,7 @@ _Created_: 2021/10/01
 _Updated_: 2022/02/17  
 _Edition_: Swan Lake  
 
-# Introduction
+## Introduction
 This is the specification for the JWT standard library of [Ballerina language](https://ballerina.io/), which is used for authorization of listeners and clients (HTTP, gRPC, GraphQL, WebSocket, WebSub, etc.).
 
 The JWT library specification has evolved and may continue to evolve in the future. The released versions of the specification can be found under the relevant GitHub tag.
@@ -15,7 +15,7 @@ If you have any feedback or suggestions about the library, start a discussion vi
 
 The conforming implementation of the specification is released and included in the distribution. Any deviation from the specification is considered a bug.
 
-# Contents
+## Contents
 
 1. [Overview](#1-overview)
 2. [JWT Auth](#2-jwt-auth)
