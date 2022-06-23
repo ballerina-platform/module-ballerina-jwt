@@ -135,10 +135,10 @@ isolated function validateFromCache(cache:Cache jwtCache, string jwt) returns Pa
         }
         cache:Error? result = jwtCache.invalidate(jwt);
         if result is cache:Error {
-            log:printError("Failed to invalidate JWT from the cache.", 'error = result);
+            log:printDebug("Failed to invalidate JWT from the cache.", 'error = result);
         }
     } else {
-        log:printError("Failed to retrieve JWT entry from the cache.", 'error = cachedResult);
+        log:printDebug("Failed to retrieve JWT entry from the cache.", 'error = cachedResult);
     }
     return;
 }
@@ -146,6 +146,6 @@ isolated function validateFromCache(cache:Cache jwtCache, string jwt) returns Pa
 isolated function addToCache(cache:Cache jwtCache, string jwt, Payload payload) {
     cache:Error? result = jwtCache.put(jwt, payload);
     if result is cache:Error {
-        log:printError("Failed to add JWT to the cache.", 'error = result);
+        log:printDebug("Failed to add JWT to the cache.", 'error = result);
     }
 }
