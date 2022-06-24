@@ -15,7 +15,6 @@
 // under the License.
 
 import ballerina/http;
-import ballerina/log;
 
 listener http:Listener sts = new(9445,
     secureSocket = {
@@ -31,7 +30,6 @@ isolated service /oauth2 on sts {
     // This JWKs endpoint respond with a JSON object that represents a set of JWKs.
     // https://tools.ietf.org/html/rfc7517#section-5
     isolated resource function get jwks() returns json {
-        log:printInfo("Invoked JWKS endpoint...");
         return {
             "keys": [{
                 "kty": "EC",
