@@ -1,13 +1,13 @@
 [package]
 org = "ballerina"
 name = "jwt"
-version = "2.3.1"
+version = "2.4.0"
 authors = ["Ballerina"]
 keywords = ["security", "authentication", "jwt", "jwk", "jws"]
 repository = "https://github.com/ballerina-platform/module-ballerina-jwt"
 icon = "icon.png"
 license = ["Apache-2.0"]
-distribution = "2201.0.4"
+distribution = "2201.2.0"
 
 [[platform.java11.dependency]]
-path = "../native/build/libs/jwt-native-2.3.1.jar"
+path = "../native/build/libs/jwt-native-2.4.0-SNAPSHOT.jar"
