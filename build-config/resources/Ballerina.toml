@@ -10,4 +10,7 @@ license = ["Apache-2.0"]
 distribution = "2201.2.0"
 
 [[platform.java11.dependency]]
+groupId = "io.ballerina.stdlib"
+artifactId = "jwt-native"
+version = "@toml.version@"
 path = "../native/build/libs/jwt-native-@project.version@.jar"
