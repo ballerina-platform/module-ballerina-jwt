@@ -60,7 +60,7 @@ modules = [
 [[package]]
 org = "ballerina"
 name = "jwt"
-version = "2.4.0"
+version = "2.4.1"
 dependencies = [
 	{org = "ballerina", name = "cache"},
 	{org = "ballerina", name = "crypto"},
@@ -89,10 +89,19 @@ modules = [
 
 [[package]]
 org = "ballerina"
-name = "lang.string"
+name = "lang.regexp"
 version = "0.0.0"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"}
+]
+
+[[package]]
+org = "ballerina"
+name = "lang.string"
+version = "0.0.0"
+dependencies = [
+	{org = "ballerina", name = "jballerina.java"},
+	{org = "ballerina", name = "lang.regexp"}
 ]
 modules = [
 	{org = "ballerina", packageName = "lang.string", moduleName = "lang.string"}
