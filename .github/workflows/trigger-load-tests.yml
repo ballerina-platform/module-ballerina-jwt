@@ -12,7 +12,7 @@ on:
         default: 'jwt-perf-cluster-test'
         required: false
   schedule:
-    - cron: '0 5 * * *'
+    - cron: '0 16 * * *'
 
 jobs:
   invoke-load-tests:
