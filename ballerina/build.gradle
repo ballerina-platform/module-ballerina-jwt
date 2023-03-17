@@ -127,6 +127,7 @@ task startBallerinaSTS() {
         }
     }
 }
+startBallerinaSTS.onlyIf { !project.gradle.startParameter.excludedTaskNames.contains('test') }
 
 task stopBallerinaSTS() {
     doLast {
@@ -153,6 +154,7 @@ task stopBallerinaSTS() {
         }
     }
 }
+stopBallerinaSTS.onlyIf { !project.gradle.startParameter.excludedTaskNames.contains('test') }
 
 updateTomlFiles.dependsOn copyStdlibs
 
