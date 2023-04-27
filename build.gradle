@@ -28,7 +28,6 @@ ext.ballerinaLangVersion = project.ballerinaLangVersion
 ext.stdlibCacheVersion = project.stdlibCacheVersion
 ext.stdlibCryptoVersion = project.stdlibCryptoVersion
 ext.stdlibLogVersion = project.stdlibLogVersion
-ext.stdlibRegexVersion = project.stdlibRegexVersion
 ext.stdlibTimeVersion = project.stdlibTimeVersion
 // Transitive dependencies
 ext.stdlibTaskVersion = project.stdlibTaskVersion
@@ -78,7 +77,6 @@ subprojects {
         ballerinaStdLibs "io.ballerina.stdlib:cache-ballerina:${stdlibCacheVersion}"
         ballerinaStdLibs "io.ballerina.stdlib:crypto-ballerina:${stdlibCryptoVersion}"
         ballerinaStdLibs "io.ballerina.stdlib:log-ballerina:${stdlibLogVersion}"
-        ballerinaStdLibs "io.ballerina.stdlib:regex-ballerina:${stdlibRegexVersion}"
         ballerinaStdLibs "io.ballerina.stdlib:time-ballerina:${stdlibTimeVersion}"
         // Transitive dependencies
         ballerinaStdLibs "io.ballerina.stdlib:task-ballerina:${stdlibTaskVersion}"
