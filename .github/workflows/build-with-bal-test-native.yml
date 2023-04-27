@@ -19,7 +19,7 @@ on:
         -   cron: '30 18 * * *'
     pull_request:
         branches:
-            - main
+            - master
         types: [ opened, synchronize, reopened, labeled, unlabeled ]
 
 concurrency:
