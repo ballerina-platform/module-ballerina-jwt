@@ -17,7 +17,6 @@
 // NOTE: All the tokens/credentials used in this test are dummy tokens/credentials and used only for testing purposes.
 
 import ballerina/lang.'string;
-import ballerina/regex;
 import ballerina/test;
 
 @test:Config {}
@@ -367,7 +366,7 @@ isolated function testIssueJwtWithEncryptedPrivateKey() returns Error? {
 }
 
 isolated function assertDecodedJwt(string jwt, string header, string payload) {
-    string[] parts = regex:split(jwt, "\\.");
+    string[] parts = re `\.`.split(jwt);
     // check header
     byte[]|Error headerDecodedResult = decodeBase64Url(parts[0]);
     if headerDecodedResult is byte[] {

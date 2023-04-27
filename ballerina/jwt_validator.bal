@@ -20,7 +20,6 @@ import ballerina/jballerina.java;
 import ballerina/lang.'int;
 import ballerina/lang.'string;
 import ballerina/log;
-import ballerina/regex;
 import ballerina/time;
 
 # Represents JWT validator configurations.
@@ -141,7 +140,7 @@ public isolated function decode(string jwt) returns [Header, Payload]|Error {
 }
 
 isolated function getJwtComponents(string jwt) returns string[]|Error {
-    string[] jwtComponents = regex:split(jwt, "\\.");
+    string[] jwtComponents = re `\.`.split(jwt);
     if jwtComponents.length() < 2 || jwtComponents.length() > 3 {
         return prepareError("Invalid JWT.");
     }

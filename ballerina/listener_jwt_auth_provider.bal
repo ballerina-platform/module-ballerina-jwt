@@ -16,7 +16,6 @@
 
 import ballerina/cache;
 import ballerina/log;
-import ballerina/regex;
 import ballerina/time;
 
 # Represents the listener JWT Auth provider, which is used to authenticate the provided credentials (JWT) against
@@ -75,7 +74,7 @@ public isolated class ListenerJwtAuthProvider {
     # + credential - JWT to be authenticated
     # + return - `jwt:Payload` if authentication is successful or else a `jwt:Error` if an error occurred
     public isolated function authenticate(string credential) returns Payload|Error {
-        string[] jwtComponents = regex:split(credential, "\\.");
+        string[] jwtComponents = re `\.`.split(credential);
         if jwtComponents.length() != 3 {
             return prepareError("Credential format does not match to JWT format.");
         }
