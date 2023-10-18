@@ -13,3 +13,4 @@ jobs:
     uses: ballerina-platform/ballerina-standard-library/.github/workflows/pull-request-build-template.yml@main
     with:
       additional-windows-test-flags: "-Pdisable=jwks"
+    secrets: inherit
