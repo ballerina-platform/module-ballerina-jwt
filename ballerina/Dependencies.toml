@@ -10,7 +10,7 @@ distribution-version = "2201.9.0-20240405-165800-4b163f78"
 [[package]]
 org = "ballerina"
 name = "cache"
-version = "3.7.1"
+version = "3.8.0"
 dependencies = [
 	{org = "ballerina", name = "constraint"},
 	{org = "ballerina", name = "jballerina.java"},
