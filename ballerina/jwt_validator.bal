@@ -57,7 +57,7 @@ public type ValidatorSignatureConfig record {|
         cache:CacheConfig cacheConfig?;
         ClientConfiguration clientConfig = {};
     |} jwksConfig?;
-    string certFile?;
+    string|crypto:PublicKey certFile?;
     record {|
         crypto:TrustStore trustStore;
         string certAlias;
@@ -311,7 +311,7 @@ isolated function validateSignature(string jwt, Header header, Payload payload, 
 
     if validatorSignatureConfig is ValidatorSignatureConfig {
         var jwksConfig = validatorSignatureConfig?.jwksConfig;
-        string? certFile = validatorSignatureConfig?.certFile;
+        var certFile = validatorSignatureConfig?.certFile;
         var trustStoreConfig = validatorSignatureConfig?.trustStoreConfig;
         string? secret = validatorSignatureConfig?.secret;
         if jwksConfig !is () {
@@ -331,8 +331,13 @@ isolated function validateSignature(string jwt, Header header, Payload payload, 
             } else {
                 return prepareError("Key ID (kid) is not provided in JOSE header.");
             }
-        } else if certFile is string {
-            crypto:PublicKey|crypto:Error publicKey = crypto:decodeRsaPublicKeyFromCertFile(certFile);
+        } else if certFile !is () {
+            crypto:PublicKey|crypto:Error publicKey;
+            if certFile is crypto:PublicKey {
+                publicKey = certFile;
+            } else {
+                publicKey = crypto:decodeRsaPublicKeyFromCertFile(certFile);
+            }
             if publicKey is crypto:PublicKey {
                 if !validateCertificate(publicKey) {
                    return prepareError("Public key certificate validity period has passed.");
