@@ -51,7 +51,7 @@ public type IssuerSignatureConfig record {|
     |} | record {|
         string keyFile;
         string keyPassword?;
-    |} | string config?;
+    |} | crypto:PrivateKey | string config?;
 |};
 
 # Issues a JWT based on the provided configurations. JWT will be signed (JWS) if `crypto:KeyStore` information is
@@ -93,6 +93,8 @@ public isolated function issue(IssuerConfig issuerConfig) returns string|Error {
         } else {
             return prepareError("Failed to decode private key.", privateKey);
         }
+    } else if config is crypto:PrivateKey {
+        return signJwtAssertion(jwtAssertion, algorithm, config);
     } else {
         string keyFile = <string> config?.keyFile;
         string? keyPassword = config?.keyPassword;
