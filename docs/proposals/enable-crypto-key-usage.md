@@ -1,7 +1,7 @@
 # Proposal: Enable direct use of `crypto:PrivateKey` and `crypto:PublicKey` in JWT signature configurations
 
 _Authors_: @ayeshLK \
-_Reviewers_: @daneshk @NipunaRanasinghe @Bhashinee \
+_Reviewers_: @shafreenAnfar @daneshk @NipunaRanasinghe @Bhashinee \
 _Created_: 2024/05/08 \
 _Updated_: 2024/05/08 \
 _Issue_: [#6515](https://github.com/ballerina-platform/ballerina-library/issues/6515)
