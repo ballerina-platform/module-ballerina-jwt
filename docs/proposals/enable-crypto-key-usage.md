@@ -11,8 +11,6 @@ _Issue_: [#6515](https://github.com/ballerina-platform/ballerina-library/issues/
 JWT signature configurations are designed to facilitate the generation and verification of JWT signatures. 
 Therefore, the JWT package should support direct usage of `crypto:PrivateKey` and `crypto:PublicKey` in 
 `jwt:IssuerSignatureConfig` and `jwt:ValidatorSignatureConfig` respectively.
-
-
 ## Goals
 
 - Enable direct use of `crypto:PrivateKey` and `crypto:PublicKey` in JWT signature configurations
