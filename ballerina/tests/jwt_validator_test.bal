@@ -16,9 +16,9 @@
 
 // NOTE: All the tokens/credentials used in this test are dummy tokens/credentials and used only for testing purposes.
 
-import ballerina/test;
-import ballerina/io;
 import ballerina/crypto;
+import ballerina/io;
+import ballerina/test;
 
 @test:Config {}
 isolated function testValidateJwtWithAudAsArray() returns Error? {

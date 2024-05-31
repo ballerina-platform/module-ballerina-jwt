@@ -16,10 +16,10 @@
 
 // NOTE: All the tokens/credentials used in this test are dummy tokens/credentials and used only for testing purposes.
 
-import ballerina/lang.'string;
-import ballerina/test;
 import ballerina/crypto;
 import ballerina/io;
+import ballerina/lang.'string;
+import ballerina/test;
 
 @test:Config {}
 isolated function testIssueJwtWithAllFields() returns Error? {
