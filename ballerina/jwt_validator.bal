@@ -48,7 +48,7 @@ public type ValidatorConfig record {
 # Represents JWT signature configurations.
 #
 # + jwksConfig - JWKS configurations
-# + certFile - Public certificate file or a `crypto:PublicKey`
+# + certFile - Public certificate file path or a `crypto:PublicKey`
 # + trustStoreConfig - JWT TrustStore configurations
 # + secret - HMAC secret configuration
 public type ValidatorSignatureConfig record {|
