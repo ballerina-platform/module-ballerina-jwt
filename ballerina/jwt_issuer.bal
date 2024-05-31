@@ -41,7 +41,7 @@ public type IssuerConfig record {|
 # Represents JWT signature configurations.
 #
 # + algorithm - Cryptographic signing algorithm for JWS
-# + config - KeyStore configurations, private key configurations or shared key configurations
+# + config - KeyStore configurations, private key configurations, `crypto:PrivateKey` or shared key configurations
 public type IssuerSignatureConfig record {|
     SigningAlgorithm algorithm = RS256;
     record {|
