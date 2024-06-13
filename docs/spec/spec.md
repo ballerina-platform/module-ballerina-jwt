@@ -1,9 +1,9 @@
 # Specification: Ballerina JWT Library
 
-_Authors_: @ldclakmal @shafreenAnfar @ayeshLK  
+_Owners_: @ldclakmal @shafreenAnfar  
 _Reviewers_: @shafreenAnfar  
 _Created_: 2021/10/01  
-_Updated_: 2024/05/29  
+_Updated_: 2022/02/17  
 _Edition_: Swan Lake  
 
 ## Introduction
