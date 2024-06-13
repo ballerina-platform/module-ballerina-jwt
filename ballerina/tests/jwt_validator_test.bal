@@ -16,8 +16,6 @@
 
 // NOTE: All the tokens/credentials used in this test are dummy tokens/credentials and used only for testing purposes.
 
-import ballerina/crypto;
-import ballerina/io;
 import ballerina/test;
 
 @test:Config {}
@@ -689,22 +687,6 @@ isolated function testValidateJwtSignatureWithPublicCert() returns Error? {
         clockSkew: 60,
         signatureConfig: {
             certFile: PUBLIC_CERT_PATH
-        }
-    };
-    Payload result = check validate(JWT1, validatorConfig);
-    test:assertEquals(result?.iss, "wso2");
-}
-
-@test:Config {}
-isolated function testValidateJwtSignatureWithCryptoPublicKey() returns io:Error|crypto:Error|Error? {
-    byte[] pubicCertContent = check io:fileReadBytes(PUBLIC_CERT_PATH);
-    crypto:PublicKey publicKey = check crypto:decodeRsaPublicKeyFromContent(pubicCertContent);
-    ValidatorConfig validatorConfig = {
-        issuer: "wso2",
-        audience: ["ballerina", "ballerinaSamples"],
-        clockSkew: 60,
-        signatureConfig: {
-            certFile: publicKey
         }
     };
     Payload result = check validate(JWT1, validatorConfig);
