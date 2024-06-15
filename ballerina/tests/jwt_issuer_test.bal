@@ -16,6 +16,8 @@
 
 // NOTE: All the tokens/credentials used in this test are dummy tokens/credentials and used only for testing purposes.
 
+import ballerina/crypto;
+import ballerina/io;
 import ballerina/lang.'string;
 import ballerina/test;
 
@@ -357,6 +359,44 @@ isolated function testIssueJwtWithEncryptedPrivateKey() returns Error? {
                 keyFile: ENCRYPTED_PRIVATE_KEY_PATH,
                 keyPassword: "ballerina"
             }
+        }
+    };
+    string result = check issue(issuerConfig);
+    string expectedHeader = "{\"alg\":\"RS256\", \"typ\":\"JWT\"}";
+    string expectedPayload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]";
+    assertDecodedJwt(result, expectedHeader, expectedPayload);
+}
+
+@test:Config {}
+isolated function testIssueJwtWithCryptoPrivateKey() returns io:Error|crypto:Error|Error? {
+    byte[] privateKeyContent = check io:fileReadBytes(PRIVATE_KEY_PATH);
+    crypto:PrivateKey privateKey = check crypto:decodeRsaPrivateKeyFromContent(privateKeyContent);
+    IssuerConfig issuerConfig = {
+        username: "John",
+        issuer: "wso2",
+        audience: ["ballerina", "ballerinaSamples"],
+        expTime: 600,
+        signatureConfig: {
+            config: privateKey
+        }
+    };
+    string result = check issue(issuerConfig);
+    string expectedHeader = "{\"alg\":\"RS256\", \"typ\":\"JWT\"}";
+    string expectedPayload = "{\"iss\":\"wso2\", \"sub\":\"John\", \"aud\":[\"ballerina\", \"ballerinaSamples\"]";
+    assertDecodedJwt(result, expectedHeader, expectedPayload);
+}
+
+@test:Config {}
+isolated function testIssueJwtWithEncryptedCryptoPrivateKey() returns io:Error|crypto:Error|Error? {
+    byte[] privateKeyContent = check io:fileReadBytes(ENCRYPTED_PRIVATE_KEY_PATH);
+    crypto:PrivateKey encryptedPrivateKey = check crypto:decodeRsaPrivateKeyFromContent(privateKeyContent, "ballerina");
+    IssuerConfig issuerConfig = {
+        username: "John",
+        issuer: "wso2",
+        audience: ["ballerina", "ballerinaSamples"],
+        expTime: 600,
+        signatureConfig: {
+            config: encryptedPrivateKey
         }
     };
     string result = check issue(issuerConfig);
