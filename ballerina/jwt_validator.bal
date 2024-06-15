@@ -48,7 +48,7 @@ public type ValidatorConfig record {
 # Represents JWT signature configurations.
 #
 # + jwksConfig - JWKS configurations
-# + certFile - Public certificate file path
+# + certFile - Public certificate file path or a `crypto:PublicKey`
 # + trustStoreConfig - JWT TrustStore configurations
 # + secret - HMAC secret configuration
 public type ValidatorSignatureConfig record {|
@@ -57,7 +57,7 @@ public type ValidatorSignatureConfig record {|
         cache:CacheConfig cacheConfig?;
         ClientConfiguration clientConfig = {};
     |} jwksConfig?;
-    string certFile?;
+    string|crypto:PublicKey certFile?;
     record {|
         crypto:TrustStore trustStore;
         string certAlias;
@@ -331,8 +331,13 @@ isolated function validateSignature(string jwt, Header header, Payload payload, 
             } else {
                 return prepareError("Key ID (kid) is not provided in JOSE header.");
             }
-        } else if certFile is string {
-            crypto:PublicKey|crypto:Error publicKey = crypto:decodeRsaPublicKeyFromCertFile(certFile);
+        } else if certFile !is () {
+            crypto:PublicKey|crypto:Error publicKey;
+            if certFile is crypto:PublicKey {
+                publicKey = certFile;
+            } else {
+                publicKey = crypto:decodeRsaPublicKeyFromCertFile(certFile);
+            }
             if publicKey is crypto:PublicKey {
                 if !validateCertificate(publicKey) {
                    return prepareError("Public key certificate validity period has passed.");
