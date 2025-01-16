@@ -1,1 +1,1 @@
-../order-management-service/A Guide on Securing Ballerina Rest APIs with JWT Auth.md
+../../order-management-service/A Guide on Securing Ballerina Rest APIs with JWT Auth.md
