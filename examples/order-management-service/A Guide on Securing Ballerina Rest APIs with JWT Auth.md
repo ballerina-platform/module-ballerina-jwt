@@ -5,7 +5,7 @@
 This guide explains how to secure an 'Order Management Service' (RESTful service) with JWT Auth using Ballerina. 
 The following figure illustrates a high-level design diagram of the complete use case.
 
-![Securing Microservice with JWT](./order-management-service.png)
+![Securing Microservice with JWT](https://raw.githubusercontent.com/ballerina-platform/module-ballerina-jwt/master/examples/order-management-service/order-management-service.png)
 
 The end-user (customer), in this example, Alice and Bob, interacts with the system using the web/mobile app provided.
 This web/mobile app acts as a 'Client' on behalf of the user’s actions and calls to the 'API Gateway'. The 'API Gateway'
