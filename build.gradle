@@ -17,22 +17,11 @@
  */
 
 plugins {
-    id "com.github.spotbugs" version "${githubSpotbugsVersion}"
-    id "com.github.johnrengelman.shadow" version "${githubJohnrengelmanShadowVersion}"
-    id "de.undercouch.download" version "${underCouchDownloadVersion}"
-    id "net.researchgate.release" version "${researchgateReleaseVersion}"
+    id "com.github.spotbugs"
+    id "com.github.johnrengelman.shadow"
+    id "de.undercouch.download"
+    id "net.researchgate.release"
 }
-
-ext.puppycrawlCheckstyleVersion = project.puppycrawlCheckstyleVersion
-ext.ballerinaLangVersion = project.ballerinaLangVersion
-ext.stdlibCacheVersion = project.stdlibCacheVersion
-ext.stdlibCryptoVersion = project.stdlibCryptoVersion
-ext.stdlibLogVersion = project.stdlibLogVersion
-ext.stdlibTimeVersion = project.stdlibTimeVersion
-// Transitive dependencies
-ext.stdlibTaskVersion = project.stdlibTaskVersion
-ext.stdlibIoVersion = project.stdlibIoVersion
-ext.stdlibConstraintVersion = project.stdlibConstraintVersion
 
 allprojects {
     group = project.group
@@ -71,8 +60,14 @@ subprojects {
 
     configurations {
         ballerinaStdLibs
+        jbalTools
     }
     dependencies {
+        /* JBallerina Tools */
+        jbalTools ("org.ballerinalang:jballerina-tools:${ballerinaLangVersion}") {
+            transitive = false
+        }
+
         /* Standard libraries */
         ballerinaStdLibs "io.ballerina.stdlib:cache-ballerina:${stdlibCacheVersion}"
         ballerinaStdLibs "io.ballerina.stdlib:crypto-ballerina:${stdlibCryptoVersion}"
