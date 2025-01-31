@@ -25,7 +25,7 @@ description = 'Ballerina - JWT Java Utils'
 
 dependencies {
     checkstyle project(':checkstyle')
-    checkstyle "com.puppycrawl.tools:checkstyle:${puppycrawlCheckstyleVersion}"
+    checkstyle "com.puppycrawl.tools:checkstyle:${checkstylePluginVersion}"
 
     implementation group: 'org.ballerinalang', name: 'ballerina-runtime', version: "${ballerinaLangVersion}"
     implementation group: 'io.ballerina.stdlib', name: 'crypto-native', version: "${stdlibCryptoVersion}"
