@@ -16,4 +16,4 @@ graalvmCompatible = true
 groupId = "io.ballerina.stdlib"
 artifactId = "jwt-native"
 version = "2.15.0"
-path = "../native/build/libs/jwt-native-2.15.0-SNAPSHOT.jar"
+path = "../native/build/libs/jwt-native-2.15.0.jar"
