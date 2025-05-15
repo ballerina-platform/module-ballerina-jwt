@@ -29,6 +29,8 @@ def packageOrg = "ballerina"
 def tomlVersion = stripBallerinaExtensionVersion("${project.version}")
 def ballerinaTomlFile = new File("$project.projectDir/Ballerina.toml")
 def ballerinaTomlFilePlaceHolder = new File("${project.rootDir}/build-config/resources/Ballerina.toml")
+def compilerPluginTomlFilePlaceHolder = new File("${project.rootDir}/build-config/resources/CompilerPlugin.toml")
+def compilerPluginTomlFile = new File("$project.projectDir/CompilerPlugin.toml")
 
 def stripBallerinaExtensionVersion(String extVersion) {
     if (extVersion.matches(project.ext.timestampedVersionRegex)) {
@@ -50,15 +52,17 @@ ballerina {
     langVersion = ballerinaLangVersion
 }
 
-task updateTomlFiles {
+tasks.register('updateTomlFiles') {
     doLast {
         def newBallerinaToml = ballerinaTomlFilePlaceHolder.text.replace("@project.version@", project.version)
+        def newCompilerPluginToml = compilerPluginTomlFilePlaceHolder.text.replace("@project.version@", project.version)
         newBallerinaToml = newBallerinaToml.replace("@toml.version@", tomlVersion)
         ballerinaTomlFile.text = newBallerinaToml
+        compilerPluginTomlFile.text = newCompilerPluginToml
     }
 }
 
-task commitTomlFiles {
+tasks.register('commitTomlFiles') {
     doLast {
         project.exec {
             ignoreExitValue true
@@ -89,7 +93,7 @@ publishing {
     }
 }
 
-task startBallerinaSTS() {
+tasks.register('startBallerinaSTS') {
     doLast {
         // This check is added to prevent starting the server in Windows OS, since the Docker image does not support
         // for Windows OS.
@@ -116,7 +120,7 @@ task startBallerinaSTS() {
 }
 startBallerinaSTS.onlyIf { !project.gradle.startParameter.excludedTaskNames.contains('test') }
 
-task stopBallerinaSTS() {
+tasks.register('stopBallerinaSTS') {
     doLast {
         // This check is added to prevent trying to stop the server in Windows OS, since the Docker image not started
         // in Windows OS.
@@ -149,7 +153,9 @@ updateTomlFiles.dependsOn copyStdlibs
 test.finalizedBy stopBallerinaSTS
 test.dependsOn startBallerinaSTS
 test.dependsOn ":${packageName}-native:build"
+test.dependsOn ":${packageName}-compiler-plugin:build"
 
+build.dependsOn ":${packageName}-compiler-plugin:build"
 build.dependsOn "generatePomFileForMavenPublication"
 build.finalizedBy stopBallerinaSTS
 build.dependsOn startBallerinaSTS

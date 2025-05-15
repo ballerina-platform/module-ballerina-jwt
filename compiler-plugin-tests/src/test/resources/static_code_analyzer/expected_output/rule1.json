@@ -1,0 +1,402 @@
+[
+  {
+    "location": {
+      "filePath": "function_named_arg_capture_pattern.bal",
+      "startLine": 18,
+      "endLine": 28,
+      "startColumn": 0,
+      "endColumn": 1,
+      "startOffset": 686,
+      "length": 305
+    },
+    "rule": {
+      "id": "ballerina:3",
+      "numericId": 3,
+      "description": "Non isolated public function",
+      "ruleKind": "CODE_SMELL"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule1/function_named_arg_capture_pattern.bal",
+    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\function_named_arg_capture_pattern.bal"
+  },
+  {
+    "location": {
+      "filePath": "function_named_arg_list_pattern.bal",
+      "startLine": 18,
+      "endLine": 30,
+      "startColumn": 0,
+      "endColumn": 1,
+      "startOffset": 685,
+      "length": 348
+    },
+    "rule": {
+      "id": "ballerina:3",
+      "numericId": 3,
+      "description": "Non isolated public function",
+      "ruleKind": "CODE_SMELL"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule1/function_named_arg_list_pattern.bal",
+    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\function_named_arg_list_pattern.bal"
+  },
+  {
+    "location": {
+      "filePath": "function_pos_arg_capture_pattern.bal",
+      "startLine": 18,
+      "endLine": 28,
+      "startColumn": 0,
+      "endColumn": 1,
+      "startOffset": 685,
+      "length": 288
+    },
+    "rule": {
+      "id": "ballerina:3",
+      "numericId": 3,
+      "description": "Non isolated public function",
+      "ruleKind": "CODE_SMELL"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule1/function_pos_arg_capture_pattern.bal",
+    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\function_pos_arg_capture_pattern.bal"
+  },
+  {
+    "location": {
+      "filePath": "function_pos_arg_list_pattern.bal",
+      "startLine": 18,
+      "endLine": 30,
+      "startColumn": 0,
+      "endColumn": 1,
+      "startOffset": 685,
+      "length": 331
+    },
+    "rule": {
+      "id": "ballerina:3",
+      "numericId": 3,
+      "description": "Non isolated public function",
+      "ruleKind": "CODE_SMELL"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule1/function_pos_arg_list_pattern.bal",
+    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\function_pos_arg_list_pattern.bal"
+  },
+  {
+    "location": {
+      "filePath": "inline_named_arg.bal",
+      "startLine": 18,
+      "endLine": 26,
+      "startColumn": 0,
+      "endColumn": 1,
+      "startOffset": 667,
+      "length": 276
+    },
+    "rule": {
+      "id": "ballerina:3",
+      "numericId": 3,
+      "description": "Non isolated public function",
+      "ruleKind": "CODE_SMELL"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule1/inline_named_arg.bal",
+    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\inline_named_arg.bal"
+  },
+  {
+    "location": {
+      "filePath": "inline_pos_arg.bal",
+      "startLine": 18,
+      "endLine": 26,
+      "startColumn": 0,
+      "endColumn": 1,
+      "startOffset": 667,
+      "length": 211
+    },
+    "rule": {
+      "id": "ballerina:3",
+      "numericId": 3,
+      "description": "Non isolated public function",
+      "ruleKind": "CODE_SMELL"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule1/inline_pos_arg.bal",
+    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\inline_pos_arg.bal"
+  },
+  {
+    "location": {
+      "filePath": "module_named_arg_capture_pattern.bal",
+      "startLine": 26,
+      "endLine": 28,
+      "startColumn": 0,
+      "endColumn": 1,
+      "startOffset": 860,
+      "length": 156
+    },
+    "rule": {
+      "id": "ballerina:3",
+      "numericId": 3,
+      "description": "Non isolated public function",
+      "ruleKind": "CODE_SMELL"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule1/module_named_arg_capture_pattern.bal",
+    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\module_named_arg_capture_pattern.bal"
+  },
+  {
+    "location": {
+      "filePath": "module_named_arg_list_pattern.bal",
+      "startLine": 28,
+      "endLine": 30,
+      "startColumn": 0,
+      "endColumn": 1,
+      "startOffset": 895,
+      "length": 150
+    },
+    "rule": {
+      "id": "ballerina:3",
+      "numericId": 3,
+      "description": "Non isolated public function",
+      "ruleKind": "CODE_SMELL"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule1/module_named_arg_list_pattern.bal",
+    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\module_named_arg_list_pattern.bal"
+  },
+  {
+    "location": {
+      "filePath": "module_pos_arg_capture_pattern.bal",
+      "startLine": 26,
+      "endLine": 28,
+      "startColumn": 0,
+      "endColumn": 1,
+      "startOffset": 858,
+      "length": 137
+    },
+    "rule": {
+      "id": "ballerina:3",
+      "numericId": 3,
+      "description": "Non isolated public function",
+      "ruleKind": "CODE_SMELL"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule1/module_pos_arg_capture_pattern.bal",
+    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\module_pos_arg_capture_pattern.bal"
+  },
+  {
+    "location": {
+      "filePath": "module_pos_arg_list_pattern.bal",
+      "startLine": 28,
+      "endLine": 30,
+      "startColumn": 0,
+      "endColumn": 1,
+      "startOffset": 893,
+      "length": 131
+    },
+    "rule": {
+      "id": "ballerina:3",
+      "numericId": 3,
+      "description": "Non isolated public function",
+      "ruleKind": "CODE_SMELL"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule1/module_pos_arg_list_pattern.bal",
+    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\module_pos_arg_list_pattern.bal"
+  },
+  {
+    "location": {
+      "filePath": "function_named_arg_capture_pattern.bal",
+      "startLine": 27,
+      "endLine": 27,
+      "startColumn": 21,
+      "endColumn": 59,
+      "startOffset": 949,
+      "length": 38
+    },
+    "rule": {
+      "id": "ballerina/jwt:1",
+      "numericId": 1,
+      "description": "JWT should be signed and verified with strong cipher algorithms",
+      "ruleKind": "VULNERABILITY"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule1/function_named_arg_capture_pattern.bal",
+    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\function_named_arg_capture_pattern.bal"
+  },
+  {
+    "location": {
+      "filePath": "function_named_arg_list_pattern.bal",
+      "startLine": 29,
+      "endLine": 29,
+      "startColumn": 21,
+      "endColumn": 59,
+      "startOffset": 991,
+      "length": 38
+    },
+    "rule": {
+      "id": "ballerina/jwt:1",
+      "numericId": 1,
+      "description": "JWT should be signed and verified with strong cipher algorithms",
+      "ruleKind": "VULNERABILITY"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule1/function_named_arg_list_pattern.bal",
+    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\function_named_arg_list_pattern.bal"
+  },
+  {
+    "location": {
+      "filePath": "function_pos_arg_capture_pattern.bal",
+      "startLine": 27,
+      "endLine": 27,
+      "startColumn": 21,
+      "endColumn": 44,
+      "startOffset": 946,
+      "length": 23
+    },
+    "rule": {
+      "id": "ballerina/jwt:1",
+      "numericId": 1,
+      "description": "JWT should be signed and verified with strong cipher algorithms",
+      "ruleKind": "VULNERABILITY"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule1/function_pos_arg_capture_pattern.bal",
+    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\function_pos_arg_capture_pattern.bal"
+  },
+  {
+    "location": {
+      "filePath": "function_pos_arg_list_pattern.bal",
+      "startLine": 29,
+      "endLine": 29,
+      "startColumn": 21,
+      "endColumn": 44,
+      "startOffset": 989,
+      "length": 23
+    },
+    "rule": {
+      "id": "ballerina/jwt:1",
+      "numericId": 1,
+      "description": "JWT should be signed and verified with strong cipher algorithms",
+      "ruleKind": "VULNERABILITY"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule1/function_pos_arg_list_pattern.bal",
+    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\function_pos_arg_list_pattern.bal"
+  },
+  {
+    "location": {
+      "filePath": "inline_named_arg.bal",
+      "startLine": 19,
+      "endLine": 25,
+      "startColumn": 21,
+      "endColumn": 14,
+      "startOffset": 738,
+      "length": 202
+    },
+    "rule": {
+      "id": "ballerina/jwt:1",
+      "numericId": 1,
+      "description": "JWT should be signed and verified with strong cipher algorithms",
+      "ruleKind": "VULNERABILITY"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule1/inline_named_arg.bal",
+    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\inline_named_arg.bal"
+  },
+  {
+    "location": {
+      "filePath": "inline_pos_arg.bal",
+      "startLine": 19,
+      "endLine": 25,
+      "startColumn": 21,
+      "endColumn": 6,
+      "startOffset": 736,
+      "length": 139
+    },
+    "rule": {
+      "id": "ballerina/jwt:1",
+      "numericId": 1,
+      "description": "JWT should be signed and verified with strong cipher algorithms",
+      "ruleKind": "VULNERABILITY"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule1/inline_pos_arg.bal",
+    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\inline_pos_arg.bal"
+  },
+  {
+    "location": {
+      "filePath": "module_named_arg_capture_pattern.bal",
+      "startLine": 27,
+      "endLine": 27,
+      "startColumn": 21,
+      "endColumn": 87,
+      "startOffset": 946,
+      "length": 66
+    },
+    "rule": {
+      "id": "ballerina/jwt:1",
+      "numericId": 1,
+      "description": "JWT should be signed and verified with strong cipher algorithms",
+      "ruleKind": "VULNERABILITY"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule1/module_named_arg_capture_pattern.bal",
+    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\module_named_arg_capture_pattern.bal"
+  },
+  {
+    "location": {
+      "filePath": "module_named_arg_list_pattern.bal",
+      "startLine": 29,
+      "endLine": 29,
+      "startColumn": 21,
+      "endColumn": 84,
+      "startOffset": 978,
+      "length": 63
+    },
+    "rule": {
+      "id": "ballerina/jwt:1",
+      "numericId": 1,
+      "description": "JWT should be signed and verified with strong cipher algorithms",
+      "ruleKind": "VULNERABILITY"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule1/module_named_arg_list_pattern.bal",
+    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\module_named_arg_list_pattern.bal"
+  },
+  {
+    "location": {
+      "filePath": "module_pos_arg_capture_pattern.bal",
+      "startLine": 27,
+      "endLine": 27,
+      "startColumn": 21,
+      "endColumn": 70,
+      "startOffset": 942,
+      "length": 49
+    },
+    "rule": {
+      "id": "ballerina/jwt:1",
+      "numericId": 1,
+      "description": "JWT should be signed and verified with strong cipher algorithms",
+      "ruleKind": "VULNERABILITY"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule1/module_pos_arg_capture_pattern.bal",
+    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\module_pos_arg_capture_pattern.bal"
+  },
+  {
+    "location": {
+      "filePath": "module_pos_arg_list_pattern.bal",
+      "startLine": 29,
+      "endLine": 29,
+      "startColumn": 21,
+      "endColumn": 67,
+      "startOffset": 974,
+      "length": 46
+    },
+    "rule": {
+      "id": "ballerina/jwt:1",
+      "numericId": 1,
+      "description": "JWT should be signed and verified with strong cipher algorithms",
+      "ruleKind": "VULNERABILITY"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule1/module_pos_arg_list_pattern.bal",
+    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\module_pos_arg_list_pattern.bal"
+  }
+]
