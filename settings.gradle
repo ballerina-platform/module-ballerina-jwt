@@ -37,10 +37,14 @@ rootProject.name = 'jwt'
 include ':checkstyle'
 include ':jwt-native'
 include ':jwt-ballerina'
+include ':jwt-compiler-plugin'
+include ':jwt-compiler-plugin-tests'
 
 project(':checkstyle').projectDir = file("build-config${File.separator}checkstyle")
 project(':jwt-native').projectDir = file('native')
 project(':jwt-ballerina').projectDir = file('ballerina')
+project(':jwt-compiler-plugin').projectDir = file('compiler-plugin')
+project(':jwt-compiler-plugin-tests').projectDir = file('compiler-plugin-tests')
 
 gradleEnterprise {
     buildScan {
