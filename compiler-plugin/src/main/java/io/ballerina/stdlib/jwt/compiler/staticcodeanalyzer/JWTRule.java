@@ -19,6 +19,36 @@
 
 package io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer;
 
-public enum JWTRule {
+import io.ballerina.scan.Rule;
 
+import static io.ballerina.scan.RuleKind.VULNERABILITY;
+import static io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.RuleFactory.createRule;
+
+public enum JWTRule {
+    AVOID_WEAK_CIPHER_ALGORITHMS(createRule(
+            1,
+            "JWT should be signed and verified with"
+                    + "strong cipher algorithms",
+            VULNERABILITY)
+    );
+
+    private final Rule rule;
+
+    JWTRule(Rule rule) {
+        this.rule = rule;
+    }
+
+    public int getId() {
+        return this.rule.numericId();
+    }
+
+    public Rule getRule() {
+        return this.rule;
+    }
+
+    @Override
+    public String toString() {
+        return "{\"id\":" + this.getId() + ", \"kind\":\"" + this.rule.kind() + "\"," +
+                " \"description\" : \"" + this.rule.description() + "\"}";
+    }
 }

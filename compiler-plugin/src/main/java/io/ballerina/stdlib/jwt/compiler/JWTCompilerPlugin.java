@@ -18,9 +18,23 @@
 
 package io.ballerina.stdlib.jwt.compiler;
 
+import io.ballerina.projects.plugins.CompilerPlugin;
+import io.ballerina.projects.plugins.CompilerPluginContext;
+import io.ballerina.scan.ScannerContext;
+import io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.JWTCodeAnalyzer;
+
 /**
  * JWT compiler plugin.
  */
-public class JWTCompilerPlugin {
+public class JWTCompilerPlugin extends CompilerPlugin {
 
+    private static final String SCANNER_CONTEXT = "ScannerContext";
+
+    @Override
+    public void init(CompilerPluginContext context) {
+        Object object = context.userData().get(SCANNER_CONTEXT);
+        if (object instanceof ScannerContext scannerContext) {
+            context.addCodeAnalyzer(new JWTCodeAnalyzer(scannerContext.getReporter()));
+        }
+    }
 }

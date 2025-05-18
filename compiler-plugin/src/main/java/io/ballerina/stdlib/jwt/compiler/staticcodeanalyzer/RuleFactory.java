@@ -26,8 +26,7 @@ import io.ballerina.scan.RuleKind;
  */
 public class RuleFactory {
 
-    private RuleFactory() {
-    }
+    private RuleFactory() {}
 
     public static Rule createRule(int id, String description, RuleKind kind) {
         return new RuleImpl(id, description, kind);

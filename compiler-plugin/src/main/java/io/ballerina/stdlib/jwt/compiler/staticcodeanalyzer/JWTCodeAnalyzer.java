@@ -19,6 +19,20 @@
 
 package io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer;
 
-public class JWTCodeAnalyzer {
+import io.ballerina.compiler.syntax.tree.SyntaxKind;
+import io.ballerina.projects.plugins.CodeAnalysisContext;
+import io.ballerina.projects.plugins.CodeAnalyzer;
+import io.ballerina.scan.Reporter;
 
+public class JWTCodeAnalyzer extends CodeAnalyzer {
+    private final Reporter reporter;
+
+    public JWTCodeAnalyzer(Reporter reporter) {
+        this.reporter = reporter;
+    }
+
+    @Override
+    public void init(CodeAnalysisContext codeAnalysisContext) {
+        codeAnalysisContext.addSyntaxNodeAnalysisTask(new JWTCipherAlgorithmAnalyzer(reporter), SyntaxKind.FUNCTION_CALL);
+    }
 }
