@@ -69,7 +69,7 @@ public class JWTCipherAlgorithmAnalyzer implements AnalysisTask<SyntaxNodeAnalys
             if (expr instanceof MappingConstructorExpressionNode mappingConstructor) {
                 if (isInsecureInlineMappingLiteral(mappingConstructor)) {
                     reporter.reportIssue(
-                            getDocument(context),
+                            getDocument(context.currentPackage().module(context.moduleId()), context.documentId()),
                             context.node().location(),
                             JWTRule.AVOID_WEAK_CIPHER_ALGORITHMS.getId()
                     );
@@ -77,7 +77,7 @@ public class JWTCipherAlgorithmAnalyzer implements AnalysisTask<SyntaxNodeAnalys
             } else if (expr instanceof SimpleNameReferenceNode varRef) {
                 if (isInsecureVariableReference(varRef)) {
                     reporter.reportIssue(
-                            getDocument(context),
+                            getDocument(context.currentPackage().module(context.moduleId()), context.documentId()),
                             context.node().location(),
                             JWTRule.AVOID_WEAK_CIPHER_ALGORITHMS.getId()
                     );
@@ -158,12 +158,13 @@ public class JWTCipherAlgorithmAnalyzer implements AnalysisTask<SyntaxNodeAnalys
     }
 
     /**
-     * Retrieves the Document corresponding to the given syntax node analysis context.
+     * Retrieves the Document corresponding to the given module and document ID.
      *
-     * @param context the syntax node analysis context
-     * @return the Document for the current module and document ID
+     * @param module the module
+     * @param documentId the document ID
+     * @return the Document for the given module and document ID
      */
-    public static Document getDocument(SyntaxNodeAnalysisContext context) {
-        return context.currentPackage().module(context.moduleId()).document(context.documentId());
+    public static Document getDocument(io.ballerina.projects.Module module, io.ballerina.projects.DocumentId documentId) {
+        return module.document(documentId);
     }
 }
