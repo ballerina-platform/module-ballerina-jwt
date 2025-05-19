@@ -28,4 +28,3 @@ public function main() returns error? {
     string token = check jwt:issue(issuerConfig);
     io:println("Token: ", token);
 }
-

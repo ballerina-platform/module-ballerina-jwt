@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org)
  *
@@ -22,13 +21,13 @@ package io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer;
 import io.ballerina.scan.Rule;
 
 import static io.ballerina.scan.RuleKind.VULNERABILITY;
+import static io.ballerina.stdlib.jwt.compiler.Constants.AVOID_WEAK_CIPHER_ALGORITHMS_LITERAL;
 import static io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.RuleFactory.createRule;
 
 public enum JWTRule {
     AVOID_WEAK_CIPHER_ALGORITHMS(createRule(
             1,
-            "JWT should be signed and verified with"
-                    + "strong cipher algorithms",
+            AVOID_WEAK_CIPHER_ALGORITHMS_LITERAL,
             VULNERABILITY)
     );
 

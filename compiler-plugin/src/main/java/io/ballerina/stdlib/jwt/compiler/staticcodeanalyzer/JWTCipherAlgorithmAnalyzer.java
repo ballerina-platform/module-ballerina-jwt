@@ -23,8 +23,17 @@ import io.ballerina.projects.Document;
 import io.ballerina.projects.plugins.AnalysisTask;
 import io.ballerina.projects.plugins.SyntaxNodeAnalysisContext;
 import io.ballerina.scan.Reporter;
+
 import static io.ballerina.stdlib.jwt.compiler.Constants.*;
 
+/**
+ * Analyzes JWT cipher algorithm usage in Ballerina code to detect insecure configurations.
+ * <p>
+ * This analysis task inspects calls to <code>jwt:issue()</code> and reports if the signature configuration uses
+ * the insecure <code>NONE</code> algorithm. It checks for insecure usage in inline mapping literals, function-local
+ * variables, and module-level variables.
+ * </p>
+ */
 public class JWTCipherAlgorithmAnalyzer implements AnalysisTask<SyntaxNodeAnalysisContext> {
     private final Reporter reporter;
 
@@ -48,7 +57,7 @@ public class JWTCipherAlgorithmAnalyzer implements AnalysisTask<SyntaxNodeAnalys
         }
 
         // Verify the module and function name
-        if (!MODULE_NAME.equals(qualifiedName.modulePrefix().text()) || !FUNCTION_NAME.equals(qualifiedName.identifier().text())) {
+        if (!JWT.equals(qualifiedName.modulePrefix().text()) || !ISSUE.equals(qualifiedName.identifier().text())) {
             return;
         }
 
@@ -92,8 +101,9 @@ public class JWTCipherAlgorithmAnalyzer implements AnalysisTask<SyntaxNodeAnalys
             if (current instanceof FunctionBodyBlockNode body) {
                 for (StatementNode stmt : body.statements()) {
                     if (stmt instanceof VariableDeclarationNode varDecl
-                            && varDecl.typedBindingPattern().bindingPattern() instanceof CaptureBindingPatternNode cap
-                            && cap.variableName().text().equals(varName)
+                            && varDecl.typedBindingPattern().bindingPattern()
+                            instanceof CaptureBindingPatternNode captureBindingPatternNode
+                            && captureBindingPatternNode.variableName().text().equals(varName)
                             && varDecl.initializer().isPresent()
                             && varDecl.initializer().get() instanceof MappingConstructorExpressionNode mappingCtor) {
                         if (isInsecureInlineMappingLiteral(mappingCtor)) {
@@ -106,8 +116,9 @@ public class JWTCipherAlgorithmAnalyzer implements AnalysisTask<SyntaxNodeAnalys
             if (current instanceof ModulePartNode module) {
                 for (ModuleMemberDeclarationNode member : module.members()) {
                     if (member instanceof ModuleVariableDeclarationNode varDecl
-                            && varDecl.typedBindingPattern().bindingPattern() instanceof CaptureBindingPatternNode cap
-                            && cap.variableName().text().equals(varName)
+                            && varDecl.typedBindingPattern().bindingPattern()
+                            instanceof CaptureBindingPatternNode captureBindingPatternNode
+                            && captureBindingPatternNode.variableName().text().equals(varName)
                             && varDecl.initializer().isPresent()
                             && varDecl.initializer().get() instanceof MappingConstructorExpressionNode mappingCtor
                             && isInsecureInlineMappingLiteral(mappingCtor)) {
@@ -137,7 +148,7 @@ public class JWTCipherAlgorithmAnalyzer implements AnalysisTask<SyntaxNodeAnalys
                     if (nestedField instanceof SpecificFieldNode algField
                             && algField.fieldName().toString().contains(ALGORITHM)
                             && algField.valueExpr().isPresent()
-                            && algField.valueExpr().get().toString().contains(ALGORITHM_TYPE)) {
+                            && algField.valueExpr().get().toString().contains(NONE)) {
                         return true;
                     }
                 }

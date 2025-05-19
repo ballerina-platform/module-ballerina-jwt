@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org)
  *
@@ -33,6 +32,9 @@ public class JWTCodeAnalyzer extends CodeAnalyzer {
 
     @Override
     public void init(CodeAnalysisContext codeAnalysisContext) {
-        codeAnalysisContext.addSyntaxNodeAnalysisTask(new JWTCipherAlgorithmAnalyzer(reporter), SyntaxKind.FUNCTION_CALL);
+        codeAnalysisContext.addSyntaxNodeAnalysisTask(
+                new JWTCipherAlgorithmAnalyzer(reporter),
+                SyntaxKind.FUNCTION_CALL
+        );
     }
 }
