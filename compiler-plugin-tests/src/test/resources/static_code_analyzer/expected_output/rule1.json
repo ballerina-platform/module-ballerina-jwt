@@ -1,0 +1,22 @@
+[
+  {
+    "location": {
+      "filePath": "main.bal",
+      "startLine": 11,
+      "endLine": 11,
+      "startColumn": 25,
+      "endColumn": 48,
+      "startOffset": 275,
+      "length": 23
+    },
+    "rule": {
+      "id": "ballerina/jwt:1",
+      "numericId": 1,
+      "description": "JWT should be signed and verified with strong cipher algorithms",
+      "ruleKind": "VULNERABILITY"
+    },
+    "source": "BUILT_IN",
+    "fileName": "Test/main.bal",
+    "filePath": "C:\\Users\\nureka\\Desktop\\Test\\main.bal"
+  }
+]
