@@ -1,30 +1,44 @@
 /*
- * Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2025 WSO2 LLC. (http://www.wso2.com).
  *
- * WSO2 Inc. licenses this file to you under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License.
- * You may obtain a copy of the License at
+ *  WSO2 Inc. licenses this file to you under the Apache License,
+ *  Version 2.0 (the "License"); you may not use this file except
+ *  in compliance with the License.
+ *  You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
+ *  OF ANY KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
  */
 
 package io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer;
 
-import io.ballerina.compiler.syntax.tree.*;
+import io.ballerina.compiler.syntax.tree.CaptureBindingPatternNode;
+import io.ballerina.compiler.syntax.tree.ExpressionNode;
+import io.ballerina.compiler.syntax.tree.FunctionArgumentNode;
+import io.ballerina.compiler.syntax.tree.FunctionBodyBlockNode;
+import io.ballerina.compiler.syntax.tree.FunctionCallExpressionNode;
+import io.ballerina.compiler.syntax.tree.MappingConstructorExpressionNode;
+import io.ballerina.compiler.syntax.tree.MappingFieldNode;
+import io.ballerina.compiler.syntax.tree.ModuleMemberDeclarationNode;
+import io.ballerina.compiler.syntax.tree.ModulePartNode;
+import io.ballerina.compiler.syntax.tree.ModuleVariableDeclarationNode;
+import io.ballerina.compiler.syntax.tree.Node;
+import io.ballerina.compiler.syntax.tree.PositionalArgumentNode;
+import io.ballerina.compiler.syntax.tree.QualifiedNameReferenceNode;
+import io.ballerina.compiler.syntax.tree.SimpleNameReferenceNode;
+import io.ballerina.compiler.syntax.tree.SpecificFieldNode;
+import io.ballerina.compiler.syntax.tree.StatementNode;
+import io.ballerina.compiler.syntax.tree.VariableDeclarationNode;
 import io.ballerina.projects.Document;
 import io.ballerina.projects.plugins.AnalysisTask;
 import io.ballerina.projects.plugins.SyntaxNodeAnalysisContext;
 import io.ballerina.scan.Reporter;
-
-import static io.ballerina.stdlib.jwt.compiler.Constants.*;
 
 /**
  * Analyzes JWT cipher algorithm usage in Ballerina code to detect insecure configurations.
@@ -36,6 +50,11 @@ import static io.ballerina.stdlib.jwt.compiler.Constants.*;
  */
 public class JWTCipherAlgorithmAnalyzer implements AnalysisTask<SyntaxNodeAnalysisContext> {
     private final Reporter reporter;
+    private static final String JWT = "jwt";
+    private static final String ISSUE = "issue";
+    private static final String SIGNATURE_CONFIG = "signatureConfig";
+    private static final String ALGORITHM = "algorithm";
+    private static final String NONE = "NONE";
 
     public JWTCipherAlgorithmAnalyzer(Reporter reporter) {
         this.reporter = reporter;
@@ -164,7 +183,8 @@ public class JWTCipherAlgorithmAnalyzer implements AnalysisTask<SyntaxNodeAnalys
      * @param documentId the document ID
      * @return the Document for the given module and document ID
      */
-    public static Document getDocument(io.ballerina.projects.Module module, io.ballerina.projects.DocumentId documentId) {
+    public static Document getDocument(io.ballerina.projects.Module module,
+                                       io.ballerina.projects.DocumentId documentId) {
         return module.document(documentId);
     }
 }
