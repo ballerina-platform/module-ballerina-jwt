@@ -2,11 +2,11 @@
   {
     "location": {
       "filePath": "main.bal",
-      "startLine": 11,
-      "endLine": 11,
+      "startLine": 27,
+      "endLine": 27,
       "startColumn": 25,
       "endColumn": 48,
-      "startOffset": 275,
+      "startOffset": 946,
       "length": 23
     },
     "rule": {
@@ -16,7 +16,7 @@
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
-    "fileName": "Test/main.bal",
-    "filePath": "C:\\Users\\nureka\\Desktop\\Test\\main.bal"
+    "fileName": "rule1/main.bal",
+    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\main.bal"
   }
 ]
