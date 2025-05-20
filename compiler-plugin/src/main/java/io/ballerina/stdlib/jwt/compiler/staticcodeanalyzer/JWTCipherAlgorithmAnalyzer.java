@@ -23,6 +23,8 @@ import io.ballerina.compiler.syntax.tree.ExpressionNode;
 import io.ballerina.compiler.syntax.tree.FunctionArgumentNode;
 import io.ballerina.compiler.syntax.tree.FunctionBodyBlockNode;
 import io.ballerina.compiler.syntax.tree.FunctionCallExpressionNode;
+import io.ballerina.compiler.syntax.tree.ListBindingPatternNode;
+import io.ballerina.compiler.syntax.tree.ListConstructorExpressionNode;
 import io.ballerina.compiler.syntax.tree.MappingConstructorExpressionNode;
 import io.ballerina.compiler.syntax.tree.MappingFieldNode;
 import io.ballerina.compiler.syntax.tree.ModuleMemberDeclarationNode;
@@ -119,14 +121,31 @@ public class JWTCipherAlgorithmAnalyzer implements AnalysisTask<SyntaxNodeAnalys
             // Case 1: variable declared inside a function body
             if (current instanceof FunctionBodyBlockNode body) {
                 for (StatementNode stmt : body.statements()) {
-                    if (stmt instanceof VariableDeclarationNode varDecl
-                            && varDecl.typedBindingPattern().bindingPattern()
-                            instanceof CaptureBindingPatternNode captureBindingPatternNode
-                            && captureBindingPatternNode.variableName().text().equals(varName)
-                            && varDecl.initializer().isPresent()
-                            && varDecl.initializer().get() instanceof MappingConstructorExpressionNode mappingCtor) {
-                        if (isInsecureInlineMappingLiteral(mappingCtor)) {
-                            return true;
+                    // Simple case: variable declared inside a function body
+                    if (stmt instanceof VariableDeclarationNode varDecl) {
+                        if (varDecl.typedBindingPattern().bindingPattern()
+                                instanceof CaptureBindingPatternNode captureBindingPattern
+                                && captureBindingPattern.variableName().text().equals(varName)
+                                && varDecl.initializer().isPresent()
+                                && varDecl.initializer().get()
+                                instanceof MappingConstructorExpressionNode mappingCtor) {
+                            if (isInsecureInlineMappingLiteral(mappingCtor)) {
+                                return true;
+                            }
+                        }
+                        if (varDecl.typedBindingPattern().bindingPattern()
+                                instanceof ListBindingPatternNode listBindingPattern
+                                && listBindingPattern.bindingPatterns().get(0)
+                                instanceof CaptureBindingPatternNode captureBindingPattern
+                                && captureBindingPattern.variableName().text().equals(varName)
+                                && varDecl.initializer().isPresent()
+                                && varDecl.initializer().get()
+                                instanceof ListConstructorExpressionNode listConstructorExpression
+                                && listConstructorExpression.expressions().get(0)
+                                instanceof MappingConstructorExpressionNode mappingCtor) {
+                            if (isInsecureInlineMappingLiteral(mappingCtor)) {
+                                return true;
+                            }
                         }
                     }
                 }
@@ -134,14 +153,28 @@ public class JWTCipherAlgorithmAnalyzer implements AnalysisTask<SyntaxNodeAnalys
             // Case 3: variable declared at module level
             if (current instanceof ModulePartNode module) {
                 for (ModuleMemberDeclarationNode member : module.members()) {
-                    if (member instanceof ModuleVariableDeclarationNode varDecl
-                            && varDecl.typedBindingPattern().bindingPattern()
-                            instanceof CaptureBindingPatternNode captureBindingPatternNode
-                            && captureBindingPatternNode.variableName().text().equals(varName)
-                            && varDecl.initializer().isPresent()
-                            && varDecl.initializer().get() instanceof MappingConstructorExpressionNode mappingCtor
-                            && isInsecureInlineMappingLiteral(mappingCtor)) {
-                        return true;
+                    if (member instanceof ModuleVariableDeclarationNode varDecl) {
+                        if (varDecl.typedBindingPattern().bindingPattern()
+                                instanceof CaptureBindingPatternNode captureBindingPattern
+                                && captureBindingPattern.variableName().text().equals(varName)
+                                && varDecl.initializer().isPresent()
+                                && varDecl.initializer().get() instanceof MappingConstructorExpressionNode mappingCtor
+                                && isInsecureInlineMappingLiteral(mappingCtor)) {
+                            return true;
+                        }
+                        if (varDecl.typedBindingPattern().bindingPattern()
+                                instanceof ListBindingPatternNode listBindingPattern
+                                && listBindingPattern.bindingPatterns().get(0)
+                                instanceof CaptureBindingPatternNode captureBindingPattern
+                                && captureBindingPattern.variableName().text().equals(varName)
+                                && varDecl.initializer().isPresent()
+                                && varDecl.initializer().get()
+                                instanceof ListConstructorExpressionNode listConstructorExpression
+                                && listConstructorExpression.expressions().get(0)
+                                instanceof MappingConstructorExpressionNode mappingCtor
+                                && isInsecureInlineMappingLiteral(mappingCtor)) {
+                            return true;
+                        }
                     }
                 }
             }
@@ -179,12 +212,12 @@ public class JWTCipherAlgorithmAnalyzer implements AnalysisTask<SyntaxNodeAnalys
     /**
      * Retrieves the Document corresponding to the given module and document ID.
      *
-     * @param module the module
+     * @param module     the module
      * @param documentId the document ID
      * @return the Document for the given module and document ID
      */
-    public static Document getDocument(io.ballerina.projects.Module module,
-                                       io.ballerina.projects.DocumentId documentId) {
+    private static Document getDocument(io.ballerina.projects.Module module,
+                                        io.ballerina.projects.DocumentId documentId) {
         return module.document(documentId);
     }
 }
