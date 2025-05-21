@@ -2,7 +2,7 @@
 org = "wso2"
 name = "rule1"
 version = "0.1.0"
-distribution = "2201.10.3"
+distribution = "2201.12.3"
 
 [build-options]
 observabilityIncluded = true

@@ -27,7 +27,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * Helper class to consume the process streams.
  *
- * @since 2.12.0
+ * @since 2.15.1
  */
 class ProcessOutputGobbler implements Runnable {
     private final InputStream inputStream;

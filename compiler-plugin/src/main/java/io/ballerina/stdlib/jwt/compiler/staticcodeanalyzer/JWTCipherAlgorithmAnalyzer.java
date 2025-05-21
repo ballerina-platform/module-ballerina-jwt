@@ -72,12 +72,10 @@ public class JWTCipherAlgorithmAnalyzer implements AnalysisTask<SyntaxNodeAnalys
     public void perform(SyntaxNodeAnalysisContext context) {
         FunctionCallExpressionNode functionCall = (FunctionCallExpressionNode) context.node();
 
-        // Check if the function is qualified with the module name
         if (!(functionCall.functionName() instanceof QualifiedNameReferenceNode qualifiedName)) {
             return;
         }
 
-        // Verify the module and function name
         if (!JWT.equals(qualifiedName.modulePrefix().text()) || !ISSUE.equals(qualifiedName.identifier().text())) {
             return;
         }
@@ -87,22 +85,20 @@ public class JWTCipherAlgorithmAnalyzer implements AnalysisTask<SyntaxNodeAnalys
                 continue;
             }
             ExpressionNode expr = posArg.expression();
-            if (expr instanceof MappingConstructorExpressionNode mappingConstructor) {
-                if (isInsecureInlineMappingLiteral(mappingConstructor)) {
-                    reporter.reportIssue(
-                            getDocument(context.currentPackage().module(context.moduleId()), context.documentId()),
-                            context.node().location(),
-                            JWTRule.AVOID_WEAK_CIPHER_ALGORITHMS.getId()
-                    );
-                }
-            } else if (expr instanceof SimpleNameReferenceNode varRef) {
-                if (isInsecureVariableReference(varRef)) {
-                    reporter.reportIssue(
-                            getDocument(context.currentPackage().module(context.moduleId()), context.documentId()),
-                            context.node().location(),
-                            JWTRule.AVOID_WEAK_CIPHER_ALGORITHMS.getId()
-                    );
-                }
+            if (expr instanceof MappingConstructorExpressionNode mappingConstructor
+                    && hasNoneAlgorithmInMappingLiteral(mappingConstructor)) {
+                reporter.reportIssue(
+                        getDocument(context.currentPackage().module(context.moduleId()), context.documentId()),
+                        context.node().location(),
+                        JWTRule.AVOID_WEAK_CIPHER_ALGORITHMS.getId()
+                );
+            } else if (expr instanceof SimpleNameReferenceNode varRef
+                    && hasNoneAlgorithmInVariableReference(varRef)) {
+                reporter.reportIssue(
+                        getDocument(context.currentPackage().module(context.moduleId()), context.documentId()),
+                        context.node().location(),
+                        JWTRule.AVOID_WEAK_CIPHER_ALGORITHMS.getId()
+                );
             }
         }
     }
@@ -114,67 +110,27 @@ public class JWTCipherAlgorithmAnalyzer implements AnalysisTask<SyntaxNodeAnalys
      * @param varRef the simple name reference node pointing to the variable
      * @return true if the variable's initializer mapping contains algorithm NONE, false otherwise
      */
-    private boolean isInsecureVariableReference(SimpleNameReferenceNode varRef) {
+    private boolean hasNoneAlgorithmInVariableReference(SimpleNameReferenceNode varRef) {
         String varName = varRef.name().text();
         Node current = varRef.parent();
         while (current != null) {
-            // Case 1: variable declared inside a function body
             if (current instanceof FunctionBodyBlockNode body) {
                 for (StatementNode stmt : body.statements()) {
-                    // Simple case: variable declared inside a function body
-                    if (stmt instanceof VariableDeclarationNode varDecl) {
-                        if (varDecl.typedBindingPattern().bindingPattern()
-                                instanceof CaptureBindingPatternNode captureBindingPattern
-                                && captureBindingPattern.variableName().text().equals(varName)
-                                && varDecl.initializer().isPresent()
-                                && varDecl.initializer().get()
-                                instanceof MappingConstructorExpressionNode mappingCtor) {
-                            if (isInsecureInlineMappingLiteral(mappingCtor)) {
-                                return true;
-                            }
-                        }
-                        if (varDecl.typedBindingPattern().bindingPattern()
-                                instanceof ListBindingPatternNode listBindingPattern
-                                && listBindingPattern.bindingPatterns().get(0)
-                                instanceof CaptureBindingPatternNode captureBindingPattern
-                                && captureBindingPattern.variableName().text().equals(varName)
-                                && varDecl.initializer().isPresent()
-                                && varDecl.initializer().get()
-                                instanceof ListConstructorExpressionNode listConstructorExpression
-                                && listConstructorExpression.expressions().get(0)
-                                instanceof MappingConstructorExpressionNode mappingCtor) {
-                            if (isInsecureInlineMappingLiteral(mappingCtor)) {
-                                return true;
-                            }
-                        }
+                    if (!(stmt instanceof VariableDeclarationNode varDecl)) {
+                        continue;
+                    }
+                    if (isWeakAlgorithmInVarDecl(varDecl, varName)) {
+                        return true;
                     }
                 }
             }
-            // Case 3: variable declared at module level
             if (current instanceof ModulePartNode module) {
                 for (ModuleMemberDeclarationNode member : module.members()) {
-                    if (member instanceof ModuleVariableDeclarationNode varDecl) {
-                        if (varDecl.typedBindingPattern().bindingPattern()
-                                instanceof CaptureBindingPatternNode captureBindingPattern
-                                && captureBindingPattern.variableName().text().equals(varName)
-                                && varDecl.initializer().isPresent()
-                                && varDecl.initializer().get() instanceof MappingConstructorExpressionNode mappingCtor
-                                && isInsecureInlineMappingLiteral(mappingCtor)) {
-                            return true;
-                        }
-                        if (varDecl.typedBindingPattern().bindingPattern()
-                                instanceof ListBindingPatternNode listBindingPattern
-                                && listBindingPattern.bindingPatterns().get(0)
-                                instanceof CaptureBindingPatternNode captureBindingPattern
-                                && captureBindingPattern.variableName().text().equals(varName)
-                                && varDecl.initializer().isPresent()
-                                && varDecl.initializer().get()
-                                instanceof ListConstructorExpressionNode listConstructorExpression
-                                && listConstructorExpression.expressions().get(0)
-                                instanceof MappingConstructorExpressionNode mappingCtor
-                                && isInsecureInlineMappingLiteral(mappingCtor)) {
-                            return true;
-                        }
+                    if (!(member instanceof ModuleVariableDeclarationNode varDecl)) {
+                        continue;
+                    }
+                    if (isWeakAlgorithmInVarDecl(varDecl, varName)) {
+                        return true;
                     }
                 }
             }
@@ -184,25 +140,71 @@ public class JWTCipherAlgorithmAnalyzer implements AnalysisTask<SyntaxNodeAnalys
     }
 
     /**
+     * Checks if a variable declaration contains a weak algorithm in its initializer.
+     *
+     * @param varDecl the variable declaration node
+     * @param varName the variable name to check
+     * @return true if the variable declaration contains a weak algorithm, false otherwise
+     */
+    private boolean isWeakAlgorithmInVarDecl(VariableDeclarationNode varDecl, String varName) {
+        if (varDecl.typedBindingPattern().bindingPattern() instanceof CaptureBindingPatternNode capture
+                && capture.variableName().text().equals(varName)
+                && varDecl.initializer().isPresent()
+                && varDecl.initializer().get() instanceof MappingConstructorExpressionNode mapping
+                && hasNoneAlgorithmInMappingLiteral(mapping)) {
+            return true;
+        }
+        return varDecl.typedBindingPattern().bindingPattern() instanceof ListBindingPatternNode listBinding
+                && listBinding.bindingPatterns().get(0) instanceof CaptureBindingPatternNode capture
+                && capture.variableName().text().equals(varName)
+                && varDecl.initializer().isPresent()
+                && varDecl.initializer().get() instanceof ListConstructorExpressionNode listConstructor
+                && listConstructor.expressions().get(0) instanceof MappingConstructorExpressionNode mapping
+                && hasNoneAlgorithmInMappingLiteral(mapping);
+    }
+
+    /**
+     * Checks if a module variable declaration contains a weak algorithm in its initializer.
+     *
+     * @param varDecl the module variable declaration node
+     * @param varName the variable name to check
+     * @return true if the module variable declaration contains a weak algorithm, false otherwise
+     */
+    private boolean isWeakAlgorithmInVarDecl(ModuleVariableDeclarationNode varDecl, String varName) {
+        if (varDecl.typedBindingPattern().bindingPattern() instanceof CaptureBindingPatternNode capture
+                && capture.variableName().text().equals(varName)
+                && varDecl.initializer().isPresent()
+                && varDecl.initializer().get() instanceof MappingConstructorExpressionNode mapping
+                && hasNoneAlgorithmInMappingLiteral(mapping)) {
+            return true;
+        }
+        return varDecl.typedBindingPattern().bindingPattern() instanceof ListBindingPatternNode listBinding
+                && listBinding.bindingPatterns().get(0) instanceof CaptureBindingPatternNode capture
+                && capture.variableName().text().equals(varName)
+                && varDecl.initializer().isPresent()
+                && varDecl.initializer().get() instanceof ListConstructorExpressionNode listConstructor
+                && listConstructor.expressions().get(0) instanceof MappingConstructorExpressionNode mapping
+                && hasNoneAlgorithmInMappingLiteral(mapping);
+    }
+
+    /**
      * Inspects a mapping constructor expression for signatureConfig.algorithm == NONE.
      *
      * @param mappingConstructor the mapping constructor expression node
      * @return true if the inline mapping specifies algorithm NONE, false otherwise
      */
-    private boolean isInsecureInlineMappingLiteral(MappingConstructorExpressionNode mappingConstructor) {
-        // Case 2: inline mapping literal
+    private boolean hasNoneAlgorithmInMappingLiteral(MappingConstructorExpressionNode mappingConstructor) {
         for (MappingFieldNode field : mappingConstructor.fields()) {
             if (field instanceof SpecificFieldNode spec
                     && spec.fieldName().toString().contains(SIGNATURE_CONFIG)
                     && spec.valueExpr().isPresent()
-                    && spec.valueExpr().get() instanceof MappingConstructorExpressionNode nested) {
-                for (MappingFieldNode nestedField : nested.fields()) {
-                    if (nestedField instanceof SpecificFieldNode algField
+                    && spec.valueExpr().get()
+                    instanceof MappingConstructorExpressionNode mappingConstructorExpression) {
+                for (MappingFieldNode nestedField : mappingConstructorExpression.fields()) {
+                    return nestedField instanceof SpecificFieldNode algField
                             && algField.fieldName().toString().contains(ALGORITHM)
                             && algField.valueExpr().isPresent()
-                            && algField.valueExpr().get().toString().contains(NONE)) {
-                        return true;
-                    }
+                            && algField.valueExpr().get().toString().contains(NONE);
                 }
             }
         }

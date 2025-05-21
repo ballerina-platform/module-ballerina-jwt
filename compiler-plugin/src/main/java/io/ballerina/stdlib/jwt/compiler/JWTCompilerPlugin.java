@@ -24,7 +24,7 @@ import io.ballerina.scan.ScannerContext;
 import io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.JWTCodeAnalyzer;
 
 /**
- * JWT compiler plugin.
+ * jwt compiler plugin.
  */
 public class JWTCompilerPlugin extends CompilerPlugin {
 

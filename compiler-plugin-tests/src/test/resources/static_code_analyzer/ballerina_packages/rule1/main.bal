@@ -14,7 +14,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/io;
 import ballerina/jwt;
 
 public function main() returns error? {
@@ -25,6 +24,5 @@ public function main() returns error? {
             algorithm: jwt:NONE
         }
     };
-    string token = check jwt:issue(issuerConfig);
-    io:println("Token: ", token);
+    string _ = check jwt:issue(issuerConfig);
 }
