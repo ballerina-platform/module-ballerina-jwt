@@ -32,6 +32,7 @@ import io.ballerina.compiler.syntax.tree.ModulePartNode;
 import io.ballerina.compiler.syntax.tree.ModuleVariableDeclarationNode;
 import io.ballerina.compiler.syntax.tree.NamedArgumentNode;
 import io.ballerina.compiler.syntax.tree.Node;
+import io.ballerina.compiler.syntax.tree.NodeList;
 import io.ballerina.compiler.syntax.tree.PositionalArgumentNode;
 import io.ballerina.compiler.syntax.tree.QualifiedNameReferenceNode;
 import io.ballerina.compiler.syntax.tree.SimpleNameReferenceNode;
@@ -83,22 +84,17 @@ public class JWTCipherAlgorithmAnalyzer implements AnalysisTask<SyntaxNodeAnalys
 
         for (FunctionArgumentNode arg : functionCall.arguments()) {
             ExpressionNode expr;
-            if (arg instanceof PositionalArgumentNode posArg) {
-                expr = posArg.expression();
-            } else if (arg instanceof NamedArgumentNode namedArg) {
-                expr = namedArg.expression();
-            } else {
-                continue;
+            switch (arg) {
+                case PositionalArgumentNode posArg -> expr = posArg.expression();
+                case NamedArgumentNode namedArg -> expr = namedArg.expression();
+                default -> {
+                    continue;
+                }
             }
-            if (expr instanceof MappingConstructorExpressionNode mappingConstructor
-                    && hasNoneAlgorithmInMappingLiteral(mappingConstructor)) {
-                reporter.reportIssue(
-                        getDocument(context.currentPackage().module(context.moduleId()), context.documentId()),
-                        context.node().location(),
-                        JWTRule.AVOID_WEAK_CIPHER_ALGORITHMS.getId()
-                );
-            } else if (expr instanceof SimpleNameReferenceNode varRef
-                    && hasNoneAlgorithmInVariableReference(varRef)) {
+            if ((expr instanceof MappingConstructorExpressionNode mappingConstructor
+                    && hasNoneAlgorithmInMappingLiteral(mappingConstructor))
+                    || (expr instanceof SimpleNameReferenceNode varRef
+                    && hasNoneAlgorithmInVariableReference(varRef))) {
                 reporter.reportIssue(
                         getDocument(context.currentPackage().module(context.moduleId()), context.documentId()),
                         context.node().location(),
@@ -109,37 +105,59 @@ public class JWTCipherAlgorithmAnalyzer implements AnalysisTask<SyntaxNodeAnalys
     }
 
     /**
-     * Determines if a variable reference refers to an IssuerConfig record with signatureConfig.algorithm == NONE.
-     * It walks up the AST to check function bodies and module-level declarations.
+     * Checks if a variable reference is used in a function body or module member.
      *
-     * @param varRef the simple name reference node pointing to the variable
-     * @return true if the variable's initializer mapping contains algorithm NONE, false otherwise
+     * @param varRef the variable reference node
+     * @return true if the variable reference is used in a function body or module member, false otherwise
      */
     private boolean hasNoneAlgorithmInVariableReference(SimpleNameReferenceNode varRef) {
         String varName = varRef.name().text();
         Node current = varRef.parent();
+
         while (current != null) {
-            if (current instanceof FunctionBodyBlockNode body) {
-                for (StatementNode stmt : body.statements()) {
-                    if (!(stmt instanceof VariableDeclarationNode varDecl)) {
-                        continue;
-                    }
-                    if (isWeakAlgorithmInVarDecl(varDecl, varName)) {
-                        return true;
-                    }
-                }
+            if (current instanceof FunctionBodyBlockNode body
+                    && hasWeakAlgorithmInStatements(body.statements(), varName)) {
+                return true;
             }
-            if (current instanceof ModulePartNode module) {
-                for (ModuleMemberDeclarationNode member : module.members()) {
-                    if (!(member instanceof ModuleVariableDeclarationNode varDecl)) {
-                        continue;
-                    }
-                    if (isWeakAlgorithmInVarDecl(varDecl, varName)) {
-                        return true;
-                    }
-                }
+            if (current instanceof ModulePartNode module
+                    && hasWeakAlgorithmInModuleMembers(module.members(), varName)) {
+                return true;
             }
             current = current.parent();
+        }
+        return false;
+    }
+
+    /**
+     * Checks if a variable declaration contains a weak algorithm in its initializer.
+     *
+     * @param statements the list of statements in the function body
+     * @param varName    the variable name to check
+     * @return true if the variable declaration contains a weak algorithm, false otherwise
+     */
+    private boolean hasWeakAlgorithmInStatements(NodeList<StatementNode> statements, String varName) {
+        for (StatementNode stmt : statements) {
+            if (stmt instanceof VariableDeclarationNode varDecl
+                    && isWeakAlgorithmInVarDecl(varDecl, varName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if a module member declaration contains a weak algorithm in its initializer.
+     *
+     * @param members the list of module member declarations
+     * @param varName the variable name to check
+     * @return true if the module member declaration contains a weak algorithm, false otherwise
+     */
+    private boolean hasWeakAlgorithmInModuleMembers(NodeList<ModuleMemberDeclarationNode> members, String varName) {
+        for (ModuleMemberDeclarationNode member : members) {
+            if (member instanceof ModuleVariableDeclarationNode varDecl
+                    && isWeakAlgorithmInVarDecl(varDecl, varName)) {
+                return true;
+            }
         }
         return false;
     }
@@ -206,10 +224,12 @@ public class JWTCipherAlgorithmAnalyzer implements AnalysisTask<SyntaxNodeAnalys
                     && spec.valueExpr().get()
                     instanceof MappingConstructorExpressionNode mappingConstructorExpression) {
                 for (MappingFieldNode nestedField : mappingConstructorExpression.fields()) {
-                    return nestedField instanceof SpecificFieldNode algField
+                    if (nestedField instanceof SpecificFieldNode algField
                             && algField.fieldName().toString().contains(ALGORITHM)
                             && algField.valueExpr().isPresent()
-                            && algField.valueExpr().get().toString().contains(NONE);
+                            && algField.valueExpr().get().toString().contains(NONE)) {
+                        return true;
+                    }
                 }
             }
         }
