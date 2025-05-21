@@ -16,13 +16,16 @@
 
 import ballerina/jwt;
 
-public function main() returns error? {
-    jwt:IssuerConfig issuerConfig = {
-        issuer: "ballerina",
-        expTime: 3600,
-        signatureConfig: {
-            algorithm: jwt:NONE
+public function functionNamedArgListPattern() returns error? {
+    [jwt:IssuerConfig] [issuerConfig] = [
+        {
+            issuer: "ballerina",
+            expTime: 3600,
+            signatureConfig: {
+                algorithm: jwt:NONE
+            }
         }
-    };
-    string _ = check jwt:issue(issuerConfig);
+    ];
+
+    string _ = check jwt:issue(issuerConfig = issuerConfig);
 }
