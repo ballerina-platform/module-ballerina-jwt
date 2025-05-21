@@ -30,6 +30,7 @@ import io.ballerina.compiler.syntax.tree.MappingFieldNode;
 import io.ballerina.compiler.syntax.tree.ModuleMemberDeclarationNode;
 import io.ballerina.compiler.syntax.tree.ModulePartNode;
 import io.ballerina.compiler.syntax.tree.ModuleVariableDeclarationNode;
+import io.ballerina.compiler.syntax.tree.NamedArgumentNode;
 import io.ballerina.compiler.syntax.tree.Node;
 import io.ballerina.compiler.syntax.tree.PositionalArgumentNode;
 import io.ballerina.compiler.syntax.tree.QualifiedNameReferenceNode;
@@ -81,10 +82,14 @@ public class JWTCipherAlgorithmAnalyzer implements AnalysisTask<SyntaxNodeAnalys
         }
 
         for (FunctionArgumentNode arg : functionCall.arguments()) {
-            if (!(arg instanceof PositionalArgumentNode posArg)) {
+            ExpressionNode expr;
+            if (arg instanceof PositionalArgumentNode posArg) {
+                expr = posArg.expression();
+            } else if (arg instanceof NamedArgumentNode namedArg) {
+                expr = namedArg.expression();
+            } else {
                 continue;
             }
-            ExpressionNode expr = posArg.expression();
             if (expr instanceof MappingConstructorExpressionNode mappingConstructor
                     && hasNoneAlgorithmInMappingLiteral(mappingConstructor)) {
                 reporter.reportIssue(
