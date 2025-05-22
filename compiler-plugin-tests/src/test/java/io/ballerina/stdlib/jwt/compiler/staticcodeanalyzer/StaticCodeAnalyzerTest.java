@@ -29,6 +29,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -54,9 +55,9 @@ class StaticCodeAnalyzerTest {
     }
 
     @BeforeSuite
-    public void pullScanTool() throws IOException, InterruptedException {
+    public void pullScanTool() throws IOException {
         ProcessBuilder processBuilder = new ProcessBuilder(BALLERINA_PATH.toString(), "tool", "pull", SCAN_COMMAND);
-        ProcessOutputGobbler output = getOutput(processBuilder.start());
+        ProcessOutputGobbler output = getOutput(processBuilder.start()).join();
         if (Pattern.compile("tool 'scan:.+\\..+\\..+' successfully set as the active version\\.")
                 .matcher(output.getOutput()).find() || Pattern.compile("tool 'scan:.+\\..+\\..+' is already active\\.")
                 .matcher(output.getOutput()).find()) {
@@ -74,7 +75,7 @@ class StaticCodeAnalyzerTest {
     }
 
     @Test
-    public void testStaticCodeRules() throws IOException, InterruptedException {
+    public void testStaticCodeRules() throws IOException {
         for (JWTRule rule : JWTRule.values()) {
             String targetPackageName = "rule" + rule.getId();
             String actualJsonReport = StaticCodeAnalyzerTest.executeScanProcess(targetPackageName);
@@ -84,28 +85,36 @@ class StaticCodeAnalyzerTest {
         }
     }
 
-    private static String executeScanProcess(String targetPackage) throws IOException, InterruptedException {
+    private static String executeScanProcess(String targetPackage) throws IOException {
         ProcessBuilder processBuilder = new ProcessBuilder(BALLERINA_PATH.toString(), SCAN_COMMAND);
         processBuilder.directory(RESOURCE_PACKAGES_DIRECTORY.resolve(targetPackage).toFile());
-        ProcessOutputGobbler output = getOutput(processBuilder.start());
+        ProcessOutputGobbler output = getOutput(processBuilder.start()).join();
         Assert.assertFalse(ExitCode.hasFailure(output.getExitCode()));
         return Files.readString(RESOURCE_PACKAGES_DIRECTORY.resolve(targetPackage)
                 .resolve("target").resolve("report").resolve("scan_results.json"));
     }
 
-    private static ProcessOutputGobbler getOutput(Process process) throws InterruptedException {
+    private static CompletableFuture<ProcessOutputGobbler> getOutput(Process process) {
         ProcessOutputGobbler outputGobbler = new ProcessOutputGobbler(process.getInputStream());
         ProcessOutputGobbler errorGobbler = new ProcessOutputGobbler(process.getErrorStream());
         Thread outputThread = new Thread(outputGobbler);
         Thread errorThread = new Thread(errorGobbler);
         outputThread.start();
         errorThread.start();
-        int exitCode = process.waitFor();
-        outputGobbler.setExitCode(exitCode);
-        errorGobbler.setExitCode(exitCode);
-        outputThread.join();
-        errorThread.join();
-        return outputGobbler;
+
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                int exitCode = process.waitFor();
+                outputGobbler.setExitCode(exitCode);
+                errorGobbler.setExitCode(exitCode);
+                outputThread.join();
+                errorThread.join();
+                return outputGobbler;
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     private void assertJsonEqual(String actual, String expected) {
