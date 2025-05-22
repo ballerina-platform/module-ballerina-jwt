@@ -29,6 +29,8 @@ def packageOrg = "ballerina"
 def tomlVersion = stripBallerinaExtensionVersion("${project.version}")
 def ballerinaTomlFile = new File("$project.projectDir/Ballerina.toml")
 def ballerinaTomlFilePlaceHolder = new File("${project.rootDir}/build-config/resources/Ballerina.toml")
+def compilerPluginTomlFilePlaceHolder = new File("${project.rootDir}/build-config/resources/CompilerPlugin.toml")
+def compilerPluginTomlFile = new File("$project.projectDir/CompilerPlugin.toml")
 
 def stripBallerinaExtensionVersion(String extVersion) {
     if (extVersion.matches(project.ext.timestampedVersionRegex)) {
@@ -53,8 +55,10 @@ ballerina {
 task updateTomlFiles {
     doLast {
         def newBallerinaToml = ballerinaTomlFilePlaceHolder.text.replace("@project.version@", project.version)
+        def newCompilerPluginToml = compilerPluginTomlFilePlaceHolder.text.replace("@project.version@", project.version)
         newBallerinaToml = newBallerinaToml.replace("@toml.version@", tomlVersion)
         ballerinaTomlFile.text = newBallerinaToml
+        compilerPluginTomlFile.text = newCompilerPluginToml
     }
 }
 
@@ -149,7 +153,9 @@ updateTomlFiles.dependsOn copyStdlibs
 test.finalizedBy stopBallerinaSTS
 test.dependsOn startBallerinaSTS
 test.dependsOn ":${packageName}-native:build"
+test.dependsOn ":${packageName}-compiler-plugin:build"
 
+build.dependsOn ":${packageName}-compiler-plugin:build"
 build.dependsOn "generatePomFileForMavenPublication"
 build.finalizedBy stopBallerinaSTS
 build.dependsOn startBallerinaSTS
