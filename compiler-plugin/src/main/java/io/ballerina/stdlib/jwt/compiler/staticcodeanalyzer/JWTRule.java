@@ -26,8 +26,7 @@ import static io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.RuleFactory.cr
 public enum JWTRule {
     AVOID_WEAK_CIPHER_ALGORITHMS(createRule(
             1,
-            "JWT should be signed and verified with "
-                    + "strong cipher algorithms",
+            "JWT should be signed and verified with strong cipher algorithms",
             VULNERABILITY)
     );
 
