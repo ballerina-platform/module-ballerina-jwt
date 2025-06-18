@@ -17,7 +17,7 @@
     },
     "source": "BUILT_IN",
     "fileName": "rule1/function_named_arg_capture_pattern.bal",
-    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\function_named_arg_capture_pattern.bal"
+    "filePath": "C:/Users/nureka/Documents/GitHub/WSO2/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule1/function_named_arg_capture_pattern.bal"
   },
   {
     "location": {
@@ -37,7 +37,7 @@
     },
     "source": "BUILT_IN",
     "fileName": "rule1/function_named_arg_list_pattern.bal",
-    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\function_named_arg_list_pattern.bal"
+    "filePath": "C:/Users/nureka/Documents/GitHub/WSO2/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule1/function_named_arg_list_pattern.bal"
   },
   {
     "location": {
@@ -57,7 +57,7 @@
     },
     "source": "BUILT_IN",
     "fileName": "rule1/function_pos_arg_capture_pattern.bal",
-    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\function_pos_arg_capture_pattern.bal"
+    "filePath": "C:/Users/nureka/Documents/GitHub/WSO2/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule1/function_pos_arg_capture_pattern.bal"
   },
   {
     "location": {
@@ -77,7 +77,7 @@
     },
     "source": "BUILT_IN",
     "fileName": "rule1/function_pos_arg_list_pattern.bal",
-    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\function_pos_arg_list_pattern.bal"
+    "filePath": "C:/Users/nureka/Documents/GitHub/WSO2/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule1/function_pos_arg_list_pattern.bal"
   },
   {
     "location": {
@@ -97,7 +97,7 @@
     },
     "source": "BUILT_IN",
     "fileName": "rule1/inline_named_arg.bal",
-    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\inline_named_arg.bal"
+    "filePath": "C:/Users/nureka/Documents/GitHub/WSO2/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule1/inline_named_arg.bal"
   },
   {
     "location": {
@@ -117,7 +117,7 @@
     },
     "source": "BUILT_IN",
     "fileName": "rule1/inline_pos_arg.bal",
-    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\inline_pos_arg.bal"
+    "filePath": "C:/Users/nureka/Documents/GitHub/WSO2/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule1/inline_pos_arg.bal"
   },
   {
     "location": {
@@ -137,7 +137,7 @@
     },
     "source": "BUILT_IN",
     "fileName": "rule1/module_named_arg_capture_pattern.bal",
-    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\module_named_arg_capture_pattern.bal"
+    "filePath": "C:/Users/nureka/Documents/GitHub/WSO2/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule1/module_named_arg_capture_pattern.bal"
   },
   {
     "location": {
@@ -157,7 +157,7 @@
     },
     "source": "BUILT_IN",
     "fileName": "rule1/module_named_arg_list_pattern.bal",
-    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\module_named_arg_list_pattern.bal"
+    "filePath": "C:/Users/nureka/Documents/GitHub/WSO2/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule1/module_named_arg_list_pattern.bal"
   },
   {
     "location": {
@@ -177,7 +177,7 @@
     },
     "source": "BUILT_IN",
     "fileName": "rule1/module_pos_arg_capture_pattern.bal",
-    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\module_pos_arg_capture_pattern.bal"
+    "filePath": "C:/Users/nureka/Documents/GitHub/WSO2/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule1/module_pos_arg_capture_pattern.bal"
   },
   {
     "location": {
@@ -197,7 +197,7 @@
     },
     "source": "BUILT_IN",
     "fileName": "rule1/module_pos_arg_list_pattern.bal",
-    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\module_pos_arg_list_pattern.bal"
+    "filePath": "C:/Users/nureka/Documents/GitHub/WSO2/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule1/module_pos_arg_list_pattern.bal"
   },
   {
     "location": {
@@ -212,12 +212,12 @@
     "rule": {
       "id": "ballerina/jwt:1",
       "numericId": 1,
-      "description": "JWT should be signed and verified with strong cipher algorithms",
+      "description": "Avoid using weak cipher algorithms when signing and verifying JWTs",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
     "fileName": "rule1/function_named_arg_capture_pattern.bal",
-    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\function_named_arg_capture_pattern.bal"
+    "filePath": "C:/Users/nureka/Documents/GitHub/WSO2/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule1/function_named_arg_capture_pattern.bal"
   },
   {
     "location": {
@@ -232,12 +232,12 @@
     "rule": {
       "id": "ballerina/jwt:1",
       "numericId": 1,
-      "description": "JWT should be signed and verified with strong cipher algorithms",
+      "description": "Avoid using weak cipher algorithms when signing and verifying JWTs",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
     "fileName": "rule1/function_named_arg_list_pattern.bal",
-    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\function_named_arg_list_pattern.bal"
+    "filePath": "C:/Users/nureka/Documents/GitHub/WSO2/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule1/function_named_arg_list_pattern.bal"
   },
   {
     "location": {
@@ -252,12 +252,12 @@
     "rule": {
       "id": "ballerina/jwt:1",
       "numericId": 1,
-      "description": "JWT should be signed and verified with strong cipher algorithms",
+      "description": "Avoid using weak cipher algorithms when signing and verifying JWTs",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
     "fileName": "rule1/function_pos_arg_capture_pattern.bal",
-    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\function_pos_arg_capture_pattern.bal"
+    "filePath": "C:/Users/nureka/Documents/GitHub/WSO2/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule1/function_pos_arg_capture_pattern.bal"
   },
   {
     "location": {
@@ -272,12 +272,12 @@
     "rule": {
       "id": "ballerina/jwt:1",
       "numericId": 1,
-      "description": "JWT should be signed and verified with strong cipher algorithms",
+      "description": "Avoid using weak cipher algorithms when signing and verifying JWTs",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
     "fileName": "rule1/function_pos_arg_list_pattern.bal",
-    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\function_pos_arg_list_pattern.bal"
+    "filePath": "C:/Users/nureka/Documents/GitHub/WSO2/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule1/function_pos_arg_list_pattern.bal"
   },
   {
     "location": {
@@ -292,12 +292,12 @@
     "rule": {
       "id": "ballerina/jwt:1",
       "numericId": 1,
-      "description": "JWT should be signed and verified with strong cipher algorithms",
+      "description": "Avoid using weak cipher algorithms when signing and verifying JWTs",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
     "fileName": "rule1/inline_named_arg.bal",
-    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\inline_named_arg.bal"
+    "filePath": "C:/Users/nureka/Documents/GitHub/WSO2/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule1/inline_named_arg.bal"
   },
   {
     "location": {
@@ -312,12 +312,12 @@
     "rule": {
       "id": "ballerina/jwt:1",
       "numericId": 1,
-      "description": "JWT should be signed and verified with strong cipher algorithms",
+      "description": "Avoid using weak cipher algorithms when signing and verifying JWTs",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
     "fileName": "rule1/inline_pos_arg.bal",
-    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\inline_pos_arg.bal"
+    "filePath": "C:/Users/nureka/Documents/GitHub/WSO2/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule1/inline_pos_arg.bal"
   },
   {
     "location": {
@@ -332,12 +332,12 @@
     "rule": {
       "id": "ballerina/jwt:1",
       "numericId": 1,
-      "description": "JWT should be signed and verified with strong cipher algorithms",
+      "description": "Avoid using weak cipher algorithms when signing and verifying JWTs",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
     "fileName": "rule1/module_named_arg_capture_pattern.bal",
-    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\module_named_arg_capture_pattern.bal"
+    "filePath": "C:/Users/nureka/Documents/GitHub/WSO2/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule1/module_named_arg_capture_pattern.bal"
   },
   {
     "location": {
@@ -352,12 +352,12 @@
     "rule": {
       "id": "ballerina/jwt:1",
       "numericId": 1,
-      "description": "JWT should be signed and verified with strong cipher algorithms",
+      "description": "Avoid using weak cipher algorithms when signing and verifying JWTs",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
     "fileName": "rule1/module_named_arg_list_pattern.bal",
-    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\module_named_arg_list_pattern.bal"
+    "filePath": "C:/Users/nureka/Documents/GitHub/WSO2/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule1/module_named_arg_list_pattern.bal"
   },
   {
     "location": {
@@ -372,12 +372,12 @@
     "rule": {
       "id": "ballerina/jwt:1",
       "numericId": 1,
-      "description": "JWT should be signed and verified with strong cipher algorithms",
+      "description": "Avoid using weak cipher algorithms when signing and verifying JWTs",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
     "fileName": "rule1/module_pos_arg_capture_pattern.bal",
-    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\module_pos_arg_capture_pattern.bal"
+    "filePath": "C:/Users/nureka/Documents/GitHub/WSO2/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule1/module_pos_arg_capture_pattern.bal"
   },
   {
     "location": {
@@ -392,11 +392,11 @@
     "rule": {
       "id": "ballerina/jwt:1",
       "numericId": 1,
-      "description": "JWT should be signed and verified with strong cipher algorithms",
+      "description": "Avoid using weak cipher algorithms when signing and verifying JWTs",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
     "fileName": "rule1/module_pos_arg_list_pattern.bal",
-    "filePath": "C:\\Users\\nureka\\Documents\\GitHub\\WSO2\\module-ballerina-jwt\\compiler-plugin-tests\\src\\test\\resources\\static_code_analyzer\\ballerina_packages\\rule1\\module_pos_arg_list_pattern.bal"
+    "filePath": "C:/Users/nureka/Documents/GitHub/WSO2/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule1/module_pos_arg_list_pattern.bal"
   }
 ]

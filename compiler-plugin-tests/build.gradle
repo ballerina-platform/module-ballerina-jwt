@@ -33,7 +33,8 @@ dependencies {
     testImplementation group: 'org.ballerinalang', name: 'ballerina-lang', version: "${ballerinaLangVersion}"
     testImplementation group: 'org.ballerinalang', name: 'ballerina-tools-api', version: "${ballerinaLangVersion}"
     testImplementation group: 'org.ballerinalang', name: 'ballerina-parser', version: "${ballerinaLangVersion}"
-
+    testImplementation group: 'io.ballerina.scan', name: 'scan-command', version: "${balScanVersion}"
+    testImplementation group: 'io.ballerina.scan', name: 'scan-command-test-utils', version: "${balScanVersion}"
     testImplementation group: 'org.testng', name: 'testng', version: "${testngVersion}"
 }
 tasks.withType(JavaCompile).configureEach {

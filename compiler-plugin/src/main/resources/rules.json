@@ -2,6 +2,6 @@
   {
     "id": 1,
     "kind": "VULNERABILITY",
-    "description": "JWT should be signed and verified with strong cipher algorithms"
+    "description": "Avoid using weak cipher algorithms when signing and verifying JWTs"
   }
 ]
