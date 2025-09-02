@@ -128,18 +128,18 @@ public class JWTCipherAlgorithmAnalyzer implements AnalysisTask<SyntaxNodeAnalys
      */
     private boolean hasNoneAlgorithmInVariableReference(SimpleNameReferenceNode varRef) {
         String varName = varRef.name().text();
-        Node current = varRef.parent();
+        Node currentNode = varRef.parent();
 
-        while (current != null) {
-            if (current instanceof FunctionBodyBlockNode body
+        while (currentNode != null) {
+            if (currentNode instanceof FunctionBodyBlockNode body
                     && hasWeakAlgorithmInStatements(body.statements(), varName)) {
                 return true;
             }
-            if (current instanceof ModulePartNode module
+            if (currentNode instanceof ModulePartNode module
                     && hasWeakAlgorithmInModuleMembers(module.members(), varName)) {
                 return true;
             }
-            current = current.parent();
+            currentNode = currentNode.parent();
         }
         return false;
     }
