@@ -83,7 +83,7 @@ public class StaticCodeAnalyzerTest {
             Assertions.assertRule(
                     rules,
                     "ballerina/jwt:1",
-                    "Avoid using weak cipher algorithms when signing and verifying JWTs",
+                    AVOID_WEAK_CIPHER_ALGORITHMS.getDescription(),
                     RuleKind.VULNERABILITY);
 
             // validate the issues
