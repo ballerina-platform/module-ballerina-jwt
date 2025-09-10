@@ -264,7 +264,7 @@ public class JWTCipherAlgorithmAnalyzer implements AnalysisTask<SyntaxNodeAnalys
     }
 
     /**
-     * Analyzes imports to identify all prefixes used for the crypto module.
+     * Analyzes imports to identify all prefixes used for the jwt module.
      *
      * @param context the syntax node analysis context
      */
