@@ -25,7 +25,6 @@ import io.ballerina.projects.environment.Environment;
 import io.ballerina.projects.environment.EnvironmentBuilder;
 import io.ballerina.scan.Issue;
 import io.ballerina.scan.Rule;
-import io.ballerina.scan.RuleKind;
 import io.ballerina.scan.Source;
 import io.ballerina.scan.test.Assertions;
 import io.ballerina.scan.test.TestOptions;
@@ -44,7 +43,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+import static io.ballerina.scan.RuleKind.VULNERABILITY;
 import static io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.JWTRule.AVOID_WEAK_CIPHER_ALGORITHMS;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class StaticCodeAnalyzerTest {
     private static final Path RESOURCE_PACKAGES_DIRECTORY = Paths
@@ -67,59 +68,77 @@ public class StaticCodeAnalyzerTest {
     @Test
     public void testStaticCodeRulesWithAPI() throws IOException {
         ByteArrayOutputStream console = new ByteArrayOutputStream();
-        PrintStream printStream = new PrintStream(console);
+        PrintStream printStream = new PrintStream(console, true, UTF_8);
+
         for (JWTRule rule : JWTRule.values()) {
-            String targetPackageName = "rule" + rule.getId();
-            Path targetPackagePath = RESOURCE_PACKAGES_DIRECTORY.resolve(targetPackageName);
-            Project project = BuildProject.load(getEnvironmentBuilder(), targetPackagePath);
-            TestOptions options = TestOptions.builder(project)
-                    .setOutputStream(printStream)
-                    .build();
-            TestRunner testRunner = new TestRunner(options);
-            testRunner.performScan();
-
-            // validate the rules
-            List<Rule> rules = testRunner.getRules();
-            Assertions.assertRule(
-                    rules,
-                    "ballerina/jwt:1",
-                    AVOID_WEAK_CIPHER_ALGORITHMS.getDescription(),
-                    RuleKind.VULNERABILITY);
-
-            // validate the issues
-            List<Issue> issues = testRunner.getIssues();
-            int index = 0;
-            if (rule == AVOID_WEAK_CIPHER_ALGORITHMS) {
-                Assert.assertEquals(issues.size(), 10);
-                Assertions.assertIssue(issues, index++, "ballerina/jwt:1", "function_named_arg_capture_pattern.bal",
-                        27, 27, Source.BUILT_IN);
-                Assertions.assertIssue(issues, index++, "ballerina/jwt:1", "function_named_arg_list_pattern.bal",
-                        29, 29, Source.BUILT_IN);
-                Assertions.assertIssue(issues, index++, "ballerina/jwt:1", "function_pos_arg_capture_pattern.bal",
-                        27, 27, Source.BUILT_IN);
-                Assertions.assertIssue(issues, index++, "ballerina/jwt:1", "function_pos_arg_list_pattern.bal",
-                        29, 29, Source.BUILT_IN);
-                Assertions.assertIssue(issues, index++, "ballerina/jwt:1", "inline_named_arg.bal",
-                        19, 25, Source.BUILT_IN);
-                Assertions.assertIssue(issues, index++, "ballerina/jwt:1", "inline_pos_arg.bal",
-                        19, 25, Source.BUILT_IN);
-                Assertions.assertIssue(issues, index++, "ballerina/jwt:1", "module_named_arg_capture_pattern.bal",
-                        27, 27, Source.BUILT_IN);
-                Assertions.assertIssue(issues, index++, "ballerina/jwt:1", "module_named_arg_list_pattern.bal",
-                        29, 29, Source.BUILT_IN);
-                Assertions.assertIssue(issues, index++, "ballerina/jwt:1", "module_pos_arg_capture_pattern.bal",
-                        27, 27, Source.BUILT_IN);
-                Assertions.assertIssue(issues, index, "ballerina/jwt:1", "module_pos_arg_list_pattern.bal",
-                        29, 29, Source.BUILT_IN);
-            }
-
-            // validate the output
-            String output = console.toString();
-            String jsonOutput = extractJson(output);
-            String expectedOutput = Files.readString(EXPECTED_OUTPUT_DIRECTORY.resolve(targetPackageName
-                    + ".json"));
-            assertJsonEqual(jsonOutput, expectedOutput);
+            testIndividualRule(rule, console, printStream);
         }
+    }
+
+    private void testIndividualRule(JWTRule rule, ByteArrayOutputStream console, PrintStream printStream)
+            throws IOException {
+        String targetPackageName = "rule" + rule.getId();
+        Path targetPackagePath = RESOURCE_PACKAGES_DIRECTORY.resolve(targetPackageName);
+
+        TestRunner testRunner = setupTestRunner(targetPackagePath, printStream);
+        testRunner.performScan();
+
+        validateRules(testRunner.getRules());
+        validateIssues(rule, testRunner.getIssues());
+        validateOutput(console, targetPackageName);
+
+        console.reset();
+    }
+
+    private TestRunner setupTestRunner(Path targetPackagePath, PrintStream printStream) {
+        Project project = BuildProject.load(getEnvironmentBuilder(), targetPackagePath);
+        TestOptions options = TestOptions.builder(project).setOutputStream(printStream).build();
+        return new TestRunner(options);
+    }
+
+    private void validateRules(List<Rule> rules) {
+        Assertions.assertRule(
+                rules,
+                "ballerina/jwt:1",
+                AVOID_WEAK_CIPHER_ALGORITHMS.getDescription(),
+                VULNERABILITY);
+    }
+
+    private void validateIssues(JWTRule rule, List<Issue> issues) {
+        switch (rule) {
+            case AVOID_WEAK_CIPHER_ALGORITHMS:
+                Assert.assertEquals(issues.size(), 10);
+                Assertions.assertIssue(issues, 0, "ballerina/jwt:1", "function_named_arg_capture_pattern.bal",
+                        27, 27, Source.BUILT_IN);
+                Assertions.assertIssue(issues, 1, "ballerina/jwt:1", "function_named_arg_list_pattern.bal",
+                        29, 29, Source.BUILT_IN);
+                Assertions.assertIssue(issues, 2, "ballerina/jwt:1", "function_pos_arg_capture_pattern.bal",
+                        27, 27, Source.BUILT_IN);
+                Assertions.assertIssue(issues, 3, "ballerina/jwt:1", "function_pos_arg_list_pattern.bal",
+                        29, 29, Source.BUILT_IN);
+                Assertions.assertIssue(issues, 4, "ballerina/jwt:1", "inline_named_arg.bal",
+                        19, 25, Source.BUILT_IN);
+                Assertions.assertIssue(issues, 5, "ballerina/jwt:1", "inline_pos_arg.bal",
+                        19, 25, Source.BUILT_IN);
+                Assertions.assertIssue(issues, 6, "ballerina/jwt:1", "module_named_arg_capture_pattern.bal",
+                        27, 27, Source.BUILT_IN);
+                Assertions.assertIssue(issues, 7, "ballerina/jwt:1", "module_named_arg_list_pattern.bal",
+                        29, 29, Source.BUILT_IN);
+                Assertions.assertIssue(issues, 8, "ballerina/jwt:1", "module_pos_arg_capture_pattern.bal",
+                        27, 27, Source.BUILT_IN);
+                Assertions.assertIssue(issues, 9, "ballerina/jwt:1", "module_pos_arg_list_pattern.bal",
+                        29, 29, Source.BUILT_IN);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void validateOutput(ByteArrayOutputStream console, String targetPackageName) throws IOException {
+        String output = console.toString(UTF_8);
+        String jsonOutput = extractJson(output);
+        String expectedOutput = Files.readString(EXPECTED_OUTPUT_DIRECTORY.resolve(targetPackageName + ".json"));
+        assertJsonEqual(jsonOutput, expectedOutput);
     }
 
     private static ProjectEnvironmentBuilder getEnvironmentBuilder() {
