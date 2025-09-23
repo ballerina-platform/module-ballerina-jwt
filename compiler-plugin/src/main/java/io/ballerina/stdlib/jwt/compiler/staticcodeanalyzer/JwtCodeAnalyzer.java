@@ -23,17 +23,17 @@ import io.ballerina.projects.plugins.CodeAnalysisContext;
 import io.ballerina.projects.plugins.CodeAnalyzer;
 import io.ballerina.scan.Reporter;
 
-public class JWTCodeAnalyzer extends CodeAnalyzer {
+public class JwtCodeAnalyzer extends CodeAnalyzer {
     private final Reporter reporter;
 
-    public JWTCodeAnalyzer(Reporter reporter) {
+    public JwtCodeAnalyzer(Reporter reporter) {
         this.reporter = reporter;
     }
 
     @Override
     public void init(CodeAnalysisContext codeAnalysisContext) {
         codeAnalysisContext.addSyntaxNodeAnalysisTask(
-                new JWTCipherAlgorithmAnalyzer(reporter),
+                new JwtCipherAlgorithmAnalyzer(reporter),
                 SyntaxKind.FUNCTION_CALL
         );
     }

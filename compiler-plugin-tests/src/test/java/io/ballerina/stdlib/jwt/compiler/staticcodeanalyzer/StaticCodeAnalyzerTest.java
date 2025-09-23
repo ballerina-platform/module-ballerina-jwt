@@ -47,7 +47,7 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 import static io.ballerina.scan.RuleKind.VULNERABILITY;
-import static io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.JWTRule.AVOID_WEAK_CIPHER_ALGORITHMS;
+import static io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.JwtRule.AVOID_WEAK_CIPHER_ALGORITHMS;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class StaticCodeAnalyzerTest {
@@ -62,8 +62,8 @@ public class StaticCodeAnalyzerTest {
 
     @Test
     public void validateRulesJson() throws IOException {
-        String expectedRules = "[" + Arrays.stream(JWTRule.values())
-                .map(JWTRule::toString).collect(Collectors.joining(",")) + "]";
+        String expectedRules = "[" + Arrays.stream(JwtRule.values())
+                .map(JwtRule::toString).collect(Collectors.joining(",")) + "]";
         String actualRules = Files.readString(JSON_RULES_FILE_PATH);
         assertJsonEqual(actualRules, expectedRules);
     }
@@ -73,12 +73,12 @@ public class StaticCodeAnalyzerTest {
         ByteArrayOutputStream console = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(console, true, UTF_8);
 
-        for (JWTRule rule : JWTRule.values()) {
+        for (JwtRule rule : JwtRule.values()) {
             testIndividualRule(rule, console, printStream);
         }
     }
 
-    private void testIndividualRule(JWTRule rule, ByteArrayOutputStream console, PrintStream printStream)
+    private void testIndividualRule(JwtRule rule, ByteArrayOutputStream console, PrintStream printStream)
             throws IOException {
         String targetPackageName = "rule" + rule.getId();
         Path targetPackagePath = RESOURCE_PACKAGES_DIRECTORY.resolve(targetPackageName);
@@ -107,7 +107,7 @@ public class StaticCodeAnalyzerTest {
                 VULNERABILITY);
     }
 
-    private void validateIssues(JWTRule rule, List<Issue> issues) {
+    private void validateIssues(JwtRule rule, List<Issue> issues) {
         switch (rule) {
             case AVOID_WEAK_CIPHER_ALGORITHMS:
                 Assert.assertEquals(issues.size(), 10);

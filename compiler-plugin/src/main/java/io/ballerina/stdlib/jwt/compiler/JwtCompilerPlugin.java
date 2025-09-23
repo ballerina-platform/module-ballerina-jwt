@@ -21,14 +21,14 @@ package io.ballerina.stdlib.jwt.compiler;
 import io.ballerina.projects.plugins.CompilerPlugin;
 import io.ballerina.projects.plugins.CompilerPluginContext;
 import io.ballerina.scan.ScannerContext;
-import io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.JWTCodeAnalyzer;
+import io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.JwtCodeAnalyzer;
 
 /**
  * jwt compiler plugin.
  *
  * @since 2.15.1
  */
-public class JWTCompilerPlugin extends CompilerPlugin {
+public class JwtCompilerPlugin extends CompilerPlugin {
 
     private static final String SCANNER_CONTEXT = "ScannerContext";
 
@@ -36,7 +36,7 @@ public class JWTCompilerPlugin extends CompilerPlugin {
     public void init(CompilerPluginContext context) {
         Object object = context.userData().get(SCANNER_CONTEXT);
         if (object instanceof ScannerContext scannerContext) {
-            context.addCodeAnalyzer(new JWTCodeAnalyzer(scannerContext.getReporter()));
+            context.addCodeAnalyzer(new JwtCodeAnalyzer(scannerContext.getReporter()));
         }
     }
 }

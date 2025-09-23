@@ -59,7 +59,7 @@ import java.util.Set;
  * variables, and module-level variables.
  * </p>
  */
-public class JWTCipherAlgorithmAnalyzer implements AnalysisTask<SyntaxNodeAnalysisContext> {
+public class JwtCipherAlgorithmAnalyzer implements AnalysisTask<SyntaxNodeAnalysisContext> {
     private final Reporter reporter;
     private static final String JWT = "jwt";
     private static final String ISSUE = "issue";
@@ -70,7 +70,7 @@ public class JWTCipherAlgorithmAnalyzer implements AnalysisTask<SyntaxNodeAnalys
 
     private final Set<String> jwtPrefixes = new HashSet<>();
 
-    public JWTCipherAlgorithmAnalyzer(Reporter reporter) {
+    public JwtCipherAlgorithmAnalyzer(Reporter reporter) {
         this.reporter = reporter;
         this.jwtPrefixes.add(JWT);
     }
@@ -114,7 +114,7 @@ public class JWTCipherAlgorithmAnalyzer implements AnalysisTask<SyntaxNodeAnalys
                 reporter.reportIssue(
                         getDocument(context.currentPackage().module(context.moduleId()), context.documentId()),
                         context.node().location(),
-                        JWTRule.AVOID_WEAK_CIPHER_ALGORITHMS.getId()
+                        JwtRule.AVOID_WEAK_CIPHER_ALGORITHMS.getId()
                 );
             }
         }

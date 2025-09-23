@@ -23,13 +23,13 @@ import io.ballerina.scan.Rule;
 import static io.ballerina.scan.RuleKind.VULNERABILITY;
 import static io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.RuleFactory.createRule;
 
-public enum JWTRule {
+public enum JwtRule {
     AVOID_WEAK_CIPHER_ALGORITHMS(createRule(1, "Avoid using weak cipher algorithms when signing and " +
             "verifying JWTs", VULNERABILITY));
 
     private final Rule rule;
 
-    JWTRule(Rule rule) {
+    JwtRule(Rule rule) {
         this.rule = rule;
     }
 
