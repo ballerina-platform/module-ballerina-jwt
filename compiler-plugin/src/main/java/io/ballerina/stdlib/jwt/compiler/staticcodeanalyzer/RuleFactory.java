@@ -1,7 +1,7 @@
 /*
  *  Copyright (c) 2025 WSO2 LLC. (http://www.wso2.com).
  *
- *  WSO2 Inc. licenses this file to you under the Apache License,
+ *  WSO2 LLC. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
  *  in compliance with the License.
  *  You may obtain a copy of the License at
@@ -16,9 +16,19 @@
  *  under the License.
  */
 
-module io.ballerina.stdlib.jwt {
-    requires io.ballerina.runtime;
-    requires java.net.http;
-    requires io.ballerina.stdlib.crypto;
-    exports io.ballerina.stdlib.jwt;
+package io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer;
+
+import io.ballerina.scan.Rule;
+import io.ballerina.scan.RuleKind;
+
+/**
+ * {@code RuleFactory} contains the logic to create a {@link Rule}.
+ */
+public final class RuleFactory {
+
+    private RuleFactory() {}
+
+    public static Rule createRule(int id, String description, RuleKind kind) {
+        return new RuleImpl(id, description, kind);
+    }
 }

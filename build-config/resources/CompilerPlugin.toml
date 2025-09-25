@@ -1,0 +1,6 @@
+[plugin]
+id = "jwt-compiler-plugin"
+class = "io.ballerina.stdlib.jwt.compiler.JwtCompilerPlugin"
+
+[[dependency]]
+path = "../compiler-plugin/build/libs/jwt-compiler-plugin-@project.version@.jar"

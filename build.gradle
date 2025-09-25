@@ -98,6 +98,6 @@ release {
     }
 }
 
-task build {
+tasks.register('build') {
     dependsOn('jwt-ballerina:build')
 }

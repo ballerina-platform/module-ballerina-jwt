@@ -1,7 +1,7 @@
 /*
  *  Copyright (c) 2025 WSO2 LLC. (http://www.wso2.com).
  *
- *  WSO2 Inc. licenses this file to you under the Apache License,
+ *  WSO2 LLC. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
  *  in compliance with the License.
  *  You may obtain a copy of the License at
@@ -16,9 +16,9 @@
  *  under the License.
  */
 
-module io.ballerina.stdlib.jwt {
-    requires io.ballerina.runtime;
-    requires java.net.http;
-    requires io.ballerina.stdlib.crypto;
-    exports io.ballerina.stdlib.jwt;
+module io.ballerina.stdlib.jwt.compiler {
+    requires io.ballerina.lang;
+    requires io.ballerina.tools.api;
+    requires io.ballerina.parser;
+    requires io.ballerina.scan;
 }
