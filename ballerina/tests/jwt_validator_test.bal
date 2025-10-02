@@ -21,10 +21,11 @@ import ballerina/io;
 import ballerina/test;
 
 @test:Config {}
-isolated function testValidateJwtWithAudAsArray() returns Error? {
+isolated function testValidateJwtWithAudAndSubAsArray() returns Error? {
     ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: ["ballerina", "ballerinaSamples"],
+        username: ["John", "Sara"],
         clockSkew: 60,
         signatureConfig: {
             trustStoreConfig: {
@@ -45,10 +46,11 @@ isolated function testValidateJwtWithAudAsArray() returns Error? {
 }
 
 @test:Config {}
-isolated function testValidateJwtWithSingleAud() returns Error? {
+isolated function testValidateJwtWithSingleAudAndSub() returns Error? {
     ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: "ballerina",
+        username: "John",
         clockSkew: 60,
         signatureConfig: {
             trustStoreConfig: {
@@ -65,10 +67,11 @@ isolated function testValidateJwtWithSingleAud() returns Error? {
 }
 
 @test:Config {}
-isolated function testValidateJwtWithSingleAudAsArray() returns Error? {
+isolated function testValidateJwtWithSingleAudAndSubAsArray() returns Error? {
     ValidatorConfig validatorConfig = {
         issuer: "wso2",
         audience: ["ballerina"],
+        username: ["John"],
         clockSkew: 60,
         signatureConfig: {
             trustStoreConfig: {
