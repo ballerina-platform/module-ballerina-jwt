@@ -3,4 +3,4 @@ id = "jwt-compiler-plugin"
 class = "io.ballerina.stdlib.jwt.compiler.JwtCompilerPlugin"
 
 [[dependency]]
-path = "../compiler-plugin/build/libs/jwt-compiler-plugin-2.15.1-SNAPSHOT.jar"
+path = "../compiler-plugin/build/libs/jwt-compiler-plugin-2.15.1.jar"
