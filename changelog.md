@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [2.15.1] - 2025-10-03
 
 ### Added
+
+- [Add support for scan rule to detect 'NONE' algorithm type](https://github.com/ballerina-platform/ballerina-library/issues/7918)
 - [Add support to directly provide `crypto:PrivateKey` and `crypto:PublicKey` in JWT signature configurations](https://github.com/ballerina-platform/ballerina-library/issues/6514)
 
 ## [2.12.1] - 2024-06-14
