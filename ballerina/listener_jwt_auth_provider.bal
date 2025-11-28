@@ -66,7 +66,7 @@ public isolated class ListenerJwtAuthProvider {
         self.jwksCache = ();
     }
 
-    # Authenticates the provided JWT.
+    # Authenticates the provided JWT against the configured validator.
     #```ballerina
     # boolean result = check provider.authenticate("<credential>");
     # ```
