@@ -57,10 +57,10 @@ const string IAT = "iat";
 
 # Represents JWT header.
 #
-# + alg - Cryptographic algorithm used to secure the JWS
+# + alg - Cryptographic algorithm used to secure the JWS. Supported values: `RS256`, `RS384`, `RS512`, `HS256`, `HS384`, `HS512`, `NONE`.
 # + typ - Media type of the JWT
-# + cty - Content type, convey structural information about the JWT
-# + kid - Key ID, hint indicating which key was used to secure the JWS
+# + cty - Content type, conveys structural information about the JWT
+# + kid - Key ID, a hint indicating which key was used to secure the JWS
 public type Header record {
     SigningAlgorithm alg?;
     string typ?;
@@ -74,9 +74,9 @@ public type Header record {
 # + sub - Subject, identifies the principal that is the subject of the JWT
 # + aud - Audience, identifies the recipients that the JWT is intended for
 # + jti - JWT ID, unique identifier for the JWT
-# + exp - Expiration time, identifies the expiration time (seconds since the Epoch) on or after which the JWT must not be accepted
-# + nbf - Not before, identifies the time (seconds since the Epoch) before which the JWT must not be accepted
-# + iat - Issued at, identifies the time (seconds since the Epoch) at which the JWT was issued
+# + exp - Expiration time, identifies the expiration time (in seconds since the Epoch) on or after which the JWT must not be accepted
+# + nbf - Not before, identifies the time (in seconds since the Epoch) before which the JWT must not be accepted
+# + iat - Issued at, identifies the time (in seconds since the Epoch) at which the JWT was issued
 public type Payload record {
     string iss?;
     string sub?;
