@@ -35,7 +35,7 @@ import ballerina/time;
 # + cacheConfig - Configurations related to the cache, which are used to store parsed JWT information
 public type ValidatorConfig record {
     string issuer?;
-    string username?;
+    string|string[] username?;
     string|string[] audience?;
     string jwtId?;
     string keyId?;
@@ -374,7 +374,7 @@ isolated function validateSignature(string jwt, Header header, Payload payload, 
 }
 
 isolated function validateJwtRecords(Header header, Payload payload, ValidatorConfig validatorConfig) returns Error? {
-    string? sub = validatorConfig?.username;
+    string|string[]? sub = validatorConfig?.username;
     if sub is string {
         check validateUsername(payload, sub);
     }
@@ -555,13 +555,38 @@ isolated function assertHmacSignature(SigningAlgorithm alg, byte[] assertion, by
     return prepareError("Unsupported HMAC algorithm '" + alg.toString() + "'.");
 }
 
-isolated function validateUsername(Payload payload, string usernameConfig) returns Error? {
-    string? usernamePayload = payload?.sub;
+isolated function validateUsername(Payload payload, string|string[] usernameConfig) returns Error? {
+    string|string[]? usernamePayload = payload?.aud;
     if usernamePayload is string {
-        if usernamePayload != usernameConfig {
-            return prepareError("JWT contained invalid username '" + usernamePayload + "'");
+        if usernameConfig is string {
+            if usernamePayload == usernameConfig {
+                return;
+            }
+        } else {
+            foreach string username in usernameConfig {
+                if username == usernamePayload {
+                    return;
+                }
+            }
         }
-        return;
+        return prepareError("JWT contained invalid username.");
+    } else if usernamePayload is string[] {
+        if usernameConfig is string {
+            foreach string username in usernamePayload {
+                if username == usernameConfig {
+                    return;
+                }
+            }
+        } else {
+            foreach string usernameC in usernameConfig {
+                foreach string usernameP in usernamePayload {
+                    if usernameC == usernameP {
+                        return;
+                    }
+                }
+            }
+        }
+        return prepareError("JWT contained invalid username.");
     } else {
         return prepareError("JWT must contain a valid username.");
     }
