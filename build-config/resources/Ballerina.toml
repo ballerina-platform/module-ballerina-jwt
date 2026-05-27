@@ -7,12 +7,12 @@ keywords = ["security", "authentication", "jwt", "jwk", "jws"]
 repository = "https://github.com/ballerina-platform/module-ballerina-jwt"
 icon = "icon.png"
 license = ["Apache-2.0"]
-distribution = "2201.12.0"
+distribution = "2201.14.0-20260527-050400-74f7e6bf"
 
-[platform.java21]
+[platform.java25]
 graalvmCompatible = true
 
-[[platform.java21.dependency]]
+[[platform.java25.dependency]]
 groupId = "io.ballerina.stdlib"
 artifactId = "jwt-native"
 version = "@toml.version@"

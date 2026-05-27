@@ -17,6 +17,68 @@
  */
 
 import org.apache.tools.ant.taskdefs.condition.Os
+import org.gradle.process.ExecOperations
+import org.gradle.jvm.toolchain.JavaLanguageVersion
+import org.gradle.jvm.toolchain.JavaToolchainService
+import javax.inject.Inject
+
+abstract class BallerinaExecHelper {
+    @Inject abstract ExecOperations getExecOperations()
+}
+
+abstract class PatchBallerinaScriptsTask extends DefaultTask {
+    @Inject abstract JavaToolchainService getJavaToolchainService()
+
+    @TaskAction
+    void patch() {
+        def launcher = javaToolchainService.launcherFor { spec ->
+            spec.languageVersion.set(JavaLanguageVersion.of(25))
+        }.get()
+        def java25Home = launcher.executablePath.asFile.parentFile.parentFile.absolutePath
+
+        def binDirs = [
+            project.layout.buildDirectory.dir("jballerina-tools-${project.ballerinaLangVersion}/bin").get().asFile,
+            new File("${project.rootDir}/target/ballerina-runtime/bin")
+        ]
+        binDirs.each { binDir ->
+            if (binDir.exists()) {
+                binDir.eachFile { file ->
+                    file.setExecutable(true)
+                    if (!file.name.endsWith('.bat') && !file.name.endsWith('.cmd')) {
+                        def original = file.text
+                        def lines = original.split('\n').toList()
+                        lines = lines.findAll { !it.contains('--sun-misc-unsafe-memory-access=allow') }
+                        // Inject JAVA_HOME override immediately after the shebang line
+                        def shebangIdx = lines.findIndexOf { it.startsWith('#!') }
+                        if (shebangIdx >= 0) {
+                            lines.add(shebangIdx + 1, "export JAVA_HOME='${java25Home}'")
+                        }
+                        def patched = lines.join('\n') + '\n'
+                        if (patched != original) {
+                            file.text = patched
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+buildscript {
+    repositories {
+        mavenLocal()
+        maven {
+            url = 'https://maven.pkg.github.com/ballerina-platform/plugin-gradle'
+            credentials {
+                username System.getenv("packageUser")
+                password System.getenv("packagePAT")
+            }
+        }
+    }
+    dependencies {
+        classpath "io.ballerina:plugin-gradle:${project.ballerinaGradlePluginVersion}"
+    }
+}
 
 plugins {
     id 'io.ballerina.plugin'
@@ -63,8 +125,9 @@ tasks.register('updateTomlFiles') {
 }
 
 tasks.register('commitTomlFiles') {
+    def execHelper = project.objects.newInstance(BallerinaExecHelper)
     doLast {
-        project.exec {
+        execHelper.execOperations.exec {
             ignoreExitValue true
             if (Os.isFamily(Os.FAMILY_WINDOWS)) {
                 commandLine 'cmd', '/c', "git commit -m \"[Automated] Update the native jar versions\" Ballerina.toml Dependencies.toml CompilerPlugin.toml"
@@ -94,18 +157,19 @@ publishing {
 }
 
 tasks.register('startBallerinaSTS') {
+    def execHelper = project.objects.newInstance(BallerinaExecHelper)
     doLast {
         // This check is added to prevent starting the server in Windows OS, since the Docker image does not support
         // for Windows OS.
         if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
             def stdOut = new ByteArrayOutputStream()
-            exec {
+            execHelper.execOperations.exec {
                 commandLine 'sh', '-c', "docker ps --filter name=ballerina-sts"
                 standardOutput = stdOut
             }
             if (!stdOut.toString().contains("ballerina-sts")) {
                 println "Starting Ballerina STS."
-                exec {
+                execHelper.execOperations.exec {
                     commandLine 'sh', '-c', "docker run --rm -d -p 9445:9445 -p 9444:9444 --name ballerina-sts ldclakmal/ballerina-sts:latest"
                     standardOutput = stdOut
                 }
@@ -121,18 +185,19 @@ tasks.register('startBallerinaSTS') {
 startBallerinaSTS.onlyIf { !project.gradle.startParameter.excludedTaskNames.contains('test') }
 
 tasks.register('stopBallerinaSTS') {
+    def execHelper = project.objects.newInstance(BallerinaExecHelper)
     doLast {
         // This check is added to prevent trying to stop the server in Windows OS, since the Docker image not started
         // in Windows OS.
         if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
             def stdOut = new ByteArrayOutputStream()
-            exec {
+            execHelper.execOperations.exec {
                 commandLine 'sh', '-c', "docker ps --filter name=ballerina-sts"
                 standardOutput = stdOut
             }
             if (stdOut.toString().contains("ballerina-sts")) {
                 println "Stopping Ballerina STS."
-                exec {
+                execHelper.execOperations.exec {
                     commandLine 'sh', '-c', "docker stop ballerina-sts"
                     standardOutput = stdOut
                 }
@@ -147,19 +212,26 @@ tasks.register('stopBallerinaSTS') {
 }
 stopBallerinaSTS.onlyIf { !project.gradle.startParameter.excludedTaskNames.contains('test') }
 
+tasks.register('patchBallerinaScripts', PatchBallerinaScriptsTask) {
+    dependsOn 'unpackJballerinaTools'
+}
+
 updateTomlFiles.dependsOn copyStdlibs
+copyStdlibs.dependsOn patchBallerinaScripts
 
 
 test.finalizedBy stopBallerinaSTS
 test.dependsOn startBallerinaSTS
 test.dependsOn ":${packageName}-native:build"
 test.dependsOn ":${packageName}-compiler-plugin:build"
+test.dependsOn patchBallerinaScripts
 
 build.dependsOn ":${packageName}-compiler-plugin:build"
 build.dependsOn "generatePomFileForMavenPublication"
 build.finalizedBy stopBallerinaSTS
 build.dependsOn startBallerinaSTS
 build.dependsOn ":${packageName}-native:build"
+build.dependsOn patchBallerinaScripts
 
 publishToMavenLocal.dependsOn build
 publish.dependsOn build
