@@ -32,7 +32,6 @@ The conforming implementation of the specification is released and included in t
     * 4.3. [Declarative Approach](#43-declarative-approach)
     * 4.4. [Imperative Approach](#44-imperative-approach)
 5. [Samples](#5-samples)
-6. [Static Code Rules](#6-static-code-rules)
     * 5.1. [Listener Auth](#51-listener-auth)
         * 5.1.1. [Declarative Approach (HTTP Listener)](#511-declarative-approach-http-listener)
         * 5.1.2. [Imperative Approach (HTTP Listener)](#512-imperative-approach-http-listener)
@@ -43,6 +42,14 @@ The conforming implementation of the specification is released and included in t
         * 5.2.2. [Imperative Approach (HTTP Client)](#522-imperative-approach-http-client)
             * 5.2.2.1. [Bearer Token](#5221-bearer-token)
             * 5.2.2.2. [Self-Signed JWT](#5222-self-signed-jwt)
+6. [Static Code Rules](#6-static-code-rules)
+    * 6.1. [Avoid using weak cipher algorithms when signing and verifying JWTs](#61-avoid-using-weak-cipher-algorithms-when-signing-and-verifying-jwts)
+    * 6.2. [Avoid validating JSON Web Tokens without a signature configuration](#62-avoid-validating-json-web-tokens-without-a-signature-configuration)
+    * 6.3. [Avoid validating JSON Web Tokens without checking the issuer and the audience](#63-avoid-validating-json-web-tokens-without-checking-the-issuer-and-the-audience)
+    * 6.4. [Avoid issuing JSON Web Tokens with a long expiry time](#64-avoid-issuing-json-web-tokens-with-a-long-expiry-time)
+    * 6.5. [Avoid validating JSON Web Tokens with a large clock skew](#65-avoid-validating-json-web-tokens-with-a-large-clock-skew)
+    * 6.6. [Avoid disabling TLS validation on the JWKS endpoint client](#66-avoid-disabling-tls-validation-on-the-jwks-endpoint-client)
+    * 6.7. [Avoid decoding JSON Web Tokens without verifying them](#67-avoid-decoding-json-web-tokens-without-verifying-them)
 
 ## 1. Overview
 This specification elaborates on JWT Auth authentication and authorization for all the Ballerina listeners and
@@ -661,11 +668,11 @@ A token cannot be withdrawn once issued, so its lifetime is the window an attack
 
 #### 6.4.1. Why this is an issue?
 
-A JWT is accepted on its own contents; there is no revocation step in the validation path. The expiry is therefore the only thing that ends a stolen token's usefulness. `expTime` defaults to 300 seconds, and the rule reports a lifetime beyond one day, which is well past anything a deployment chooses deliberately.
+A JWT is accepted on its own contents; there is no revocation step in the validation path. Where no revocation list or signing-key rotation is in place, the expiry is the only thing that ends a stolen token's usefulness. `expTime` defaults to 300 seconds, and the rule reports a lifetime beyond one day, which is well past anything a deployment chooses deliberately.
 
 #### 6.4.2. What is the potential impact?
 
-A token captured from a log, a proxy or a browser stays usable for its whole lifetime, and nothing short of rotating the signing key cuts that short.
+A token captured from a log, a proxy or a browser stays usable for its whole lifetime. Cutting that short means rotating the signing key, which invalidates every token issued under it, not just the stolen one.
 
 #### 6.4.3. How can I fix this?
 
