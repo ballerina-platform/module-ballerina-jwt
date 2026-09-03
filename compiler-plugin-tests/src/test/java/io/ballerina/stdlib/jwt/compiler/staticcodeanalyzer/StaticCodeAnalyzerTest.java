@@ -47,7 +47,6 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 import static io.ballerina.scan.RuleKind.VULNERABILITY;
-import static io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.JwtRule.AVOID_WEAK_CIPHER_ALGORITHMS;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class StaticCodeAnalyzerTest {
@@ -100,11 +99,9 @@ public class StaticCodeAnalyzerTest {
     }
 
     private void validateRules(List<Rule> rules) {
-        Assertions.assertRule(
-                rules,
-                "ballerina/jwt:1",
-                AVOID_WEAK_CIPHER_ALGORITHMS.getDescription(),
-                VULNERABILITY);
+        for (JwtRule rule : JwtRule.values()) {
+            Assertions.assertRule(rules, "ballerina/jwt:" + rule.getId(), rule.getDescription(), VULNERABILITY);
+        }
     }
 
     private void validateIssues(JwtRule rule, List<Issue> issues) {
@@ -131,6 +128,42 @@ public class StaticCodeAnalyzerTest {
                         27, 27, Source.BUILT_IN);
                 Assertions.assertIssue(issues, 9, "ballerina/jwt:1", "module_pos_arg_list_pattern.bal",
                         29, 29, Source.BUILT_IN);
+                break;
+            case ENSURE_SIGNATURE_VERIFICATION:
+                Assert.assertEquals(issues.size(), 2);
+                Assertions.assertIssue(issues, 0, "ballerina/jwt:2", "no_signature_config.bal",
+                        20, 23, Source.BUILT_IN);
+                Assertions.assertIssue(issues, 1, "ballerina/jwt:2", "no_signature_config.bal",
+                        33, 33, Source.BUILT_IN);
+                break;
+            case ENSURE_ISSUER_AND_AUDIENCE_VALIDATION:
+                Assert.assertEquals(issues.size(), 2);
+                Assertions.assertIssue(issues, 0, "ballerina/jwt:3", "no_issuer_or_audience.bal",
+                        20, 25, Source.BUILT_IN);
+                Assertions.assertIssue(issues, 1, "ballerina/jwt:3", "no_issuer_or_audience.bal",
+                        30, 35, Source.BUILT_IN);
+                break;
+            case AVOID_LONG_TOKEN_EXPIRY:
+                Assert.assertEquals(issues.size(), 2);
+                Assertions.assertIssue(issues, 0, "ballerina/jwt:4", "long_expiry.bal",
+                        23, 23, Source.BUILT_IN);
+                Assertions.assertIssue(issues, 1, "ballerina/jwt:4", "long_expiry.bal",
+                        37, 37, Source.BUILT_IN);
+                break;
+            case AVOID_LARGE_CLOCK_SKEW:
+                Assert.assertEquals(issues.size(), 1);
+                Assertions.assertIssue(issues, 0, "ballerina/jwt:5", "large_clock_skew.bal",
+                        23, 23, Source.BUILT_IN);
+                break;
+            case AVOID_DISABLED_JWKS_TLS:
+                Assert.assertEquals(issues.size(), 1);
+                Assertions.assertIssue(issues, 0, "ballerina/jwt:6", "jwks_tls_disabled.bal",
+                        28, 28, Source.BUILT_IN);
+                break;
+            case AVOID_UNVERIFIED_TOKEN_DECODING:
+                Assert.assertEquals(issues.size(), 1);
+                Assertions.assertIssue(issues, 0, "ballerina/jwt:7", "unverified_decode.bal",
+                        20, 20, Source.BUILT_IN);
                 break;
             default:
                 Assert.fail("Unhandled rule in validateIssues: " + rule);

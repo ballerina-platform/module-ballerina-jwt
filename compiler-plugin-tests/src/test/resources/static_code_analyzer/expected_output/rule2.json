@@ -1,0 +1,102 @@
+[
+  {
+    "location": {
+      "filePath": "no_signature_config.bal",
+      "startLine": 19,
+      "endLine": 19,
+      "startColumn": 0,
+      "endColumn": 6,
+      "startOffset": 733,
+      "length": 6
+    },
+    "rule": {
+      "id": "ballerina:3",
+      "numericId": 3,
+      "description": "Non isolated public function",
+      "ruleKind": "CODE_SMELL"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule2/no_signature_config.bal",
+    "filePath": "/Users/tharmigan/Downloads/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule2/no_signature_config.bal"
+  },
+  {
+    "location": {
+      "filePath": "no_signature_config.bal",
+      "startLine": 32,
+      "endLine": 32,
+      "startColumn": 0,
+      "endColumn": 6,
+      "startOffset": 1051,
+      "length": 6
+    },
+    "rule": {
+      "id": "ballerina:3",
+      "numericId": 3,
+      "description": "Non isolated public function",
+      "ruleKind": "CODE_SMELL"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule2/no_signature_config.bal",
+    "filePath": "/Users/tharmigan/Downloads/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule2/no_signature_config.bal"
+  },
+  {
+    "location": {
+      "filePath": "no_signature_config.bal",
+      "startLine": 37,
+      "endLine": 37,
+      "startColumn": 0,
+      "endColumn": 6,
+      "startOffset": 1285,
+      "length": 6
+    },
+    "rule": {
+      "id": "ballerina:3",
+      "numericId": 3,
+      "description": "Non isolated public function",
+      "ruleKind": "CODE_SMELL"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule2/no_signature_config.bal",
+    "filePath": "/Users/tharmigan/Downloads/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule2/no_signature_config.bal"
+  },
+  {
+    "location": {
+      "filePath": "no_signature_config.bal",
+      "startLine": 20,
+      "endLine": 23,
+      "startColumn": 26,
+      "endColumn": 6,
+      "startOffset": 835,
+      "length": 82
+    },
+    "rule": {
+      "id": "ballerina/jwt:2",
+      "numericId": 2,
+      "description": "Avoid validating JSON Web Tokens without a signature configuration",
+      "ruleKind": "VULNERABILITY"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule2/no_signature_config.bal",
+    "filePath": "/Users/tharmigan/Downloads/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule2/no_signature_config.bal"
+  },
+  {
+    "location": {
+      "filePath": "no_signature_config.bal",
+      "startLine": 33,
+      "endLine": 33,
+      "startColumn": 26,
+      "endColumn": 70,
+      "startOffset": 1161,
+      "length": 44
+    },
+    "rule": {
+      "id": "ballerina/jwt:2",
+      "numericId": 2,
+      "description": "Avoid validating JSON Web Tokens without a signature configuration",
+      "ruleKind": "VULNERABILITY"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule2/no_signature_config.bal",
+    "filePath": "/Users/tharmigan/Downloads/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule2/no_signature_config.bal"
+  }
+]
