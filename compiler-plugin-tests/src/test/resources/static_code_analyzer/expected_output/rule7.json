@@ -17,7 +17,7 @@
     },
     "source": "BUILT_IN",
     "fileName": "rule7/unverified_decode.bal",
-    "filePath": "/Users/tharmigan/Downloads/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule7/unverified_decode.bal"
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule7/unverified_decode.bal"
   },
   {
     "location": {
@@ -37,7 +37,7 @@
     },
     "source": "BUILT_IN",
     "fileName": "rule7/unverified_decode.bal",
-    "filePath": "/Users/tharmigan/Downloads/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule7/unverified_decode.bal"
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule7/unverified_decode.bal"
   },
   {
     "location": {
@@ -57,6 +57,6 @@
     },
     "source": "BUILT_IN",
     "fileName": "rule7/unverified_decode.bal",
-    "filePath": "/Users/tharmigan/Downloads/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule7/unverified_decode.bal"
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule7/unverified_decode.bal"
   }
 ]

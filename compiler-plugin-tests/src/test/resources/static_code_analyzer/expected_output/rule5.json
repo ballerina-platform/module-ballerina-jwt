@@ -17,7 +17,7 @@
     },
     "source": "BUILT_IN",
     "fileName": "rule5/large_clock_skew.bal",
-    "filePath": "/Users/tharmigan/Downloads/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule5/large_clock_skew.bal"
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule5/large_clock_skew.bal"
   },
   {
     "location": {
@@ -37,7 +37,7 @@
     },
     "source": "BUILT_IN",
     "fileName": "rule5/large_clock_skew.bal",
-    "filePath": "/Users/tharmigan/Downloads/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule5/large_clock_skew.bal"
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule5/large_clock_skew.bal"
   },
   {
     "location": {
@@ -57,7 +57,7 @@
     },
     "source": "BUILT_IN",
     "fileName": "rule5/large_clock_skew.bal",
-    "filePath": "/Users/tharmigan/Downloads/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule5/large_clock_skew.bal"
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule5/large_clock_skew.bal"
   },
   {
     "location": {
@@ -77,6 +77,6 @@
     },
     "source": "BUILT_IN",
     "fileName": "rule5/large_clock_skew.bal",
-    "filePath": "/Users/tharmigan/Downloads/module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule5/large_clock_skew.bal"
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule5/large_clock_skew.bal"
   }
 ]
