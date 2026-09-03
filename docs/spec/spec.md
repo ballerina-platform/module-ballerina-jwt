@@ -498,6 +498,13 @@ Almost every field of `jwt:ValidatorConfig` is optional, and each one left out r
 
 Signing with `NONE` produces a token that carries no signature at all.
 
+| Property              | Description |
+|-----------------------|-------------|
+| **Rule ID**           | ballerina/jwt:1 |
+| **Rule Kind**         | Vulnerability |
+| **CWE**               | [CWE-327](https://cwe.mitre.org/data/definitions/327.html), [CWE-347](https://cwe.mitre.org/data/definitions/347.html) |
+| **OWASP Top 10:2025** | [A04 Cryptographic Failures](https://owasp.org/Top10/2025/A04_2025-Cryptographic_Failures/) |
+
 #### 6.1.1. Why this is an issue?
 
 The security of JWT-based authentication rests entirely on the signature. `jwt:NONE` selects the unsigned form, so the token is a plain assertion of whatever claims it contains, with nothing binding those claims to the issuer.
@@ -545,6 +552,13 @@ string token = check jwt:issue({
 
 A validator with no `signatureConfig` never checks the signature.
 
+| Property              | Description |
+|-----------------------|-------------|
+| **Rule ID**           | ballerina/jwt:2 |
+| **Rule Kind**         | Vulnerability |
+| **CWE**               | [CWE-347](https://cwe.mitre.org/data/definitions/347.html) |
+| **OWASP Top 10:2025** | [A07 Authentication Failures](https://owasp.org/Top10/2025/A07_2025-Authentication_Failures/) |
+
 #### 6.2.1. Why this is an issue?
 
 `signatureConfig` is optional, and leaving it out removes the signature check rather than defaulting to one. `jwt:validate` still parses the token and returns its claims, so the calling code reads them as though they had been verified.
@@ -586,6 +600,13 @@ jwt:Payload payload = check jwt:validate(token, {
 ### 6.3. Avoid validating JSON Web Tokens without checking the issuer and the audience
 
 A verified signature does not say the token was meant for this service.
+
+| Property              | Description |
+|-----------------------|-------------|
+| **Rule ID**           | ballerina/jwt:3 |
+| **Rule Kind**         | Vulnerability |
+| **CWE**               | [CWE-347](https://cwe.mitre.org/data/definitions/347.html), [CWE-863](https://cwe.mitre.org/data/definitions/863.html) |
+| **OWASP Top 10:2025** | [A07 Authentication Failures](https://owasp.org/Top10/2025/A07_2025-Authentication_Failures/) |
 
 #### 6.3.1. Why this is an issue?
 
@@ -630,6 +651,13 @@ jwt:Payload payload = check jwt:validate(token, {
 ### 6.4. Avoid issuing JSON Web Tokens with a long expiry time
 
 A token cannot be withdrawn once issued, so its lifetime is the window an attacker keeps.
+
+| Property              | Description |
+|-----------------------|-------------|
+| **Rule ID**           | ballerina/jwt:4 |
+| **Rule Kind**         | Vulnerability |
+| **CWE**               | [CWE-613](https://cwe.mitre.org/data/definitions/613.html) |
+| **OWASP Top 10:2025** | [A07 Authentication Failures](https://owasp.org/Top10/2025/A07_2025-Authentication_Failures/) |
 
 #### 6.4.1. Why this is an issue?
 
@@ -680,6 +708,13 @@ string token = check jwt:issue({
 
 Skew extends the lifetime of every token the service accepts.
 
+| Property              | Description |
+|-----------------------|-------------|
+| **Rule ID**           | ballerina/jwt:5 |
+| **Rule Kind**         | Vulnerability |
+| **CWE**               | [CWE-613](https://cwe.mitre.org/data/definitions/613.html) |
+| **OWASP Top 10:2025** | [A07 Authentication Failures](https://owasp.org/Top10/2025/A07_2025-Authentication_Failures/) |
+
 #### 6.5.1. Why this is an issue?
 
 `clockSkew` is allowed on both ends of every expiry check, so it silently lengthens the validity window of every token, including ones that have already expired. It defaults to zero, and a few minutes covers any realistic clock drift between hosts. The rule reports a skew beyond five minutes.
@@ -722,6 +757,13 @@ jwt:Payload payload = check jwt:validate(token, {
 ### 6.6. Avoid disabling TLS validation on the JWKS endpoint client
 
 The signing keys are fetched over that client, so its trust decides every signature check.
+
+| Property              | Description |
+|-----------------------|-------------|
+| **Rule ID**           | ballerina/jwt:6 |
+| **Rule Kind**         | Vulnerability |
+| **CWE**               | [CWE-295](https://cwe.mitre.org/data/definitions/295.html) |
+| **OWASP Top 10:2025** | [A07 Authentication Failures](https://owasp.org/Top10/2025/A07_2025-Authentication_Failures/) |
 
 #### 6.6.1. Why this is an issue?
 
@@ -777,6 +819,13 @@ jwt:Payload payload = check jwt:validate(token, {
 ### 6.7. Avoid decoding JSON Web Tokens without verifying them
 
 `jwt:decode` returns the claims without checking anything.
+
+| Property              | Description |
+|-----------------------|-------------|
+| **Rule ID**           | ballerina/jwt:7 |
+| **Rule Kind**         | Vulnerability |
+| **CWE**               | [CWE-347](https://cwe.mitre.org/data/definitions/347.html) |
+| **OWASP Top 10:2025** | [A07 Authentication Failures](https://owasp.org/Top10/2025/A07_2025-Authentication_Failures/) |
 
 #### 6.7.1. Why this is an issue?
 
