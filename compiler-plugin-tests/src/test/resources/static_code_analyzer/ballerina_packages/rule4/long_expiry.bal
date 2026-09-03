@@ -62,3 +62,18 @@ public function shortExpiry() returns error? {
         }
     });
 }
+
+// A decimal literal may spell its type out with a suffix
+public function suffixedLongExpiry() returns error? {
+    string _ = check jwt:issue({
+        issuer: "wso2",
+        audience: "ballerina",
+        expTime: 86401d,
+        signatureConfig: {
+            algorithm: jwt:RS256,
+            config: {
+                keyFile: "/path/to/private.key"
+            }
+        }
+    });
+}

@@ -3,11 +3,11 @@
     "location": {
       "filePath": "function_named_arg_capture_pattern.bal",
       "startLine": 18,
-      "endLine": 28,
+      "endLine": 18,
       "startColumn": 0,
-      "endColumn": 1,
-      "startOffset": 686,
-      "length": 305
+      "endColumn": 6,
+      "startOffset": 668,
+      "length": 6
     },
     "rule": {
       "id": "ballerina:3",
@@ -23,11 +23,11 @@
     "location": {
       "filePath": "function_named_arg_list_pattern.bal",
       "startLine": 18,
-      "endLine": 30,
+      "endLine": 18,
       "startColumn": 0,
-      "endColumn": 1,
-      "startOffset": 685,
-      "length": 348
+      "endColumn": 6,
+      "startOffset": 667,
+      "length": 6
     },
     "rule": {
       "id": "ballerina:3",
@@ -43,11 +43,11 @@
     "location": {
       "filePath": "function_pos_arg_capture_pattern.bal",
       "startLine": 18,
-      "endLine": 28,
+      "endLine": 18,
       "startColumn": 0,
-      "endColumn": 1,
-      "startOffset": 685,
-      "length": 288
+      "endColumn": 6,
+      "startOffset": 667,
+      "length": 6
     },
     "rule": {
       "id": "ballerina:3",
@@ -63,11 +63,11 @@
     "location": {
       "filePath": "function_pos_arg_list_pattern.bal",
       "startLine": 18,
-      "endLine": 30,
+      "endLine": 18,
       "startColumn": 0,
-      "endColumn": 1,
-      "startOffset": 685,
-      "length": 331
+      "endColumn": 6,
+      "startOffset": 667,
+      "length": 6
     },
     "rule": {
       "id": "ballerina:3",
@@ -83,11 +83,11 @@
     "location": {
       "filePath": "inline_named_arg.bal",
       "startLine": 18,
-      "endLine": 26,
+      "endLine": 18,
       "startColumn": 0,
-      "endColumn": 1,
+      "endColumn": 6,
       "startOffset": 667,
-      "length": 276
+      "length": 6
     },
     "rule": {
       "id": "ballerina:3",
@@ -103,11 +103,11 @@
     "location": {
       "filePath": "inline_pos_arg.bal",
       "startLine": 18,
-      "endLine": 26,
+      "endLine": 18,
       "startColumn": 0,
-      "endColumn": 1,
+      "endColumn": 6,
       "startOffset": 667,
-      "length": 211
+      "length": 6
     },
     "rule": {
       "id": "ballerina:3",
@@ -123,11 +123,11 @@
     "location": {
       "filePath": "module_named_arg_capture_pattern.bal",
       "startLine": 26,
-      "endLine": 28,
+      "endLine": 26,
       "startColumn": 0,
-      "endColumn": 1,
-      "startOffset": 860,
-      "length": 156
+      "endColumn": 6,
+      "startOffset": 834,
+      "length": 6
     },
     "rule": {
       "id": "ballerina:3",
@@ -143,11 +143,11 @@
     "location": {
       "filePath": "module_named_arg_list_pattern.bal",
       "startLine": 28,
-      "endLine": 30,
+      "endLine": 28,
       "startColumn": 0,
-      "endColumn": 1,
-      "startOffset": 895,
-      "length": 150
+      "endColumn": 6,
+      "startOffset": 867,
+      "length": 6
     },
     "rule": {
       "id": "ballerina:3",
@@ -163,11 +163,11 @@
     "location": {
       "filePath": "module_pos_arg_capture_pattern.bal",
       "startLine": 26,
-      "endLine": 28,
+      "endLine": 26,
       "startColumn": 0,
-      "endColumn": 1,
-      "startOffset": 858,
-      "length": 137
+      "endColumn": 6,
+      "startOffset": 832,
+      "length": 6
     },
     "rule": {
       "id": "ballerina:3",
@@ -183,11 +183,11 @@
     "location": {
       "filePath": "module_pos_arg_list_pattern.bal",
       "startLine": 28,
-      "endLine": 30,
+      "endLine": 28,
       "startColumn": 0,
-      "endColumn": 1,
-      "startOffset": 893,
-      "length": 131
+      "endColumn": 6,
+      "startOffset": 865,
+      "length": 6
     },
     "rule": {
       "id": "ballerina:3",
@@ -206,7 +206,7 @@
       "endLine": 27,
       "startColumn": 21,
       "endColumn": 59,
-      "startOffset": 949,
+      "startOffset": 922,
       "length": 38
     },
     "rule": {
@@ -226,7 +226,7 @@
       "endLine": 29,
       "startColumn": 21,
       "endColumn": 59,
-      "startOffset": 991,
+      "startOffset": 962,
       "length": 38
     },
     "rule": {
@@ -246,7 +246,7 @@
       "endLine": 27,
       "startColumn": 21,
       "endColumn": 44,
-      "startOffset": 946,
+      "startOffset": 919,
       "length": 23
     },
     "rule": {
@@ -266,7 +266,7 @@
       "endLine": 29,
       "startColumn": 21,
       "endColumn": 44,
-      "startOffset": 989,
+      "startOffset": 960,
       "length": 23
     },
     "rule": {
@@ -326,7 +326,7 @@
       "endLine": 27,
       "startColumn": 21,
       "endColumn": 87,
-      "startOffset": 946,
+      "startOffset": 919,
       "length": 66
     },
     "rule": {
@@ -346,7 +346,7 @@
       "endLine": 29,
       "startColumn": 21,
       "endColumn": 84,
-      "startOffset": 978,
+      "startOffset": 949,
       "length": 63
     },
     "rule": {
@@ -366,7 +366,7 @@
       "endLine": 27,
       "startColumn": 21,
       "endColumn": 70,
-      "startOffset": 942,
+      "startOffset": 915,
       "length": 49
     },
     "rule": {
@@ -386,7 +386,7 @@
       "endLine": 29,
       "startColumn": 21,
       "endColumn": 67,
-      "startOffset": 974,
+      "startOffset": 945,
       "length": 46
     },
     "rule": {

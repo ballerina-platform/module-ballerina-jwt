@@ -50,3 +50,15 @@ public function defaultClockSkew(string token) returns error? {
         }
     });
 }
+
+// A decimal literal may spell its type out with a suffix
+public function suffixedLargeClockSkew(string token) returns error? {
+    jwt:Payload _ = check jwt:validate(token, {
+        issuer: "wso2",
+        audience: "ballerina",
+        clockSkew: 301d,
+        signatureConfig: {
+            certFile: "/path/to/public.crt"
+        }
+    });
+}

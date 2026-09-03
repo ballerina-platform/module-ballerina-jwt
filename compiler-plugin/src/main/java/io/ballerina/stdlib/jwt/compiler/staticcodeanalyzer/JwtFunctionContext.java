@@ -164,7 +164,7 @@ public class JwtFunctionContext {
     public Optional<MappingConstructorExpressionNode> getNestedConfigRecord(String... fieldNames) {
         Optional<MappingConstructorExpressionNode> current = Optional.ofNullable(this.configRecord);
         for (String fieldName : fieldNames) {
-            current = current.flatMap(record -> getNestedRecord(record, fieldName));
+            current = current.flatMap(enclosingRecord -> getNestedRecord(enclosingRecord, fieldName));
         }
         return current;
     }

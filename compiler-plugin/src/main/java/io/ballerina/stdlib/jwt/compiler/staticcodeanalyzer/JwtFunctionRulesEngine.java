@@ -53,9 +53,14 @@ public class JwtFunctionRulesEngine {
     }
 
     public void addRule(JwtFunctionRule rule) {
-        if (rule != null && !rules.contains(rule)) {
-            rules.add(rule);
+        if (rule == null || hasRule(rule.getRuleId())) {
+            return;
         }
+        rules.add(rule);
+    }
+
+    private boolean hasRule(int ruleId) {
+        return rules.stream().anyMatch(registered -> registered.getRuleId() == ruleId);
     }
 
     private void initializeDefaultRules() {

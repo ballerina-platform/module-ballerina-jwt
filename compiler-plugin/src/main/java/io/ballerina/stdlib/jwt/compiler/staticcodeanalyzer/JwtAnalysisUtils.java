@@ -19,6 +19,7 @@
 package io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer;
 
 import io.ballerina.compiler.syntax.tree.BasicLiteralNode;
+import io.ballerina.compiler.syntax.tree.BlockStatementNode;
 import io.ballerina.compiler.syntax.tree.CaptureBindingPatternNode;
 import io.ballerina.compiler.syntax.tree.ExpressionNode;
 import io.ballerina.compiler.syntax.tree.FunctionArgumentNode;
@@ -50,7 +51,9 @@ import io.ballerina.projects.Module;
 import io.ballerina.projects.plugins.SyntaxNodeAnalysisContext;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -74,9 +77,13 @@ public final class JwtAnalysisUtils {
     /**
      * Resolve the configuration record behind an argument expression.
      * <p>
-     * The record is written either inline at the call site or in a variable declared in the enclosing function or at
+     * The record is written either inline at the call site or in a variable declared in an enclosing block or at
      * module level. A variable assigned anything other than a record literal cannot be resolved without data-flow
      * analysis and yields an empty result.
+     * <p>
+     * The blocks are searched innermost first, and within a block only declarations that precede the reference are
+     * considered, so the declaration found is the one the reference actually binds to rather than a later
+     * same-named local.
      *
      * @param expression the argument expression
      * @return the configuration record if it can be resolved, empty otherwise
@@ -89,10 +96,14 @@ public final class JwtAnalysisUtils {
             return Optional.empty();
         }
         String variableName = variableReference.name().text();
+        int referenceOffset = variableReference.textRange().startOffset();
         Node current = variableReference.parent();
         while (current != null) {
             Optional<MappingConstructorExpressionNode> resolved = switch (current) {
-                case FunctionBodyBlockNode body -> findInStatements(body.statements(), variableName);
+                case BlockStatementNode block ->
+                        findInStatements(block.statements(), variableName, referenceOffset);
+                case FunctionBodyBlockNode body ->
+                        findInStatements(body.statements(), variableName, referenceOffset);
                 case ModulePartNode modulePart -> findInModuleMembers(modulePart.members(), variableName);
                 default -> Optional.empty();
             };
@@ -105,17 +116,22 @@ public final class JwtAnalysisUtils {
     }
 
     private static Optional<MappingConstructorExpressionNode> findInStatements(NodeList<StatementNode> statements,
-                                                                              String variableName) {
+                                                                              String variableName,
+                                                                              int referenceOffset) {
+        Optional<MappingConstructorExpressionNode> resolved = Optional.empty();
         for (StatementNode statement : statements) {
+            if (statement.textRange().startOffset() >= referenceOffset) {
+                break;
+            }
             if (statement instanceof VariableDeclarationNode variableDeclaration) {
-                Optional<MappingConstructorExpressionNode> resolved = matchDeclaration(
+                Optional<MappingConstructorExpressionNode> candidate = matchDeclaration(
                         variableDeclaration.typedBindingPattern(), variableDeclaration.initializer(), variableName);
-                if (resolved.isPresent()) {
-                    return resolved;
+                if (candidate.isPresent()) {
+                    resolved = candidate;
                 }
             }
         }
-        return Optional.empty();
+        return resolved;
     }
 
     private static Optional<MappingConstructorExpressionNode> findInModuleMembers(
@@ -174,37 +190,35 @@ public final class JwtAnalysisUtils {
      */
     public static Optional<ExpressionNode> getArgument(FunctionCallExpressionNode functionCall, int position,
                                                        String parameterName) {
-        int positionalIndex = 0;
+        List<ExpressionNode> positionalArguments = new ArrayList<>();
         for (FunctionArgumentNode argument : functionCall.arguments()) {
             switch (argument) {
-                case NamedArgumentNode namedArgument -> {
-                    if (parameterName.equals(namedArgument.argumentName().name().text())) {
-                        return Optional.of(namedArgument.expression());
-                    }
+                case NamedArgumentNode namedArgument
+                        when parameterName.equals(namedArgument.argumentName().name().text()) -> {
+                    return Optional.of(namedArgument.expression());
                 }
-                case PositionalArgumentNode positionalArgument -> {
-                    if (positionalIndex++ == position) {
-                        return Optional.of(positionalArgument.expression());
-                    }
-                }
+                case PositionalArgumentNode positionalArgument ->
+                        positionalArguments.add(positionalArgument.expression());
                 default -> {
                     // A rest argument spreads a value that cannot be resolved without data-flow analysis
                 }
             }
         }
-        return Optional.empty();
+        return position < positionalArguments.size() ? Optional.of(positionalArguments.get(position))
+                : Optional.empty();
     }
 
     /**
      * Find a field by name within a configuration record. Computed and spread fields cannot be resolved statically
      * and are skipped.
      *
-     * @param record    the configuration record
-     * @param fieldName the field name to look for
+     * @param configRecord the configuration record
+     * @param fieldName    the field name to look for
      * @return the matching field if present, empty otherwise
      */
-    public static Optional<SpecificFieldNode> findField(MappingConstructorExpressionNode record, String fieldName) {
-        return record.fields().stream()
+    public static Optional<SpecificFieldNode> findField(MappingConstructorExpressionNode configRecord,
+                                                        String fieldName) {
+        return configRecord.fields().stream()
                 .filter(field -> field.kind() == SyntaxKind.SPECIFIC_FIELD)
                 .map(field -> (SpecificFieldNode) field)
                 .filter(field -> matchesFieldName(field.fieldName(), fieldName))
@@ -224,18 +238,17 @@ public final class JwtAnalysisUtils {
     }
 
     /**
-     * Get a field whose value is itself a record.
+     * Get a field whose value is itself a record, written inline or held in a variable.
      *
-     * @param record    the configuration record
-     * @param fieldName the field name to look for
+     * @param configRecord the configuration record
+     * @param fieldName    the field name to look for
      * @return the nested record if present, empty otherwise
      */
-    public static Optional<MappingConstructorExpressionNode> getNestedRecord(MappingConstructorExpressionNode record,
-                                                                            String fieldName) {
-        return findField(record, fieldName)
+    public static Optional<MappingConstructorExpressionNode> getNestedRecord(
+            MappingConstructorExpressionNode configRecord, String fieldName) {
+        return findField(configRecord, fieldName)
                 .flatMap(SpecificFieldNode::valueExpr)
-                .filter(MappingConstructorExpressionNode.class::isInstance)
-                .map(MappingConstructorExpressionNode.class::cast);
+                .flatMap(JwtAnalysisUtils::resolveConfigRecord);
     }
 
     /**
@@ -260,14 +273,18 @@ public final class JwtAnalysisUtils {
 
     /**
      * Get the value of a numeric literal expression. The JWT durations are {@code decimal}, so a value may be
-     * written with a fraction or as a negated literal.
+     * written with a fraction, as a negated literal, or with the {@code d} suffix that spells the type out.
      *
      * @param expression the expression to read
      * @return the literal value if the expression is a numeric literal, empty otherwise
      */
     public static Optional<BigDecimal> getNumericLiteralValue(ExpressionNode expression) {
+        String source = expression.toSourceCode().trim();
+        if (source.endsWith("d") || source.endsWith("D")) {
+            source = source.substring(0, source.length() - 1);
+        }
         try {
-            return Optional.of(new BigDecimal(expression.toSourceCode().trim()));
+            return Optional.of(new BigDecimal(source));
         } catch (NumberFormatException e) {
             return Optional.empty();
         }

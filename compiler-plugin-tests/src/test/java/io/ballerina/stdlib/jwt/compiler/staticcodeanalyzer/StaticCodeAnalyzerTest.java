@@ -144,21 +144,29 @@ public class StaticCodeAnalyzerTest {
                         30, 35, Source.BUILT_IN);
                 break;
             case AVOID_LONG_TOKEN_EXPIRY:
-                Assert.assertEquals(issues.size(), 2);
+                Assert.assertEquals(issues.size(), 4);
                 Assertions.assertIssue(issues, 0, "ballerina/jwt:4", "long_expiry.bal",
                         23, 23, Source.BUILT_IN);
                 Assertions.assertIssue(issues, 1, "ballerina/jwt:4", "long_expiry.bal",
                         37, 37, Source.BUILT_IN);
+                Assertions.assertIssue(issues, 2, "ballerina/jwt:4", "long_expiry.bal",
+                        70, 70, Source.BUILT_IN);
+                Assertions.assertIssue(issues, 3, "ballerina/jwt:4", "shadowed_config.bal",
+                        21, 21, Source.BUILT_IN);
                 break;
             case AVOID_LARGE_CLOCK_SKEW:
-                Assert.assertEquals(issues.size(), 1);
+                Assert.assertEquals(issues.size(), 2);
                 Assertions.assertIssue(issues, 0, "ballerina/jwt:5", "large_clock_skew.bal",
                         23, 23, Source.BUILT_IN);
+                Assertions.assertIssue(issues, 1, "ballerina/jwt:5", "large_clock_skew.bal",
+                        58, 58, Source.BUILT_IN);
                 break;
             case AVOID_DISABLED_JWKS_TLS:
-                Assert.assertEquals(issues.size(), 1);
+                Assert.assertEquals(issues.size(), 2);
                 Assertions.assertIssue(issues, 0, "ballerina/jwt:6", "jwks_tls_disabled.bal",
                         28, 28, Source.BUILT_IN);
+                Assertions.assertIssue(issues, 1, "ballerina/jwt:6", "jwks_tls_disabled.bal",
+                        57, 57, Source.BUILT_IN);
                 break;
             case AVOID_UNVERIFIED_TOKEN_DECODING:
                 Assert.assertEquals(issues.size(), 1);
@@ -201,7 +209,7 @@ public class StaticCodeAnalyzerTest {
             ObjectMapper mapper = new ObjectMapper().configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
             JsonNode node = mapper.readTree(json);
             String normalizedJson = mapper.writeValueAsString(node)
-                    .replaceAll(":\".*" + MODULE_BALLERINA_JWT, ":\"" + MODULE_BALLERINA_JWT);
+                    .replaceAll(":\"[^\"]*" + MODULE_BALLERINA_JWT, ":\"" + MODULE_BALLERINA_JWT);
             return isWindows() ? normalizedJson.replace("/", "\\\\") : normalizedJson;
         } catch (Exception ignore) {
             return json;

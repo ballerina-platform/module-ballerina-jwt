@@ -51,3 +51,23 @@ public function validatedJwksTls(string token) returns error? {
         }
     });
 }
+
+// The nested client configuration is held in a variable
+jwt:ClientConfiguration insecureJwksClientConfig = {
+    secureSocket: {
+        disable: true
+    }
+};
+
+public function variableJwksClientConfig(string token) returns error? {
+    jwt:Payload _ = check jwt:validate(token, {
+        issuer: "wso2",
+        audience: "ballerina",
+        signatureConfig: {
+            jwksConfig: {
+                url: "https://idp.example.com/jwks",
+                clientConfig: insecureJwksClientConfig
+            }
+        }
+    });
+}
