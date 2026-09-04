@@ -18,9 +18,11 @@
 
 package io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer;
 
+import io.ballerina.compiler.syntax.tree.AssignmentStatementNode;
 import io.ballerina.compiler.syntax.tree.BasicLiteralNode;
 import io.ballerina.compiler.syntax.tree.BlockStatementNode;
 import io.ballerina.compiler.syntax.tree.CaptureBindingPatternNode;
+import io.ballerina.compiler.syntax.tree.CheckExpressionNode;
 import io.ballerina.compiler.syntax.tree.ExpressionNode;
 import io.ballerina.compiler.syntax.tree.FunctionArgumentNode;
 import io.ballerina.compiler.syntax.tree.FunctionBodyBlockNode;
@@ -43,6 +45,7 @@ import io.ballerina.compiler.syntax.tree.SimpleNameReferenceNode;
 import io.ballerina.compiler.syntax.tree.SpecificFieldNode;
 import io.ballerina.compiler.syntax.tree.StatementNode;
 import io.ballerina.compiler.syntax.tree.SyntaxKind;
+import io.ballerina.compiler.syntax.tree.TypeCastExpressionNode;
 import io.ballerina.compiler.syntax.tree.TypedBindingPatternNode;
 import io.ballerina.compiler.syntax.tree.VariableDeclarationNode;
 import io.ballerina.projects.Document;
@@ -89,6 +92,21 @@ public final class JwtAnalysisUtils {
      * @return the configuration record if it can be resolved, empty otherwise
      */
     public static Optional<MappingConstructorExpressionNode> resolveConfigRecord(ExpressionNode expression) {
+        return resolveConfigRecord(expression, List.of());
+    }
+
+    /**
+     * Resolve the configuration record behind an argument, falling back to the module's other documents.
+     * <p>
+     * A configuration declared in a sibling {@code .bal} file is as much a module-level declaration as one in the
+     * same file, so a lookup confined to the current document would silently skip every configuration rule for it.
+     *
+     * @param expression        the argument expression
+     * @param siblingModuleParts the module's other documents
+     * @return the configuration record if it can be resolved, empty otherwise
+     */
+    public static Optional<MappingConstructorExpressionNode> resolveConfigRecord(
+            ExpressionNode expression, List<ModulePartNode> siblingModuleParts) {
         if (expression instanceof MappingConstructorExpressionNode mappingConstructor) {
             return Optional.of(mappingConstructor);
         }
@@ -112,6 +130,13 @@ public final class JwtAnalysisUtils {
             }
             current = current.parent();
         }
+        for (ModulePartNode siblingModulePart : siblingModuleParts) {
+            Optional<MappingConstructorExpressionNode> resolved =
+                    findInModuleMembers(siblingModulePart.members(), variableName);
+            if (resolved.isPresent()) {
+                return resolved;
+            }
+        }
         return Optional.empty();
     }
 
@@ -120,7 +145,7 @@ public final class JwtAnalysisUtils {
                                                                               int referenceOffset) {
         Optional<MappingConstructorExpressionNode> resolved = Optional.empty();
         for (StatementNode statement : statements) {
-            if (statement.textRange().startOffset() >= referenceOffset) {
+            if (statement.textRange().endOffset() > referenceOffset) {
                 break;
             }
             if (statement instanceof VariableDeclarationNode variableDeclaration) {
@@ -129,6 +154,13 @@ public final class JwtAnalysisUtils {
                 if (candidate.isPresent()) {
                     resolved = candidate;
                 }
+            } else if (statement instanceof AssignmentStatementNode assignment
+                    && variableName.equals(assignment.varRef().toSourceCode().trim())) {
+                // A later assignment replaces the record the declaration set, so the earlier one is no longer
+                // what the call receives. An assignment of anything but a record literal leaves it unresolved.
+                resolved = Optional.of(getEffectiveExpression(assignment.expression()))
+                        .filter(MappingConstructorExpressionNode.class::isInstance)
+                        .map(MappingConstructorExpressionNode.class::cast);
             }
         }
         return resolved;
@@ -223,6 +255,17 @@ public final class JwtAnalysisUtils {
                 .map(field -> (SpecificFieldNode) field)
                 .filter(field -> matchesFieldName(field.fieldName(), fieldName))
                 .findFirst();
+    }
+
+    /**
+     * Unwrap a {@code check} or a type cast to reach the expression underneath.
+     */
+    private static ExpressionNode getEffectiveExpression(ExpressionNode expression) {
+        return switch (expression) {
+            case CheckExpressionNode checkExpression -> checkExpression.expression();
+            case TypeCastExpressionNode castExpression -> castExpression.expression();
+            default -> expression;
+        };
     }
 
     private static boolean matchesFieldName(Node fieldNameNode, String expectedFieldName) {

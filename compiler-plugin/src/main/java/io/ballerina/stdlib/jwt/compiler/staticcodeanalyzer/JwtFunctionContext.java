@@ -21,11 +21,13 @@ package io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer;
 import io.ballerina.compiler.syntax.tree.ExpressionNode;
 import io.ballerina.compiler.syntax.tree.FunctionCallExpressionNode;
 import io.ballerina.compiler.syntax.tree.MappingConstructorExpressionNode;
+import io.ballerina.compiler.syntax.tree.ModulePartNode;
 import io.ballerina.compiler.syntax.tree.SpecificFieldNode;
 import io.ballerina.projects.Document;
 import io.ballerina.scan.Reporter;
 import io.ballerina.tools.diagnostics.Location;
 
+import java.util.List;
 import java.util.Optional;
 
 import static io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.JwtAnalysisUtils.findField;
@@ -63,14 +65,16 @@ public class JwtFunctionContext {
      * @param document     the document containing the call
      * @param functionName the simple name of the JWT function being called
      * @param functionCall the call being analyzed
+     * @param siblingModuleParts the module's other documents, searched when the configuration is declared in one
      */
     public JwtFunctionContext(Reporter reporter, Document document, String functionName,
-                              FunctionCallExpressionNode functionCall) {
+                              FunctionCallExpressionNode functionCall,
+                              List<ModulePartNode> siblingModuleParts) {
         this.reporter = reporter;
         this.document = document;
         this.functionName = functionName;
         this.functionLocation = functionCall.location();
-        this.configRecord = resolveConfigRecord(functionCall, functionName);
+        this.configRecord = resolveConfigRecord(functionCall, functionName, siblingModuleParts);
     }
 
     /**
@@ -78,12 +82,13 @@ public class JwtFunctionContext {
      * configuration, so a call to it leaves the record absent and only the rules that need no record apply.
      */
     private static MappingConstructorExpressionNode resolveConfigRecord(FunctionCallExpressionNode functionCall,
-                                                                       String functionName) {
+                                                                       String functionName,
+                                                                       List<ModulePartNode> siblingModuleParts) {
         Optional<MappingConstructorExpressionNode> configRecord = switch (functionName) {
             case ISSUE -> getArgument(functionCall, ISSUER_CONFIG_POSITION, ISSUER_CONFIG_PARAM)
-                    .flatMap(JwtAnalysisUtils::resolveConfigRecord);
+                    .flatMap(argument -> JwtAnalysisUtils.resolveConfigRecord(argument, siblingModuleParts));
             case VALIDATE -> getArgument(functionCall, VALIDATOR_CONFIG_POSITION, VALIDATOR_CONFIG_PARAM)
-                    .flatMap(JwtAnalysisUtils::resolveConfigRecord);
+                    .flatMap(argument -> JwtAnalysisUtils.resolveConfigRecord(argument, siblingModuleParts));
             default -> Optional.empty();
         };
         return configRecord.orElse(null);

@@ -105,72 +105,82 @@ public class StaticCodeAnalyzerTest {
     }
 
     private void validateIssues(JwtRule rule, List<Issue> issues) {
+        int index;
         switch (rule) {
             case AVOID_WEAK_CIPHER_ALGORITHMS:
+                index = 0;
                 Assert.assertEquals(issues.size(), 10);
-                Assertions.assertIssue(issues, 0, "ballerina/jwt:1", "function_named_arg_capture_pattern.bal",
+                Assertions.assertIssue(issues, index++, "ballerina/jwt:1", "function_named_arg_capture_pattern.bal",
                         27, 27, Source.BUILT_IN);
-                Assertions.assertIssue(issues, 1, "ballerina/jwt:1", "function_named_arg_list_pattern.bal",
+                Assertions.assertIssue(issues, index++, "ballerina/jwt:1", "function_named_arg_list_pattern.bal",
                         29, 29, Source.BUILT_IN);
-                Assertions.assertIssue(issues, 2, "ballerina/jwt:1", "function_pos_arg_capture_pattern.bal",
+                Assertions.assertIssue(issues, index++, "ballerina/jwt:1", "function_pos_arg_capture_pattern.bal",
                         27, 27, Source.BUILT_IN);
-                Assertions.assertIssue(issues, 3, "ballerina/jwt:1", "function_pos_arg_list_pattern.bal",
+                Assertions.assertIssue(issues, index++, "ballerina/jwt:1", "function_pos_arg_list_pattern.bal",
                         29, 29, Source.BUILT_IN);
-                Assertions.assertIssue(issues, 4, "ballerina/jwt:1", "inline_named_arg.bal",
+                Assertions.assertIssue(issues, index++, "ballerina/jwt:1", "inline_named_arg.bal",
                         19, 25, Source.BUILT_IN);
-                Assertions.assertIssue(issues, 5, "ballerina/jwt:1", "inline_pos_arg.bal",
+                Assertions.assertIssue(issues, index++, "ballerina/jwt:1", "inline_pos_arg.bal",
                         19, 25, Source.BUILT_IN);
-                Assertions.assertIssue(issues, 6, "ballerina/jwt:1", "module_named_arg_capture_pattern.bal",
+                Assertions.assertIssue(issues, index++, "ballerina/jwt:1", "module_named_arg_capture_pattern.bal",
                         27, 27, Source.BUILT_IN);
-                Assertions.assertIssue(issues, 7, "ballerina/jwt:1", "module_named_arg_list_pattern.bal",
+                Assertions.assertIssue(issues, index++, "ballerina/jwt:1", "module_named_arg_list_pattern.bal",
                         29, 29, Source.BUILT_IN);
-                Assertions.assertIssue(issues, 8, "ballerina/jwt:1", "module_pos_arg_capture_pattern.bal",
+                Assertions.assertIssue(issues, index++, "ballerina/jwt:1", "module_pos_arg_capture_pattern.bal",
                         27, 27, Source.BUILT_IN);
-                Assertions.assertIssue(issues, 9, "ballerina/jwt:1", "module_pos_arg_list_pattern.bal",
+                Assertions.assertIssue(issues, index, "ballerina/jwt:1", "module_pos_arg_list_pattern.bal",
                         29, 29, Source.BUILT_IN);
                 break;
             case ENSURE_SIGNATURE_VERIFICATION:
-                Assert.assertEquals(issues.size(), 2);
-                Assertions.assertIssue(issues, 0, "ballerina/jwt:2", "no_signature_config.bal",
+                index = 0;
+                Assert.assertEquals(issues.size(), 3);
+                Assertions.assertIssue(issues, index++, "ballerina/jwt:2", "no_signature_config.bal",
                         20, 23, Source.BUILT_IN);
-                Assertions.assertIssue(issues, 1, "ballerina/jwt:2", "no_signature_config.bal",
+                Assertions.assertIssue(issues, index++, "ballerina/jwt:2", "no_signature_config.bal",
                         33, 33, Source.BUILT_IN);
+                Assertions.assertIssue(issues, index, "ballerina/jwt:2", "no_signature_config.bal",
+                        49, 49, Source.BUILT_IN);
                 break;
             case ENSURE_ISSUER_AND_AUDIENCE_VALIDATION:
+                index = 0;
                 Assert.assertEquals(issues.size(), 2);
-                Assertions.assertIssue(issues, 0, "ballerina/jwt:3", "no_issuer_or_audience.bal",
+                Assertions.assertIssue(issues, index++, "ballerina/jwt:3", "no_issuer_or_audience.bal",
                         20, 25, Source.BUILT_IN);
-                Assertions.assertIssue(issues, 1, "ballerina/jwt:3", "no_issuer_or_audience.bal",
+                Assertions.assertIssue(issues, index, "ballerina/jwt:3", "no_issuer_or_audience.bal",
                         30, 35, Source.BUILT_IN);
                 break;
             case AVOID_LONG_TOKEN_EXPIRY:
+                index = 0;
                 Assert.assertEquals(issues.size(), 4);
-                Assertions.assertIssue(issues, 0, "ballerina/jwt:4", "long_expiry.bal",
+                Assertions.assertIssue(issues, index++, "ballerina/jwt:4", "long_expiry.bal",
                         23, 23, Source.BUILT_IN);
-                Assertions.assertIssue(issues, 1, "ballerina/jwt:4", "long_expiry.bal",
+                Assertions.assertIssue(issues, index++, "ballerina/jwt:4", "long_expiry.bal",
                         37, 37, Source.BUILT_IN);
-                Assertions.assertIssue(issues, 2, "ballerina/jwt:4", "long_expiry.bal",
+                Assertions.assertIssue(issues, index++, "ballerina/jwt:4", "long_expiry.bal",
                         70, 70, Source.BUILT_IN);
-                Assertions.assertIssue(issues, 3, "ballerina/jwt:4", "shadowed_config.bal",
+                Assertions.assertIssue(issues, index, "ballerina/jwt:4", "shadowed_config.bal",
                         21, 21, Source.BUILT_IN);
                 break;
             case AVOID_LARGE_CLOCK_SKEW:
+                index = 0;
                 Assert.assertEquals(issues.size(), 2);
-                Assertions.assertIssue(issues, 0, "ballerina/jwt:5", "large_clock_skew.bal",
+                Assertions.assertIssue(issues, index++, "ballerina/jwt:5", "large_clock_skew.bal",
                         23, 23, Source.BUILT_IN);
-                Assertions.assertIssue(issues, 1, "ballerina/jwt:5", "large_clock_skew.bal",
+                Assertions.assertIssue(issues, index, "ballerina/jwt:5", "large_clock_skew.bal",
                         58, 58, Source.BUILT_IN);
                 break;
             case AVOID_DISABLED_JWKS_TLS:
+                index = 0;
                 Assert.assertEquals(issues.size(), 2);
-                Assertions.assertIssue(issues, 0, "ballerina/jwt:6", "jwks_tls_disabled.bal",
+                Assertions.assertIssue(issues, index++, "ballerina/jwt:6", "jwks_tls_disabled.bal",
                         28, 28, Source.BUILT_IN);
-                Assertions.assertIssue(issues, 1, "ballerina/jwt:6", "jwks_tls_disabled.bal",
+                Assertions.assertIssue(issues, index, "ballerina/jwt:6", "jwks_tls_disabled.bal",
                         57, 57, Source.BUILT_IN);
                 break;
             case AVOID_UNVERIFIED_TOKEN_DECODING:
+                index = 0;
                 Assert.assertEquals(issues.size(), 1);
-                Assertions.assertIssue(issues, 0, "ballerina/jwt:7", "unverified_decode.bal",
+                Assertions.assertIssue(issues, index, "ballerina/jwt:7", "unverified_decode.bal",
                         20, 20, Source.BUILT_IN);
                 break;
             default:

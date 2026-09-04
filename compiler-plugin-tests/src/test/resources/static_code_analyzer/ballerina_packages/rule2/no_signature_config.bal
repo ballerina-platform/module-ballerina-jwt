@@ -44,3 +44,25 @@ public function withSignatureConfig(string token) returns error? {
         }
     });
 }
+
+// Resolved from a sibling document of the same module
+public function siblingDocumentConfig(string token) returns error? {
+    jwt:Payload _ = check jwt:validate(token, siblingValidatorConfig);
+}
+
+// Negative case - the record is replaced before the call, and the replacement
+// configures the signature check
+public function reassignedBeforeUse(string token) returns error? {
+    jwt:ValidatorConfig config = {
+        issuer: "wso2",
+        audience: "ballerina"
+    };
+    config = {
+        issuer: "wso2",
+        audience: "ballerina",
+        signatureConfig: {
+            certFile: "/path/to/public.crt"
+        }
+    };
+    jwt:Payload _ = check jwt:validate(token, config);
+}

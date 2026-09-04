@@ -19,10 +19,15 @@
 package io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer;
 
 import io.ballerina.compiler.syntax.tree.FunctionCallExpressionNode;
+import io.ballerina.compiler.syntax.tree.ModulePartNode;
+import io.ballerina.projects.DocumentId;
+import io.ballerina.projects.Module;
 import io.ballerina.projects.plugins.AnalysisTask;
 import io.ballerina.projects.plugins.SyntaxNodeAnalysisContext;
 import io.ballerina.scan.Reporter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -59,6 +64,23 @@ public class JwtFunctionCallAnalyzer implements AnalysisTask<SyntaxNodeAnalysisC
             return;
         }
         rulesEngine.executeRules(new JwtFunctionContext(reporter, getDocument(context), functionName.get(),
-                functionCall));
+                functionCall, collectSiblingModuleParts(context)));
+    }
+
+    /**
+     * Collect the module's other documents, so a configuration declared in a sibling file is still found.
+     */
+    private List<ModulePartNode> collectSiblingModuleParts(SyntaxNodeAnalysisContext context) {
+        Module module = context.currentPackage().module(context.moduleId());
+        List<ModulePartNode> moduleParts = new ArrayList<>();
+        for (DocumentId documentId : module.documentIds()) {
+            if (documentId.equals(context.documentId())) {
+                continue;
+            }
+            if (module.document(documentId).syntaxTree().rootNode() instanceof ModulePartNode modulePart) {
+                moduleParts.add(modulePart);
+            }
+        }
+        return moduleParts;
     }
 }
