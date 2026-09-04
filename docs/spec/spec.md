@@ -499,7 +499,7 @@ The following static code rules are applied to the JWT module.
 | ballerina/jwt:6 | VULNERABILITY | [Avoid disabling TLS validation on the JWKS endpoint client](#66-avoid-disabling-tls-validation-on-the-jwks-endpoint-client) |
 | ballerina/jwt:7 | VULNERABILITY | [Avoid decoding JSON Web Tokens without verifying them](#67-avoid-decoding-json-web-tokens-without-verifying-them) |
 
-Almost every field of `jwt:ValidatorConfig` is optional, and each one left out removes a check rather than falling back to a safe value. That is what makes an incomplete configuration look like a working one: the code calls `jwt:validate` and reads the claims, while the token was never held to the property the caller assumes it was.
+The fields of `jwt:ValidatorConfig` that decide what is verified — `signatureConfig`, `issuer` and `audience` — are all optional, and each one left out removes that check rather than falling back to a safe value. That is what makes an incomplete configuration look like a working one: the code calls `jwt:validate` and reads the claims, while the token was never held to the property the caller assumes it was. The remaining fields configure behaviour rather than verification, and omitting them takes the documented defaults.
 
 ### 6.1. Avoid using weak cipher algorithms when signing and verifying JWTs
 
