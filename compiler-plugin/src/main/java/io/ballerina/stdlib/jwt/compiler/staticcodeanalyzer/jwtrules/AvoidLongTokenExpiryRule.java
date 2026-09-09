@@ -22,7 +22,6 @@ import io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.JwtFunctionContext;
 
 import java.math.BigDecimal;
 
-import static io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.JwtAnalysisUtils.getNumericLiteralValue;
 import static io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.JwtConstants.EXP_TIME;
 import static io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.JwtConstants.ISSUE;
 import static io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.JwtRule.AVOID_LONG_TOKEN_EXPIRY;
@@ -43,7 +42,7 @@ public class AvoidLongTokenExpiryRule implements JwtFunctionRule {
     @Override
     public void analyze(JwtFunctionContext context) {
         context.getConfigField(EXP_TIME).ifPresent(expTime -> expTime.valueExpr()
-                .flatMap(value -> getNumericLiteralValue(value))
+                .flatMap(context::getNumericValue)
                 .filter(seconds -> seconds.compareTo(MAX_EXPIRY_SECONDS) > 0)
                 .ifPresent(seconds -> context.reportIssue(expTime.location(), getRuleId())));
     }

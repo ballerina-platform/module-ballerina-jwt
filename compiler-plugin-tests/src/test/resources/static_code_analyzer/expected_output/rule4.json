@@ -81,6 +81,26 @@
   },
   {
     "location": {
+      "filePath": "long_expiry.bal",
+      "startLine": 83,
+      "endLine": 83,
+      "startColumn": 0,
+      "endColumn": 6,
+      "startOffset": 2302,
+      "length": 6
+    },
+    "rule": {
+      "id": "ballerina:3",
+      "numericId": 3,
+      "description": "Non isolated public function",
+      "ruleKind": "CODE_SMELL"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule4/long_expiry.bal",
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule4/long_expiry.bal"
+  },
+  {
+    "location": {
       "filePath": "shadowed_config.bal",
       "startLine": 31,
       "endLine": 31,
@@ -148,6 +168,26 @@
       "endColumn": 23,
       "startOffset": 2032,
       "length": 15
+    },
+    "rule": {
+      "id": "ballerina/jwt:4",
+      "numericId": 4,
+      "description": "Avoid issuing JSON Web Tokens with a long expiry time",
+      "ruleKind": "VULNERABILITY"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule4/long_expiry.bal",
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule4/long_expiry.bal"
+  },
+  {
+    "location": {
+      "filePath": "long_expiry.bal",
+      "startLine": 87,
+      "endLine": 87,
+      "startColumn": 8,
+      "endColumn": 40,
+      "startOffset": 2452,
+      "length": 32
     },
     "rule": {
       "id": "ballerina/jwt:4",

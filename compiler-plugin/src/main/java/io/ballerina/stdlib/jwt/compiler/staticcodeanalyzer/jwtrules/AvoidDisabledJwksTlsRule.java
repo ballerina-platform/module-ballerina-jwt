@@ -24,7 +24,6 @@ import io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.JwtFunctionContext;
 import java.util.Optional;
 
 import static io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.JwtAnalysisUtils.findField;
-import static io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.JwtAnalysisUtils.getBooleanLiteralValue;
 import static io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.JwtConstants.CLIENT_CONFIG;
 import static io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.JwtConstants.DISABLE;
 import static io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.JwtConstants.JWKS_CONFIG;
@@ -52,7 +51,7 @@ public class AvoidDisabledJwksTlsRule implements JwtFunctionRule {
         if (disable.isEmpty() || disable.get().valueExpr().isEmpty()) {
             return;
         }
-        if (getBooleanLiteralValue(disable.get().valueExpr().get()).orElse(false)) {
+        if (context.getBooleanValue(disable.get().valueExpr().get()).orElse(false)) {
             context.reportIssue(disable.get().location(), getRuleId());
         }
     }

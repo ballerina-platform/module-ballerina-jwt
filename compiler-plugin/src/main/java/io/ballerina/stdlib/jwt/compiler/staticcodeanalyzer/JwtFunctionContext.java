@@ -28,6 +28,7 @@ import io.ballerina.projects.Document;
 import io.ballerina.scan.Reporter;
 import io.ballerina.tools.diagnostics.Location;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -187,6 +188,28 @@ public class JwtFunctionContext {
      */
     public Optional<String> getStringValue(ExpressionNode expression) {
         return JwtAnalysisUtils.getStringValue(expression, this.semanticModel);
+    }
+
+    /**
+     * Get the value of a boolean-valued expression from this call's configuration, resolving a constant reference
+     * through the module's semantic model.
+     *
+     * @param expression the expression to read
+     * @return the value if the expression is a boolean literal or a constant of boolean value, empty otherwise
+     */
+    public Optional<Boolean> getBooleanValue(ExpressionNode expression) {
+        return JwtAnalysisUtils.getBooleanValue(expression, this.semanticModel);
+    }
+
+    /**
+     * Get the value of a numeric expression from this call's configuration, resolving a constant reference through
+     * the module's semantic model.
+     *
+     * @param expression the expression to read
+     * @return the value if the expression is a numeric literal or a constant of numeric value, empty otherwise
+     */
+    public Optional<BigDecimal> getNumericValue(ExpressionNode expression) {
+        return JwtAnalysisUtils.getNumericValue(expression, this.semanticModel);
     }
 
     /**

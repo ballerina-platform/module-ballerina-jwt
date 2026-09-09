@@ -22,7 +22,6 @@ import io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.JwtFunctionContext;
 
 import java.math.BigDecimal;
 
-import static io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.JwtAnalysisUtils.getNumericLiteralValue;
 import static io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.JwtConstants.CLOCK_SKEW;
 import static io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.JwtConstants.VALIDATE;
 import static io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.JwtRule.AVOID_LARGE_CLOCK_SKEW;
@@ -43,7 +42,7 @@ public class AvoidLargeClockSkewRule implements JwtFunctionRule {
     @Override
     public void analyze(JwtFunctionContext context) {
         context.getConfigField(CLOCK_SKEW).ifPresent(clockSkew -> clockSkew.valueExpr()
-                .flatMap(value -> getNumericLiteralValue(value))
+                .flatMap(context::getNumericValue)
                 .filter(seconds -> seconds.compareTo(MAX_CLOCK_SKEW_SECONDS) > 0)
                 .ifPresent(seconds -> context.reportIssue(clockSkew.location(), getRuleId())));
     }

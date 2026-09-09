@@ -62,3 +62,17 @@ public function suffixedLargeClockSkew(string token) returns error? {
         }
     });
 }
+
+// The skew is held in a constant
+const decimal CONSTANT_SKEW_SECONDS = 3600;
+
+public function constantLargeClockSkew(string token) returns error? {
+    jwt:Payload _ = check jwt:validate(token, {
+        issuer: "wso2",
+        audience: "ballerina",
+        clockSkew: CONSTANT_SKEW_SECONDS,
+        signatureConfig: {
+            certFile: "/path/to/public.crt"
+        }
+    });
+}

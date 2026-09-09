@@ -77,3 +77,20 @@ public function suffixedLongExpiry() returns error? {
         }
     });
 }
+
+// The lifetime is held in a constant
+const decimal CONSTANT_EXPIRY_SECONDS = 604800;
+
+public function constantLongExpiry() returns error? {
+    string _ = check jwt:issue({
+        issuer: "wso2",
+        audience: "ballerina",
+        expTime: CONSTANT_EXPIRY_SECONDS,
+        signatureConfig: {
+            algorithm: jwt:RS256,
+            config: {
+                keyFile: "/path/to/private.key"
+            }
+        }
+    });
+}

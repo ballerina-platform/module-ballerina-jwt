@@ -71,3 +71,42 @@ public function variableJwksClientConfig(string token) returns error? {
         }
     });
 }
+
+// The flag is held in a constant
+const DISABLE_TLS = true;
+const ENABLE_TLS = false;
+
+public function constantDisabledJwksTls(string token) returns error? {
+    jwt:Payload _ = check jwt:validate(token, {
+        issuer: "wso2",
+        audience: "ballerina",
+        signatureConfig: {
+            jwksConfig: {
+                url: "https://idp.example.com/jwks",
+                clientConfig: {
+                    secureSocket: {
+                        disable: DISABLE_TLS
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Negative case - a constant that leaves the certificate validated
+public function constantEnabledJwksTls(string token) returns error? {
+    jwt:Payload _ = check jwt:validate(token, {
+        issuer: "wso2",
+        audience: "ballerina",
+        signatureConfig: {
+            jwksConfig: {
+                url: "https://idp.example.com/jwks",
+                clientConfig: {
+                    secureSocket: {
+                        disable: ENABLE_TLS
+                    }
+                }
+            }
+        }
+    });
+}

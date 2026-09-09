@@ -162,31 +162,37 @@ public class StaticCodeAnalyzerTest {
                 break;
             case AVOID_LONG_TOKEN_EXPIRY:
                 index = 0;
-                Assert.assertEquals(issues.size(), 4);
+                Assert.assertEquals(issues.size(), 5);
                 Assertions.assertIssue(issues, index++, "ballerina/jwt:4", "long_expiry.bal",
                         23, 23, Source.BUILT_IN);
                 Assertions.assertIssue(issues, index++, "ballerina/jwt:4", "long_expiry.bal",
                         37, 37, Source.BUILT_IN);
                 Assertions.assertIssue(issues, index++, "ballerina/jwt:4", "long_expiry.bal",
                         70, 70, Source.BUILT_IN);
+                Assertions.assertIssue(issues, index++, "ballerina/jwt:4", "long_expiry.bal",
+                        87, 87, Source.BUILT_IN);
                 Assertions.assertIssue(issues, index, "ballerina/jwt:4", "shadowed_config.bal",
                         21, 21, Source.BUILT_IN);
                 break;
             case AVOID_LARGE_CLOCK_SKEW:
                 index = 0;
-                Assert.assertEquals(issues.size(), 2);
+                Assert.assertEquals(issues.size(), 3);
                 Assertions.assertIssue(issues, index++, "ballerina/jwt:5", "large_clock_skew.bal",
                         23, 23, Source.BUILT_IN);
-                Assertions.assertIssue(issues, index, "ballerina/jwt:5", "large_clock_skew.bal",
+                Assertions.assertIssue(issues, index++, "ballerina/jwt:5", "large_clock_skew.bal",
                         58, 58, Source.BUILT_IN);
+                Assertions.assertIssue(issues, index, "ballerina/jwt:5", "large_clock_skew.bal",
+                        72, 72, Source.BUILT_IN);
                 break;
             case AVOID_DISABLED_JWKS_TLS:
                 index = 0;
-                Assert.assertEquals(issues.size(), 2);
+                Assert.assertEquals(issues.size(), 3);
                 Assertions.assertIssue(issues, index++, "ballerina/jwt:6", "jwks_tls_disabled.bal",
                         28, 28, Source.BUILT_IN);
-                Assertions.assertIssue(issues, index, "ballerina/jwt:6", "jwks_tls_disabled.bal",
+                Assertions.assertIssue(issues, index++, "ballerina/jwt:6", "jwks_tls_disabled.bal",
                         57, 57, Source.BUILT_IN);
+                Assertions.assertIssue(issues, index, "ballerina/jwt:6", "jwks_tls_disabled.bal",
+                        87, 87, Source.BUILT_IN);
                 break;
             case AVOID_UNVERIFIED_TOKEN_DECODING:
                 index = 0;

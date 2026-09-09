@@ -298,16 +298,19 @@ public final class JwtAnalysisUtils {
     }
 
     /**
-     * Get the value of a boolean literal expression.
-     * <p>
-     * Only a literal is actionable. A variable or a computed expression cannot be resolved without data-flow
-     * analysis, and reporting on one would be a guess.
+     * Get the value of a boolean-valued expression, written either as a literal or as a reference to a constant.
      *
-     * @param expression the expression to read
-     * @return the literal value if the expression is a boolean literal, empty otherwise
+     * @param expression    the expression to read
+     * @param semanticModel the semantic model of the module being analyzed
+     * @return the value if the expression is a boolean literal or a constant of boolean value, empty otherwise
      */
-    public static Optional<Boolean> getBooleanLiteralValue(ExpressionNode expression) {
-        String source = expression.toSourceCode().trim();
+    public static Optional<Boolean> getBooleanValue(ExpressionNode expression, SemanticModel semanticModel) {
+        return toBoolean(expression.toSourceCode().trim())
+                .or(() -> getConstantValue(expression, semanticModel)
+                        .flatMap(value -> toBoolean(value.toString())));
+    }
+
+    private static Optional<Boolean> toBoolean(String source) {
         if (Boolean.TRUE.toString().equals(source)) {
             return Optional.of(true);
         }
@@ -334,35 +337,53 @@ public final class JwtAnalysisUtils {
             String literal = expression.toSourceCode().trim();
             return Optional.of(literal.substring(1, literal.length() - 1));
         }
-        return semanticModel.symbol(expression)
-                .filter(ConstantSymbol.class::isInstance)
-                .map(symbol -> ((ConstantSymbol) symbol).constValue())
-                .map(JwtAnalysisUtils::unwrapConstantValue)
+        return getConstantValue(expression, semanticModel)
                 .filter(String.class::isInstance)
                 .map(String.class::cast);
     }
 
     /**
+     * Resolve the value of the constant a reference names, so a value is matched on what it is rather than on how
+     * it was spelled. Anything else, a variable included, cannot be resolved without data-flow analysis and yields
+     * an empty result.
+     */
+    private static Optional<Object> getConstantValue(ExpressionNode expression, SemanticModel semanticModel) {
+        return semanticModel.symbol(expression)
+                .filter(ConstantSymbol.class::isInstance)
+                .map(symbol -> ((ConstantSymbol) symbol).constValue())
+                .map(JwtAnalysisUtils::unwrapConstantValue);
+    }
+
+    /**
      * A constant's value is handed over wrapped in its type, though the interface promises only an {@code Object}.
+     * What the wrapper carries is not always the Java type of the value: a {@code decimal} constant arrives as
+     * text, so a caller reads the value through its string form rather than by casting.
      */
     private static Object unwrapConstantValue(Object constValue) {
         return constValue instanceof ConstantValue wrapped ? wrapped.value() : constValue;
     }
 
     /**
-     * Get the value of a numeric literal expression. The JWT durations are {@code decimal}, so a value may be
-     * written with a fraction, as a negated literal, or with the {@code d} suffix that spells the type out.
+     * Get the value of a numeric expression, written either as a literal or as a reference to a constant. The JWT
+     * durations are {@code decimal}, so a value may be written with a fraction, as a negated literal, or with the
+     * {@code d} suffix that spells the type out.
      *
-     * @param expression the expression to read
-     * @return the literal value if the expression is a numeric literal, empty otherwise
+     * @param expression    the expression to read
+     * @param semanticModel the semantic model of the module being analyzed
+     * @return the value if the expression is a numeric literal or a constant of numeric value, empty otherwise
      */
-    public static Optional<BigDecimal> getNumericLiteralValue(ExpressionNode expression) {
-        String source = expression.toSourceCode().trim();
-        if (source.endsWith("d") || source.endsWith("D")) {
-            source = source.substring(0, source.length() - 1);
-        }
+    public static Optional<BigDecimal> getNumericValue(ExpressionNode expression, SemanticModel semanticModel) {
+        return toBigDecimal(expression.toSourceCode().trim())
+                .or(() -> getConstantValue(expression, semanticModel)
+                        .flatMap(value -> toBigDecimal(value.toString())));
+    }
+
+    private static Optional<BigDecimal> toBigDecimal(String source) {
+        String value = source.endsWith("d") || source.endsWith("D")
+                ? source.substring(0, source.length() - 1)
+                : source;
         try {
-            return Optional.of(new BigDecimal(source));
+            return Optional.of(new BigDecimal(value));
         } catch (NumberFormatException e) {
             return Optional.empty();
         }
