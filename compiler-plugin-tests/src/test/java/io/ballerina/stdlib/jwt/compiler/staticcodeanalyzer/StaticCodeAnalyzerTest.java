@@ -21,6 +21,7 @@ package io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.ballerina.projects.Project;
 import io.ballerina.projects.ProjectEnvironmentBuilder;
 import io.ballerina.projects.directory.BuildProject;
@@ -58,6 +59,8 @@ public class StaticCodeAnalyzerTest {
             .get("../", "compiler-plugin", "src", "main", "resources", "rules.json").toAbsolutePath();
     private static final Path DISTRIBUTION_PATH = Paths.get("../", "target", "ballerina-runtime");
     private static final String MODULE_BALLERINA_JWT = "module-ballerina-jwt";
+    private static final String START_OFFSET_FIELD = "startOffset";
+    private static final List<String> BYTE_OFFSET_FIELDS = List.of(START_OFFSET_FIELD, "length");
 
     @Test
     public void validateRulesJson() throws IOException {
@@ -218,6 +221,9 @@ public class StaticCodeAnalyzerTest {
         try {
             ObjectMapper mapper = new ObjectMapper().configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
             JsonNode node = mapper.readTree(json);
+            // The byte offsets shift with the line endings the fixtures were checked out with
+            node.findParents(START_OFFSET_FIELD)
+                    .forEach(location -> ((ObjectNode) location).remove(BYTE_OFFSET_FIELDS));
             String normalizedJson = mapper.writeValueAsString(node)
                     .replaceAll(":\"[^\"]*" + MODULE_BALLERINA_JWT, ":\"" + MODULE_BALLERINA_JWT);
             return isWindows() ? normalizedJson.replace("/", "\\\\") : normalizedJson;
