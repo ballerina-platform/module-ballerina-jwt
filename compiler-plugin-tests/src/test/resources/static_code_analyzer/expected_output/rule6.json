@@ -1,0 +1,162 @@
+[
+  {
+    "location": {
+      "filePath": "jwks_tls_disabled.bal",
+      "startLine": 19,
+      "endLine": 19,
+      "startColumn": 0,
+      "endColumn": 6,
+      "startOffset": 745,
+      "length": 6
+    },
+    "rule": {
+      "id": "ballerina:3",
+      "numericId": 3,
+      "description": "Non isolated public function",
+      "ruleKind": "CODE_SMELL"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule6/jwks_tls_disabled.bal",
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule6/jwks_tls_disabled.bal"
+  },
+  {
+    "location": {
+      "filePath": "jwks_tls_disabled.bal",
+      "startLine": 37,
+      "endLine": 37,
+      "startColumn": 0,
+      "endColumn": 6,
+      "startOffset": 1266,
+      "length": 6
+    },
+    "rule": {
+      "id": "ballerina:3",
+      "numericId": 3,
+      "description": "Non isolated public function",
+      "ruleKind": "CODE_SMELL"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule6/jwks_tls_disabled.bal",
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule6/jwks_tls_disabled.bal"
+  },
+  {
+    "location": {
+      "filePath": "jwks_tls_disabled.bal",
+      "startLine": 61,
+      "endLine": 61,
+      "startColumn": 0,
+      "endColumn": 6,
+      "startOffset": 1896,
+      "length": 6
+    },
+    "rule": {
+      "id": "ballerina:3",
+      "numericId": 3,
+      "description": "Non isolated public function",
+      "ruleKind": "CODE_SMELL"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule6/jwks_tls_disabled.bal",
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule6/jwks_tls_disabled.bal"
+  },
+  {
+    "location": {
+      "filePath": "jwks_tls_disabled.bal",
+      "startLine": 78,
+      "endLine": 78,
+      "startColumn": 0,
+      "endColumn": 6,
+      "startOffset": 2354,
+      "length": 6
+    },
+    "rule": {
+      "id": "ballerina:3",
+      "numericId": 3,
+      "description": "Non isolated public function",
+      "ruleKind": "CODE_SMELL"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule6/jwks_tls_disabled.bal",
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule6/jwks_tls_disabled.bal"
+  },
+  {
+    "location": {
+      "filePath": "jwks_tls_disabled.bal",
+      "startLine": 96,
+      "endLine": 96,
+      "startColumn": 0,
+      "endColumn": 6,
+      "startOffset": 2890,
+      "length": 6
+    },
+    "rule": {
+      "id": "ballerina:3",
+      "numericId": 3,
+      "description": "Non isolated public function",
+      "ruleKind": "CODE_SMELL"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule6/jwks_tls_disabled.bal",
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule6/jwks_tls_disabled.bal"
+  },
+  {
+    "location": {
+      "filePath": "jwks_tls_disabled.bal",
+      "startLine": 28,
+      "endLine": 28,
+      "startColumn": 24,
+      "endColumn": 37,
+      "startOffset": 1115,
+      "length": 13
+    },
+    "rule": {
+      "id": "ballerina/jwt:6",
+      "numericId": 6,
+      "description": "Avoid disabling TLS validation on the JWKS endpoint client",
+      "ruleKind": "VULNERABILITY"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule6/jwks_tls_disabled.bal",
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule6/jwks_tls_disabled.bal"
+  },
+  {
+    "location": {
+      "filePath": "jwks_tls_disabled.bal",
+      "startLine": 57,
+      "endLine": 57,
+      "startColumn": 8,
+      "endColumn": 21,
+      "startOffset": 1872,
+      "length": 13
+    },
+    "rule": {
+      "id": "ballerina/jwt:6",
+      "numericId": 6,
+      "description": "Avoid disabling TLS validation on the JWKS endpoint client",
+      "ruleKind": "VULNERABILITY"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule6/jwks_tls_disabled.bal",
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule6/jwks_tls_disabled.bal"
+  },
+  {
+    "location": {
+      "filePath": "jwks_tls_disabled.bal",
+      "startLine": 87,
+      "endLine": 87,
+      "startColumn": 24,
+      "endColumn": 44,
+      "startOffset": 2726,
+      "length": 20
+    },
+    "rule": {
+      "id": "ballerina/jwt:6",
+      "numericId": 6,
+      "description": "Avoid disabling TLS validation on the JWKS endpoint client",
+      "ruleKind": "VULNERABILITY"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule6/jwks_tls_disabled.bal",
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule6/jwks_tls_disabled.bal"
+  }
+]

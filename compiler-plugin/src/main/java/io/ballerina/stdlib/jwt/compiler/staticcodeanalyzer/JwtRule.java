@@ -25,7 +25,17 @@ import static io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.RuleFactory.cr
 
 public enum JwtRule {
     AVOID_WEAK_CIPHER_ALGORITHMS(createRule(1, "Avoid using weak cipher algorithms when signing and " +
-            "verifying JWTs", VULNERABILITY));
+            "verifying JWTs", VULNERABILITY)),
+    ENSURE_SIGNATURE_VERIFICATION(createRule(2, "Avoid validating JSON Web Tokens without a signature " +
+            "configuration", VULNERABILITY)),
+    ENSURE_ISSUER_AND_AUDIENCE_VALIDATION(createRule(3, "Avoid validating JSON Web Tokens without checking the " +
+            "issuer and the audience", VULNERABILITY)),
+    AVOID_LONG_TOKEN_EXPIRY(createRule(4, "Avoid issuing JSON Web Tokens with a long expiry time", VULNERABILITY)),
+    AVOID_LARGE_CLOCK_SKEW(createRule(5, "Avoid validating JSON Web Tokens with a large clock skew", VULNERABILITY)),
+    AVOID_DISABLED_JWKS_TLS(createRule(6, "Avoid disabling TLS validation on the JWKS endpoint client",
+            VULNERABILITY)),
+    AVOID_UNVERIFIED_TOKEN_DECODING(createRule(7, "Avoid decoding JSON Web Tokens without verifying them",
+            VULNERABILITY));
 
     private final Rule rule;
 

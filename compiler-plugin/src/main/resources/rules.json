@@ -3,5 +3,35 @@
     "id": 1,
     "kind": "VULNERABILITY",
     "description": "Avoid using weak cipher algorithms when signing and verifying JWTs"
+  },
+  {
+    "id": 2,
+    "kind": "VULNERABILITY",
+    "description": "Avoid validating JSON Web Tokens without a signature configuration"
+  },
+  {
+    "id": 3,
+    "kind": "VULNERABILITY",
+    "description": "Avoid validating JSON Web Tokens without checking the issuer and the audience"
+  },
+  {
+    "id": 4,
+    "kind": "VULNERABILITY",
+    "description": "Avoid issuing JSON Web Tokens with a long expiry time"
+  },
+  {
+    "id": 5,
+    "kind": "VULNERABILITY",
+    "description": "Avoid validating JSON Web Tokens with a large clock skew"
+  },
+  {
+    "id": 6,
+    "kind": "VULNERABILITY",
+    "description": "Avoid disabling TLS validation on the JWKS endpoint client"
+  },
+  {
+    "id": 7,
+    "kind": "VULNERABILITY",
+    "description": "Avoid decoding JSON Web Tokens without verifying them"
   }
 ]

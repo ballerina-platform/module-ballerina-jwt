@@ -1,0 +1,162 @@
+[
+  {
+    "location": {
+      "filePath": "large_clock_skew.bal",
+      "startLine": 19,
+      "endLine": 19,
+      "startColumn": 0,
+      "endColumn": 6,
+      "startOffset": 742,
+      "length": 6
+    },
+    "rule": {
+      "id": "ballerina:3",
+      "numericId": 3,
+      "description": "Non isolated public function",
+      "ruleKind": "CODE_SMELL"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule5/large_clock_skew.bal",
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule5/large_clock_skew.bal"
+  },
+  {
+    "location": {
+      "filePath": "large_clock_skew.bal",
+      "startLine": 31,
+      "endLine": 31,
+      "startColumn": 0,
+      "endColumn": 6,
+      "startOffset": 1093,
+      "length": 6
+    },
+    "rule": {
+      "id": "ballerina:3",
+      "numericId": 3,
+      "description": "Non isolated public function",
+      "ruleKind": "CODE_SMELL"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule5/large_clock_skew.bal",
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule5/large_clock_skew.bal"
+  },
+  {
+    "location": {
+      "filePath": "large_clock_skew.bal",
+      "startLine": 43,
+      "endLine": 43,
+      "startColumn": 0,
+      "endColumn": 6,
+      "startOffset": 1415,
+      "length": 6
+    },
+    "rule": {
+      "id": "ballerina:3",
+      "numericId": 3,
+      "description": "Non isolated public function",
+      "ruleKind": "CODE_SMELL"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule5/large_clock_skew.bal",
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule5/large_clock_skew.bal"
+  },
+  {
+    "location": {
+      "filePath": "large_clock_skew.bal",
+      "startLine": 54,
+      "endLine": 54,
+      "startColumn": 0,
+      "endColumn": 6,
+      "startOffset": 1732,
+      "length": 6
+    },
+    "rule": {
+      "id": "ballerina:3",
+      "numericId": 3,
+      "description": "Non isolated public function",
+      "ruleKind": "CODE_SMELL"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule5/large_clock_skew.bal",
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule5/large_clock_skew.bal"
+  },
+  {
+    "location": {
+      "filePath": "large_clock_skew.bal",
+      "startLine": 68,
+      "endLine": 68,
+      "startColumn": 0,
+      "endColumn": 6,
+      "startOffset": 2101,
+      "length": 6
+    },
+    "rule": {
+      "id": "ballerina:3",
+      "numericId": 3,
+      "description": "Non isolated public function",
+      "ruleKind": "CODE_SMELL"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule5/large_clock_skew.bal",
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule5/large_clock_skew.bal"
+  },
+  {
+    "location": {
+      "filePath": "large_clock_skew.bal",
+      "startLine": 23,
+      "endLine": 23,
+      "startColumn": 8,
+      "endColumn": 23,
+      "startOffset": 921,
+      "length": 15
+    },
+    "rule": {
+      "id": "ballerina/jwt:5",
+      "numericId": 5,
+      "description": "Avoid validating JSON Web Tokens with a large clock skew",
+      "ruleKind": "VULNERABILITY"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule5/large_clock_skew.bal",
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule5/large_clock_skew.bal"
+  },
+  {
+    "location": {
+      "filePath": "large_clock_skew.bal",
+      "startLine": 58,
+      "endLine": 58,
+      "startColumn": 8,
+      "endColumn": 23,
+      "startOffset": 1913,
+      "length": 15
+    },
+    "rule": {
+      "id": "ballerina/jwt:5",
+      "numericId": 5,
+      "description": "Avoid validating JSON Web Tokens with a large clock skew",
+      "ruleKind": "VULNERABILITY"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule5/large_clock_skew.bal",
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule5/large_clock_skew.bal"
+  },
+  {
+    "location": {
+      "filePath": "large_clock_skew.bal",
+      "startLine": 72,
+      "endLine": 72,
+      "startColumn": 8,
+      "endColumn": 40,
+      "startOffset": 2282,
+      "length": 32
+    },
+    "rule": {
+      "id": "ballerina/jwt:5",
+      "numericId": 5,
+      "description": "Avoid validating JSON Web Tokens with a large clock skew",
+      "ruleKind": "VULNERABILITY"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule5/large_clock_skew.bal",
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule5/large_clock_skew.bal"
+  }
+]
