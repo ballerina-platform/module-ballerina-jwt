@@ -1,6 +1,66 @@
 [
   {
     "location": {
+      "filePath": "constant_reference_algorithm.bal",
+      "startLine": 22,
+      "endLine": 22,
+      "startColumn": 0,
+      "endColumn": 6,
+      "startOffset": 790,
+      "length": 6
+    },
+    "rule": {
+      "id": "ballerina:3",
+      "numericId": 3,
+      "description": "Non isolated public function",
+      "ruleKind": "CODE_SMELL"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule1/constant_reference_algorithm.bal",
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule1/constant_reference_algorithm.bal"
+  },
+  {
+    "location": {
+      "filePath": "constant_reference_algorithm.bal",
+      "startLine": 33,
+      "endLine": 33,
+      "startColumn": 0,
+      "endColumn": 6,
+      "startOffset": 1072,
+      "length": 6
+    },
+    "rule": {
+      "id": "ballerina:3",
+      "numericId": 3,
+      "description": "Non isolated public function",
+      "ruleKind": "CODE_SMELL"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule1/constant_reference_algorithm.bal",
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule1/constant_reference_algorithm.bal"
+  },
+  {
+    "location": {
+      "filePath": "constant_reference_algorithm.bal",
+      "startLine": 44,
+      "endLine": 44,
+      "startColumn": 0,
+      "endColumn": 6,
+      "startOffset": 1362,
+      "length": 6
+    },
+    "rule": {
+      "id": "ballerina:3",
+      "numericId": 3,
+      "description": "Non isolated public function",
+      "ruleKind": "CODE_SMELL"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule1/constant_reference_algorithm.bal",
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule1/constant_reference_algorithm.bal"
+  },
+  {
+    "location": {
       "filePath": "function_named_arg_capture_pattern.bal",
       "startLine": 18,
       "endLine": 18,
@@ -201,6 +261,66 @@
   },
   {
     "location": {
+      "filePath": "string_literal_algorithm.bal",
+      "startLine": 26,
+      "endLine": 26,
+      "startColumn": 0,
+      "endColumn": 6,
+      "startOffset": 891,
+      "length": 6
+    },
+    "rule": {
+      "id": "ballerina:3",
+      "numericId": 3,
+      "description": "Non isolated public function",
+      "ruleKind": "CODE_SMELL"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule1/string_literal_algorithm.bal",
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule1/string_literal_algorithm.bal"
+  },
+  {
+    "location": {
+      "filePath": "constant_reference_algorithm.bal",
+      "startLine": 23,
+      "endLine": 29,
+      "startColumn": 21,
+      "endColumn": 6,
+      "startOffset": 871,
+      "length": 143
+    },
+    "rule": {
+      "id": "ballerina/jwt:1",
+      "numericId": 1,
+      "description": "Avoid using weak cipher algorithms when signing and verifying JWTs",
+      "ruleKind": "VULNERABILITY"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule1/constant_reference_algorithm.bal",
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule1/constant_reference_algorithm.bal"
+  },
+  {
+    "location": {
+      "filePath": "constant_reference_algorithm.bal",
+      "startLine": 34,
+      "endLine": 40,
+      "startColumn": 21,
+      "endColumn": 6,
+      "startOffset": 1151,
+      "length": 147
+    },
+    "rule": {
+      "id": "ballerina/jwt:1",
+      "numericId": 1,
+      "description": "Avoid using weak cipher algorithms when signing and verifying JWTs",
+      "ruleKind": "VULNERABILITY"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule1/constant_reference_algorithm.bal",
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule1/constant_reference_algorithm.bal"
+  },
+  {
+    "location": {
       "filePath": "function_named_arg_capture_pattern.bal",
       "startLine": 27,
       "endLine": 27,
@@ -398,5 +518,45 @@
     "source": "BUILT_IN",
     "fileName": "rule1/module_pos_arg_list_pattern.bal",
     "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule1/module_pos_arg_list_pattern.bal"
+  },
+  {
+    "location": {
+      "filePath": "string_literal_algorithm.bal",
+      "startLine": 19,
+      "endLine": 24,
+      "startColumn": 49,
+      "endColumn": 2,
+      "startOffset": 799,
+      "length": 89
+    },
+    "rule": {
+      "id": "ballerina/jwt:1",
+      "numericId": 1,
+      "description": "Avoid using weak cipher algorithms when signing and verifying JWTs",
+      "ruleKind": "VULNERABILITY"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule1/string_literal_algorithm.bal",
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule1/string_literal_algorithm.bal"
+  },
+  {
+    "location": {
+      "filePath": "string_literal_algorithm.bal",
+      "startLine": 27,
+      "endLine": 32,
+      "startColumn": 21,
+      "endColumn": 6,
+      "startOffset": 983,
+      "length": 109
+    },
+    "rule": {
+      "id": "ballerina/jwt:1",
+      "numericId": 1,
+      "description": "Avoid using weak cipher algorithms when signing and verifying JWTs",
+      "ruleKind": "VULNERABILITY"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule1/string_literal_algorithm.bal",
+    "filePath": "module-ballerina-jwt/compiler-plugin-tests/src/test/resources/static_code_analyzer/ballerina_packages/rule1/string_literal_algorithm.bal"
   }
 ]

@@ -18,6 +18,7 @@
 
 package io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer;
 
+import io.ballerina.compiler.api.SemanticModel;
 import io.ballerina.compiler.syntax.tree.ExpressionNode;
 import io.ballerina.compiler.syntax.tree.FunctionCallExpressionNode;
 import io.ballerina.compiler.syntax.tree.MappingConstructorExpressionNode;
@@ -54,6 +55,7 @@ public class JwtFunctionContext {
 
     private final Reporter reporter;
     private final Document document;
+    private final SemanticModel semanticModel;
     private final String functionName;
     private final Location functionLocation;
     private final MappingConstructorExpressionNode configRecord;
@@ -63,15 +65,17 @@ public class JwtFunctionContext {
      *
      * @param reporter     the static code analysis reporter
      * @param document     the document containing the call
+     * @param semanticModel the semantic model of the module containing the call
      * @param functionName the simple name of the JWT function being called
      * @param functionCall the call being analyzed
      * @param siblingModuleParts the module's other documents, searched when the configuration is declared in one
      */
-    public JwtFunctionContext(Reporter reporter, Document document, String functionName,
+    public JwtFunctionContext(Reporter reporter, Document document, SemanticModel semanticModel, String functionName,
                               FunctionCallExpressionNode functionCall,
                               List<ModulePartNode> siblingModuleParts) {
         this.reporter = reporter;
         this.document = document;
+        this.semanticModel = semanticModel;
         this.functionName = functionName;
         this.functionLocation = functionCall.location();
         this.configRecord = resolveConfigRecord(functionCall, functionName, siblingModuleParts);
@@ -172,6 +176,17 @@ public class JwtFunctionContext {
             current = current.flatMap(enclosingRecord -> getNestedRecord(enclosingRecord, fieldName));
         }
         return current;
+    }
+
+    /**
+     * Get the value of a string-valued expression from this call's configuration, resolving a constant reference
+     * through the module's semantic model.
+     *
+     * @param expression the expression to read
+     * @return the value if the expression is a string literal or a constant of string value, empty otherwise
+     */
+    public Optional<String> getStringValue(ExpressionNode expression) {
+        return JwtAnalysisUtils.getStringValue(expression, this.semanticModel);
     }
 
     /**

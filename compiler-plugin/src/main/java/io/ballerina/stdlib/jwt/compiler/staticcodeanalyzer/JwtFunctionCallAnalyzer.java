@@ -63,8 +63,8 @@ public class JwtFunctionCallAnalyzer implements AnalysisTask<SyntaxNodeAnalysisC
         if (functionName.isEmpty()) {
             return;
         }
-        rulesEngine.executeRules(new JwtFunctionContext(reporter, getDocument(context), functionName.get(),
-                functionCall, collectSiblingModuleParts(context)));
+        rulesEngine.executeRules(new JwtFunctionContext(reporter, getDocument(context), context.semanticModel(),
+                functionName.get(), functionCall, collectSiblingModuleParts(context)));
     }
 
     /**

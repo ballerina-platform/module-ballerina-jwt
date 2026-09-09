@@ -112,7 +112,11 @@ public class StaticCodeAnalyzerTest {
         switch (rule) {
             case AVOID_WEAK_CIPHER_ALGORITHMS:
                 index = 0;
-                Assert.assertEquals(issues.size(), 10);
+                Assert.assertEquals(issues.size(), 14);
+                Assertions.assertIssue(issues, index++, "ballerina/jwt:1", "constant_reference_algorithm.bal",
+                        23, 29, Source.BUILT_IN);
+                Assertions.assertIssue(issues, index++, "ballerina/jwt:1", "constant_reference_algorithm.bal",
+                        34, 40, Source.BUILT_IN);
                 Assertions.assertIssue(issues, index++, "ballerina/jwt:1", "function_named_arg_capture_pattern.bal",
                         27, 27, Source.BUILT_IN);
                 Assertions.assertIssue(issues, index++, "ballerina/jwt:1", "function_named_arg_list_pattern.bal",
@@ -131,8 +135,12 @@ public class StaticCodeAnalyzerTest {
                         29, 29, Source.BUILT_IN);
                 Assertions.assertIssue(issues, index++, "ballerina/jwt:1", "module_pos_arg_capture_pattern.bal",
                         27, 27, Source.BUILT_IN);
-                Assertions.assertIssue(issues, index, "ballerina/jwt:1", "module_pos_arg_list_pattern.bal",
+                Assertions.assertIssue(issues, index++, "ballerina/jwt:1", "module_pos_arg_list_pattern.bal",
                         29, 29, Source.BUILT_IN);
+                Assertions.assertIssue(issues, index++, "ballerina/jwt:1", "string_literal_algorithm.bal",
+                        19, 24, Source.BUILT_IN);
+                Assertions.assertIssue(issues, index, "ballerina/jwt:1", "string_literal_algorithm.bal",
+                        27, 32, Source.BUILT_IN);
                 break;
             case ENSURE_SIGNATURE_VERIFICATION:
                 index = 0;

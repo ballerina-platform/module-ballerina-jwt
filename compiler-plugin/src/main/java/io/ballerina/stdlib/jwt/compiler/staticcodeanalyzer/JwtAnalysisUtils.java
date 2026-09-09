@@ -18,6 +18,9 @@
 
 package io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer;
 
+import io.ballerina.compiler.api.SemanticModel;
+import io.ballerina.compiler.api.symbols.ConstantSymbol;
+import io.ballerina.compiler.api.values.ConstantValue;
 import io.ballerina.compiler.syntax.tree.AssignmentStatementNode;
 import io.ballerina.compiler.syntax.tree.BasicLiteralNode;
 import io.ballerina.compiler.syntax.tree.BlockStatementNode;
@@ -312,6 +315,38 @@ public final class JwtAnalysisUtils {
             return Optional.of(false);
         }
         return Optional.empty();
+    }
+
+    /**
+     * Get the value of a string-valued expression, written either as a literal or as a reference to a constant.
+     * <p>
+     * A constant is resolved through the semantic model, so the expression matches on the value it carries rather
+     * than on how it was spelled: {@code jwt:NONE}, the same constant reached through an import alias, and the
+     * literal {@code "none"} are one value. A variable holding a value cannot be resolved without data-flow
+     * analysis and yields an empty result.
+     *
+     * @param expression    the expression to read
+     * @param semanticModel the semantic model of the module being analyzed
+     * @return the value if the expression is a string literal or a constant of string value, empty otherwise
+     */
+    public static Optional<String> getStringValue(ExpressionNode expression, SemanticModel semanticModel) {
+        if (expression.kind() == SyntaxKind.STRING_LITERAL) {
+            String literal = expression.toSourceCode().trim();
+            return Optional.of(literal.substring(1, literal.length() - 1));
+        }
+        return semanticModel.symbol(expression)
+                .filter(ConstantSymbol.class::isInstance)
+                .map(symbol -> ((ConstantSymbol) symbol).constValue())
+                .map(JwtAnalysisUtils::unwrapConstantValue)
+                .filter(String.class::isInstance)
+                .map(String.class::cast);
+    }
+
+    /**
+     * A constant's value is handed over wrapped in its type, though the interface promises only an {@code Object}.
+     */
+    private static Object unwrapConstantValue(Object constValue) {
+        return constValue instanceof ConstantValue wrapped ? wrapped.value() : constValue;
     }
 
     /**

@@ -18,6 +18,7 @@
 
 package io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.jwtrules;
 
+import io.ballerina.compiler.syntax.tree.SpecificFieldNode;
 import io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.JwtFunctionContext;
 
 import static io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.JwtAnalysisUtils.findField;
@@ -31,20 +32,23 @@ import static io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.JwtRule.AVOID_
  * <p>
  * A token signed with {@code NONE} carries no signature at all, so anyone can assemble one with whatever claims they
  * like and it will be accepted as genuine. That removes authentication entirely rather than weakening it.
+ * <p>
+ * The algorithm is matched on the value it resolves to, so the constant, an alias of it and the literal the constant
+ * stands for are all caught, and a same-named constant from an unrelated module is not.
  *
  * @since 2.15.0
  */
 public class AvoidWeakCipherAlgorithmsRule implements JwtFunctionRule {
 
-    private static final String NONE = "NONE";
+    private static final String NONE = "none";
 
     @Override
     public void analyze(JwtFunctionContext context) {
         boolean usesNoneAlgorithm = context.getNestedConfigRecord(SIGNATURE_CONFIG)
                 .flatMap(signatureConfig -> findField(signatureConfig, ALGORITHM))
-                .flatMap(algorithm -> algorithm.valueExpr())
-                .map(value -> value.toSourceCode().trim())
-                .filter(algorithm -> NONE.equals(algorithm) || algorithm.endsWith(":" + NONE))
+                .flatMap(SpecificFieldNode::valueExpr)
+                .flatMap(context::getStringValue)
+                .filter(NONE::equals)
                 .isPresent();
         if (usesNoneAlgorithm) {
             context.reportIssue(context.getFunctionLocation(), getRuleId());
