@@ -101,6 +101,14 @@ release {
     }
 }
 
-tasks.named('build') {
-    dependsOn('jwt-ballerina:build')
+if (tasks.names.contains('build')) {
+    tasks.named('build') {
+        dependsOn('jwt-ballerina:build')
+
+    }
+} else {
+    tasks.register('build') {
+        dependsOn('jwt-ballerina:build')
+
+    }
 }
