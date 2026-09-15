@@ -72,7 +72,7 @@
     "rule": {
       "id": "ballerina/jwt:3",
       "numericId": 3,
-      "description": "Avoid validating JSON Web Tokens without checking the issuer and the audience",
+      "description": "A JSON Web Token is validated without checking that the issuer and the audience match what the service expects.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
@@ -92,7 +92,7 @@
     "rule": {
       "id": "ballerina/jwt:3",
       "numericId": 3,
-      "description": "Avoid validating JSON Web Tokens without checking the issuer and the audience",
+      "description": "A JSON Web Token is validated without checking that the issuer and the audience match what the service expects.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",

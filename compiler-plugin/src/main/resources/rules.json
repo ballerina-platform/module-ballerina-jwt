@@ -2,36 +2,165 @@
   {
     "id": 1,
     "kind": "VULNERABILITY",
-    "description": "Avoid using weak cipher algorithms when signing and verifying JWTs"
+    "name": "Avoid using weak cipher algorithms when signing and verifying JWTs",
+    "severity": "HIGH",
+    "description": "A JSON Web Token is signed or verified with a weak or unsuitable algorithm.",
+    "fullDescription": "Signing or verifying a JSON Web Token with a weak algorithm, or accepting one that declares `none`, allows an attacker to forge tokens and impersonate any user. Use a strong signature algorithm and reject any token whose declared algorithm is not the one the service expects.",
+    "tags": [
+      "jwt",
+      "crypto"
+    ],
+    "standards": {
+      "cwe": [
+        327,
+        347
+      ],
+      "owasp": [
+        {
+          "year": 2025,
+          "categories": [4]
+        }
+      ]
+    }
   },
   {
     "id": 2,
     "kind": "VULNERABILITY",
-    "description": "Avoid validating JSON Web Tokens without a signature configuration"
+    "name": "Avoid validating JSON Web Tokens without a signature configuration",
+    "severity": "HIGH",
+    "description": "A JSON Web Token is validated without a signature configuration, so its signature is never verified.",
+    "fullDescription": "Validating a JSON Web Token without a signature configuration means the token's signature is never cryptographically verified, so an attacker can submit a forged or tampered token with arbitrary claims and have it accepted as valid. Always provide a signature configuration, such as a certificate, a JWKS endpoint, or a trusted public key, when validating a token.",
+    "tags": [
+      "jwt",
+      "authentication"
+    ],
+    "standards": {
+      "cwe": [
+        347
+      ],
+      "owasp": [
+        {
+          "year": 2025,
+          "categories": [7]
+        }
+      ]
+    }
   },
   {
     "id": 3,
     "kind": "VULNERABILITY",
-    "description": "Avoid validating JSON Web Tokens without checking the issuer and the audience"
+    "name": "Avoid validating JSON Web Tokens without checking the issuer and the audience",
+    "severity": "MEDIUM",
+    "description": "A JSON Web Token is validated without checking that the issuer and the audience match what the service expects.",
+    "fullDescription": "Validating a JSON Web Token without checking its issuer and audience allows a token that was issued by a different issuer, or intended for a different service, to be accepted here. This can let a token obtained from one service be replayed against another. Always validate the issuer and the audience against the values the service expects.",
+    "tags": [
+      "jwt",
+      "authentication"
+    ],
+    "standards": {
+      "cwe": [
+        287
+      ],
+      "owasp": [
+        {
+          "year": 2025,
+          "categories": [7]
+        }
+      ]
+    }
   },
   {
     "id": 4,
     "kind": "VULNERABILITY",
-    "description": "Avoid issuing JSON Web Tokens with a long expiry time"
+    "name": "Avoid issuing JSON Web Tokens with a long expiry time",
+    "severity": "MEDIUM",
+    "description": "A JSON Web Token is issued with an expiry time that is longer than necessary.",
+    "fullDescription": "A JSON Web Token cannot be revoked once issued, so its expiry time is the window during which a leaked or stolen token remains usable. Issuing tokens with a long expiry time widens that window unnecessarily. Keep the expiry time as short as the use case allows, and rely on a refresh mechanism for longer sessions.",
+    "tags": [
+      "jwt",
+      "session-management"
+    ],
+    "standards": {
+      "cwe": [
+        613
+      ],
+      "owasp": [
+        {
+          "year": 2025,
+          "categories": [7]
+        }
+      ]
+    }
   },
   {
     "id": 5,
     "kind": "VULNERABILITY",
-    "description": "Avoid validating JSON Web Tokens with a large clock skew"
+    "name": "Avoid validating JSON Web Tokens with a large clock skew",
+    "severity": "MEDIUM",
+    "description": "A JSON Web Token is validated with a clock skew allowance that is larger than necessary.",
+    "fullDescription": "Clock skew is applied to both ends of the expiry check, so a large clock skew allowance silently extends the effective lifetime of every token that is validated, including tokens that should already have expired. Keep the clock skew allowance small, only large enough to cover genuine clock drift between systems.",
+    "tags": [
+      "jwt",
+      "session-management"
+    ],
+    "standards": {
+      "cwe": [
+        613
+      ],
+      "owasp": [
+        {
+          "year": 2025,
+          "categories": [7]
+        }
+      ]
+    }
   },
   {
     "id": 6,
     "kind": "VULNERABILITY",
-    "description": "Avoid disabling TLS validation on the JWKS endpoint client"
+    "name": "Avoid disabling TLS validation on the JWKS endpoint client",
+    "severity": "HIGH",
+    "description": "TLS certificate validation is disabled on the client used to fetch signing keys from a JWKS endpoint.",
+    "fullDescription": "Disabling TLS certificate validation on the client used to fetch signing keys from a JWKS endpoint allows an attacker in a position to intercept the connection to serve their own signing keys, defeating signature verification entirely and allowing forged tokens to be accepted. Keep certificate validation enabled on the JWKS endpoint client.",
+    "tags": [
+      "jwt",
+      "tls"
+    ],
+    "standards": {
+      "cwe": [
+        295,
+        296
+      ],
+      "owasp": [
+        {
+          "year": 2025,
+          "categories": [4]
+        }
+      ]
+    }
   },
   {
     "id": 7,
     "kind": "VULNERABILITY",
-    "description": "Avoid decoding JSON Web Tokens without verifying them"
+    "name": "Avoid decoding JSON Web Tokens without verifying them",
+    "severity": "LOW",
+    "description": "A JSON Web Token is decoded without verifying its signature, issuer, audience, or expiry.",
+    "fullDescription": "Decoding a JSON Web Token without verifying it reads its header and payload without checking the signature, issuer, audience, or expiry, so any decision made from the decoded content is a decision made on attacker-supplied data. Reading a token's header to select a verification key, for example by its `kid`, before validating is legitimate, but the decoded payload should not be trusted until the token has been validated.",
+    "tags": [
+      "jwt",
+      "authentication"
+    ],
+    "standards": {
+      "cwe": [
+        347,
+        345
+      ],
+      "owasp": [
+        {
+          "year": 2025,
+          "categories": [7]
+        }
+      ]
+    }
   }
 ]

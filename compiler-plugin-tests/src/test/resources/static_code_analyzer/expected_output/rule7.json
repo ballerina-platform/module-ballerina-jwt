@@ -52,7 +52,7 @@
     "rule": {
       "id": "ballerina/jwt:7",
       "numericId": 7,
-      "description": "Avoid decoding JSON Web Tokens without verifying them",
+      "description": "A JSON Web Token is decoded without verifying its signature, issuer, audience, or expiry.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",

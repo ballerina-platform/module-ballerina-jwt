@@ -112,7 +112,7 @@
     "rule": {
       "id": "ballerina/jwt:2",
       "numericId": 2,
-      "description": "Avoid validating JSON Web Tokens without a signature configuration",
+      "description": "A JSON Web Token is validated without a signature configuration, so its signature is never verified.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
@@ -132,7 +132,7 @@
     "rule": {
       "id": "ballerina/jwt:2",
       "numericId": 2,
-      "description": "Avoid validating JSON Web Tokens without a signature configuration",
+      "description": "A JSON Web Token is validated without a signature configuration, so its signature is never verified.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
@@ -152,7 +152,7 @@
     "rule": {
       "id": "ballerina/jwt:2",
       "numericId": 2,
-      "description": "Avoid validating JSON Web Tokens without a signature configuration",
+      "description": "A JSON Web Token is validated without a signature configuration, so its signature is never verified.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",

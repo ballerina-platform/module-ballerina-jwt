@@ -112,7 +112,7 @@
     "rule": {
       "id": "ballerina/jwt:6",
       "numericId": 6,
-      "description": "Avoid disabling TLS validation on the JWKS endpoint client",
+      "description": "TLS certificate validation is disabled on the client used to fetch signing keys from a JWKS endpoint.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
@@ -132,7 +132,7 @@
     "rule": {
       "id": "ballerina/jwt:6",
       "numericId": 6,
-      "description": "Avoid disabling TLS validation on the JWKS endpoint client",
+      "description": "TLS certificate validation is disabled on the client used to fetch signing keys from a JWKS endpoint.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
@@ -152,7 +152,7 @@
     "rule": {
       "id": "ballerina/jwt:6",
       "numericId": 6,
-      "description": "Avoid disabling TLS validation on the JWKS endpoint client",
+      "description": "TLS certificate validation is disabled on the client used to fetch signing keys from a JWKS endpoint.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
