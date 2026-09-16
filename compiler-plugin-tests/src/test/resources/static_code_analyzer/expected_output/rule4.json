@@ -132,7 +132,7 @@
     "rule": {
       "id": "ballerina/jwt:4",
       "numericId": 4,
-      "description": "Avoid issuing JSON Web Tokens with a long expiry time",
+      "description": "A JSON Web Token is issued with an expiry time that is longer than necessary.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
@@ -152,7 +152,7 @@
     "rule": {
       "id": "ballerina/jwt:4",
       "numericId": 4,
-      "description": "Avoid issuing JSON Web Tokens with a long expiry time",
+      "description": "A JSON Web Token is issued with an expiry time that is longer than necessary.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
@@ -172,7 +172,7 @@
     "rule": {
       "id": "ballerina/jwt:4",
       "numericId": 4,
-      "description": "Avoid issuing JSON Web Tokens with a long expiry time",
+      "description": "A JSON Web Token is issued with an expiry time that is longer than necessary.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
@@ -192,7 +192,7 @@
     "rule": {
       "id": "ballerina/jwt:4",
       "numericId": 4,
-      "description": "Avoid issuing JSON Web Tokens with a long expiry time",
+      "description": "A JSON Web Token is issued with an expiry time that is longer than necessary.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
@@ -212,7 +212,7 @@
     "rule": {
       "id": "ballerina/jwt:4",
       "numericId": 4,
-      "description": "Avoid issuing JSON Web Tokens with a long expiry time",
+      "description": "A JSON Web Token is issued with an expiry time that is longer than necessary.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",

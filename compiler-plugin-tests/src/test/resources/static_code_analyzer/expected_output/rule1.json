@@ -292,7 +292,7 @@
     "rule": {
       "id": "ballerina/jwt:1",
       "numericId": 1,
-      "description": "Avoid using weak cipher algorithms when signing and verifying JWTs",
+      "description": "A JSON Web Token is signed or verified with a weak or unsuitable algorithm.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
@@ -312,7 +312,7 @@
     "rule": {
       "id": "ballerina/jwt:1",
       "numericId": 1,
-      "description": "Avoid using weak cipher algorithms when signing and verifying JWTs",
+      "description": "A JSON Web Token is signed or verified with a weak or unsuitable algorithm.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
@@ -332,7 +332,7 @@
     "rule": {
       "id": "ballerina/jwt:1",
       "numericId": 1,
-      "description": "Avoid using weak cipher algorithms when signing and verifying JWTs",
+      "description": "A JSON Web Token is signed or verified with a weak or unsuitable algorithm.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
@@ -352,7 +352,7 @@
     "rule": {
       "id": "ballerina/jwt:1",
       "numericId": 1,
-      "description": "Avoid using weak cipher algorithms when signing and verifying JWTs",
+      "description": "A JSON Web Token is signed or verified with a weak or unsuitable algorithm.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
@@ -372,7 +372,7 @@
     "rule": {
       "id": "ballerina/jwt:1",
       "numericId": 1,
-      "description": "Avoid using weak cipher algorithms when signing and verifying JWTs",
+      "description": "A JSON Web Token is signed or verified with a weak or unsuitable algorithm.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
@@ -392,7 +392,7 @@
     "rule": {
       "id": "ballerina/jwt:1",
       "numericId": 1,
-      "description": "Avoid using weak cipher algorithms when signing and verifying JWTs",
+      "description": "A JSON Web Token is signed or verified with a weak or unsuitable algorithm.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
@@ -412,7 +412,7 @@
     "rule": {
       "id": "ballerina/jwt:1",
       "numericId": 1,
-      "description": "Avoid using weak cipher algorithms when signing and verifying JWTs",
+      "description": "A JSON Web Token is signed or verified with a weak or unsuitable algorithm.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
@@ -432,7 +432,7 @@
     "rule": {
       "id": "ballerina/jwt:1",
       "numericId": 1,
-      "description": "Avoid using weak cipher algorithms when signing and verifying JWTs",
+      "description": "A JSON Web Token is signed or verified with a weak or unsuitable algorithm.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
@@ -452,7 +452,7 @@
     "rule": {
       "id": "ballerina/jwt:1",
       "numericId": 1,
-      "description": "Avoid using weak cipher algorithms when signing and verifying JWTs",
+      "description": "A JSON Web Token is signed or verified with a weak or unsuitable algorithm.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
@@ -472,7 +472,7 @@
     "rule": {
       "id": "ballerina/jwt:1",
       "numericId": 1,
-      "description": "Avoid using weak cipher algorithms when signing and verifying JWTs",
+      "description": "A JSON Web Token is signed or verified with a weak or unsuitable algorithm.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
@@ -492,7 +492,7 @@
     "rule": {
       "id": "ballerina/jwt:1",
       "numericId": 1,
-      "description": "Avoid using weak cipher algorithms when signing and verifying JWTs",
+      "description": "A JSON Web Token is signed or verified with a weak or unsuitable algorithm.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
@@ -512,7 +512,7 @@
     "rule": {
       "id": "ballerina/jwt:1",
       "numericId": 1,
-      "description": "Avoid using weak cipher algorithms when signing and verifying JWTs",
+      "description": "A JSON Web Token is signed or verified with a weak or unsuitable algorithm.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
@@ -532,7 +532,7 @@
     "rule": {
       "id": "ballerina/jwt:1",
       "numericId": 1,
-      "description": "Avoid using weak cipher algorithms when signing and verifying JWTs",
+      "description": "A JSON Web Token is signed or verified with a weak or unsuitable algorithm.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
@@ -552,7 +552,7 @@
     "rule": {
       "id": "ballerina/jwt:1",
       "numericId": 1,
-      "description": "Avoid using weak cipher algorithms when signing and verifying JWTs",
+      "description": "A JSON Web Token is signed or verified with a weak or unsuitable algorithm.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
