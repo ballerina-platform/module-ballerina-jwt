@@ -24,8 +24,20 @@ import static io.ballerina.scan.RuleKind.VULNERABILITY;
 import static io.ballerina.stdlib.jwt.compiler.staticcodeanalyzer.RuleFactory.createRule;
 
 public enum JwtRule {
-    AVOID_WEAK_CIPHER_ALGORITHMS(createRule(1, "Avoid using weak cipher algorithms when signing and " +
-            "verifying JWTs", VULNERABILITY));
+    AVOID_WEAK_CIPHER_ALGORITHMS(createRule(1, "A JSON Web Token is signed or verified with a weak or " +
+            "unsuitable algorithm.", VULNERABILITY)),
+    ENSURE_SIGNATURE_VERIFICATION(createRule(2, "A JSON Web Token is validated without a signature " +
+            "configuration, so its signature is never verified.", VULNERABILITY)),
+    ENSURE_ISSUER_AND_AUDIENCE_VALIDATION(createRule(3, "A JSON Web Token is validated without checking that " +
+            "the issuer and the audience match what the service expects.", VULNERABILITY)),
+    AVOID_LONG_TOKEN_EXPIRY(createRule(4, "A JSON Web Token is issued with an expiry time that is longer than " +
+            "necessary.", VULNERABILITY)),
+    AVOID_LARGE_CLOCK_SKEW(createRule(5, "A JSON Web Token is validated with a clock skew allowance that is " +
+            "larger than necessary.", VULNERABILITY)),
+    AVOID_DISABLED_JWKS_TLS(createRule(6, "TLS certificate validation is disabled on the client used to fetch " +
+            "signing keys from a JWKS endpoint.", VULNERABILITY)),
+    AVOID_UNVERIFIED_TOKEN_DECODING(createRule(7, "A JSON Web Token is decoded without verifying its signature, " +
+            "issuer, audience, or expiry.", VULNERABILITY));
 
     private final Rule rule;
 

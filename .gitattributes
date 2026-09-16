@@ -1,2 +1,5 @@
 # Ensure all Java files use LF.
 *.java eol=lf
+
+# Ensure the static analyzer fixtures use LF: the expected output records byte offsets into them.
+*.bal eol=lf
