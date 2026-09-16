@@ -31,9 +31,11 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.SecureRandom;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.UUID;
 
@@ -90,7 +92,8 @@ public class JwksClient {
         return URI.create(url);
     }
 
-    private static SSLContext getSslContext(BMap<BString, ?> secureSocket) throws Exception {
+    private static SSLContext getSslContext(BMap<BString, ?> secureSocket)
+            throws GeneralSecurityException, IOException {
         boolean disable = secureSocket.getBooleanValue(JwtConstants.DISABLE);
         if (disable) {
             return initSslContext();
@@ -98,7 +101,8 @@ public class JwksClient {
         BMap<BString, BString> key = (BMap<BString, BString>) getBMapValueIfPresent(secureSocket, JwtConstants.KEY);
         Object cert = secureSocket.get(JwtConstants.CERT);
         if (cert == null) {
-            throw new Exception("Need to configure 'crypto:TrustStore' or 'cert' with client SSL certificates file.");
+            throw new CertificateException(
+                    "Need to configure 'crypto:TrustStore' or 'cert' with client SSL certificates file.");
         }
         KeyManagerFactory kmf;
         TrustManagerFactory tmf;
@@ -147,7 +151,7 @@ public class JwksClient {
         return HttpClient.Version.HTTP_1_1;
     }
 
-    private static SSLContext initSslContext() throws Exception {
+    private static SSLContext initSslContext() throws GeneralSecurityException {
         TrustManager[] trustManagers = new TrustManager[]{
                 new X509TrustManager() {
                     public X509Certificate[] getAcceptedIssuers() {
@@ -164,7 +168,8 @@ public class JwksClient {
         return buildSslContext(null, trustManagers);
     }
 
-    private static TrustManagerFactory getTrustManagerFactory(BString cert) throws Exception {
+    private static TrustManagerFactory getTrustManagerFactory(BString cert)
+            throws GeneralSecurityException, IOException {
         Object publicKeyMap = Decode.decodeRsaPublicKeyFromCertFile(cert);
         if (publicKeyMap instanceof BMap) {
             X509Certificate x509Certificate = (X509Certificate) ((BMap<BString, Object>) publicKeyMap).getNativeData(
@@ -176,12 +181,13 @@ public class JwksClient {
             tmf.init(ts);
             return tmf;
         } else {
-            throw new Exception("Failed to get the public key from Crypto API. " +
+            throw new CertificateException("Failed to get the public key from Crypto API. " +
                                         ((BError) publicKeyMap).getErrorMessage().getValue());
         }
     }
 
-    private static TrustManagerFactory getTrustManagerFactory(BMap<BString, BString> trustStore) throws Exception {
+    private static TrustManagerFactory getTrustManagerFactory(BMap<BString, BString> trustStore)
+            throws GeneralSecurityException, IOException {
         BString trustStorePath = trustStore.getStringValue(JwtConstants.PATH);
         BString trustStorePassword = trustStore.getStringValue(JwtConstants.PASSWORD);
         KeyStore ts = getKeyStore(trustStorePath, trustStorePassword);
@@ -190,7 +196,8 @@ public class JwksClient {
         return tmf;
     }
 
-    private static KeyManagerFactory getKeyManagerFactory(BMap<BString, BString> keyStore) throws Exception {
+    private static KeyManagerFactory getKeyManagerFactory(BMap<BString, BString> keyStore)
+            throws GeneralSecurityException, IOException {
         BString keyStorePath = keyStore.getStringValue(JwtConstants.PATH);
         BString keyStorePassword = keyStore.getStringValue(JwtConstants.PASSWORD);
         KeyStore ks = getKeyStore(keyStorePath, keyStorePassword);
@@ -200,7 +207,7 @@ public class JwksClient {
     }
 
     private static KeyManagerFactory getKeyManagerFactory(BString certFile, BString keyFile, BString keyPassword)
-            throws Exception {
+            throws GeneralSecurityException, IOException {
         Object publicKey = Decode.decodeRsaPublicKeyFromCertFile(certFile);
         if (publicKey instanceof BMap) {
             X509Certificate publicCert = (X509Certificate) ((BMap<BString, Object>) publicKey).getNativeData(
@@ -217,16 +224,17 @@ public class JwksClient {
                 kmf.init(ks, "".toCharArray());
                 return kmf;
             } else {
-                throw new Exception("Failed to get the private key from Crypto API. " +
+                throw new CertificateException("Failed to get the private key from Crypto API. " +
                                             ((BError) privateKeyMap).getErrorMessage().getValue());
             }
         } else {
-            throw new Exception("Failed to get the public key from Crypto API. " +
+            throw new CertificateException("Failed to get the public key from Crypto API. " +
                                         ((BError) publicKey).getErrorMessage().getValue());
         }
     }
 
-    private static KeyStore getKeyStore(BString path, BString password) throws Exception {
+    private static KeyStore getKeyStore(BString path, BString password)
+            throws GeneralSecurityException, IOException {
         try (FileInputStream is = new FileInputStream(path.getValue())) {
             char[] passphrase = password.getValue().toCharArray();
             KeyStore ks = KeyStore.getInstance(JwtConstants.PKCS12);
@@ -235,7 +243,8 @@ public class JwksClient {
         }
     }
 
-    private static SSLContext buildSslContext(KeyManager[] keyManagers, TrustManager[] trustManagers) throws Exception {
+    private static SSLContext buildSslContext(KeyManager[] keyManagers, TrustManager[] trustManagers)
+            throws GeneralSecurityException {
         SSLContext sslContext = SSLContext.getInstance(JwtConstants.TLS);
         sslContext.init(keyManagers, trustManagers, new SecureRandom());
         return sslContext;

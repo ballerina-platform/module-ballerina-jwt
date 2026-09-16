@@ -1,5 +1,4 @@
-Ballerina JWT Library
-===================
+# Ballerina JWT Library
 
   [![Build](https://github.com/ballerina-platform/module-ballerina-jwt/actions/workflows/build-timestamped-master.yml/badge.svg)](https://github.com/ballerina-platform/module-ballerina-jwt/actions/workflows/build-timestamped-master.yml)
   [![codecov](https://codecov.io/gh/ballerina-platform/module-ballerina-jwt/branch/master/graph/badge.svg)](https://codecov.io/gh/ballerina-platform/module-ballerina-jwt)
@@ -8,11 +7,9 @@ Ballerina JWT Library
   [![GitHub Last Commit](https://img.shields.io/github/last-commit/ballerina-platform/module-ballerina-jwt.svg?label=Last%20Commit)](https://github.com/ballerina-platform/module-ballerina-jwt/commits/master)
   [![GitHub issues](https://img.shields.io/github/issues/ballerina-platform/ballerina-standard-library/module/jwt.svg?label=Open%20Issues)](https://github.com/ballerina-platform/ballerina-standard-library/labels/module%2Fjwt)
 
-This library provides a framework for authentication/authorization with JWTs and generation/validation of JWTs as specified in the [RFC 7519](https://datatracker.ietf.org/doc/html/rfc7519), [RFC 7515](https://datatracker.ietf.org/doc/html/rfc7515), and [RFC 7517](https://datatracker.ietf.org/doc/html/rfc7517).
+## Overview
 
-JSON Web Token (JWT) is a compact, URL-safe means of representing claims to be transferred between two parties. The claims in a JWT are encoded as a JSON object that is used as the payload of a JSON Web Signature (JWS) structure or as the plaintext of a JSON Web Encryption (JWE) structure enabling the claims to be signed digitally or protecting the integrity with a Message Authentication Code(MAC) and/or encrypted.
-
-The Ballerina `jwt` library facilitates auth providers that are to be used by the clients and listeners of different protocol connectors. Also, it provides the APIs for issuing a self-signed JWT and validating a JWT.
+This module provides a framework for authentication and authorization with JWTs, including generating and validating JWTs as specified in [RFC 7519](https://datatracker.ietf.org/doc/html/rfc7519), [RFC 7515](https://datatracker.ietf.org/doc/html/rfc7515), and [RFC 7517](https://datatracker.ietf.org/doc/html/rfc7517), and defines auth providers for clients and listeners of different protocol connectors.
 
 ### Listener JWT Auth provider
 
@@ -133,7 +130,7 @@ Execute the commands below to build from the source.
 
 ## Contribute to Ballerina
 
-As an open source project, Ballerina welcomes contributions from the community.
+As an open-source project, Ballerina welcomes contributions from the community.
 
 For more information, go to the [contribution guidelines](https://github.com/ballerina-platform/ballerina-lang/blob/master/CONTRIBUTING.md).
 
