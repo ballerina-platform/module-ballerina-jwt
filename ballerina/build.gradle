@@ -17,6 +17,13 @@
  */
 
 import org.apache.tools.ant.taskdefs.condition.Os
+import org.gradle.process.ExecOperations
+
+import javax.inject.Inject
+
+abstract class BallerinaExecHelper {
+    @Inject abstract ExecOperations getExecOperations()
+}
 
 plugins {
     id 'io.ballerina.plugin'
@@ -63,8 +70,9 @@ tasks.register('updateTomlFiles') {
 }
 
 tasks.register('commitTomlFiles') {
+    def execHelper = project.objects.newInstance(BallerinaExecHelper)
     doLast {
-        project.exec {
+        execHelper.execOperations.exec {
             ignoreExitValue true
             if (Os.isFamily(Os.FAMILY_WINDOWS)) {
                 commandLine 'cmd', '/c', "git commit -m \"[Automated] Update the native jar versions\" Ballerina.toml Dependencies.toml CompilerPlugin.toml"
@@ -94,18 +102,19 @@ publishing {
 }
 
 tasks.register('startBallerinaSTS') {
+    def execHelper = project.objects.newInstance(BallerinaExecHelper)
     doLast {
         // This check is added to prevent starting the server in Windows OS, since the Docker image does not support
         // for Windows OS.
         if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
             def stdOut = new ByteArrayOutputStream()
-            exec {
+            execHelper.execOperations.exec {
                 commandLine 'sh', '-c', "docker ps --filter name=ballerina-sts"
                 standardOutput = stdOut
             }
             if (!stdOut.toString().contains("ballerina-sts")) {
                 println "Starting Ballerina STS."
-                exec {
+                execHelper.execOperations.exec {
                     commandLine 'sh', '-c', "docker run --rm -d -p 9445:9445 -p 9444:9444 --name ballerina-sts ldclakmal/ballerina-sts:latest"
                     standardOutput = stdOut
                 }
@@ -121,18 +130,19 @@ tasks.register('startBallerinaSTS') {
 startBallerinaSTS.onlyIf { !project.gradle.startParameter.excludedTaskNames.contains('test') }
 
 tasks.register('stopBallerinaSTS') {
+    def execHelper = project.objects.newInstance(BallerinaExecHelper)
     doLast {
         // This check is added to prevent trying to stop the server in Windows OS, since the Docker image not started
         // in Windows OS.
         if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
             def stdOut = new ByteArrayOutputStream()
-            exec {
+            execHelper.execOperations.exec {
                 commandLine 'sh', '-c', "docker ps --filter name=ballerina-sts"
                 standardOutput = stdOut
             }
             if (stdOut.toString().contains("ballerina-sts")) {
                 println "Stopping Ballerina STS."
-                exec {
+                execHelper.execOperations.exec {
                     commandLine 'sh', '-c', "docker stop ballerina-sts"
                     standardOutput = stdOut
                 }

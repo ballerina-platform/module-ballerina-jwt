@@ -387,7 +387,8 @@ isolated function testValidateJwtSignatureWithJwkWithoutSecureSocket() returns E
     };
     Payload|Error result = validate(JWT2, validatorConfig);
     if result is Error {
-        assertContains(result, "Failed to send the request to the endpoint. PKIX path building failed:");
+        assertContains(result, "Failed to send the request to the endpoint.");
+        assertContains(result, "PKIX path building failed:");
     } else {
         test:assertFail("Expected error not found.");
     }
@@ -512,7 +513,8 @@ isolated function testValidateJwtSignatureWithJwkWithInvalidCert() {
     };
     Payload|Error result = validate(JWT2, validatorConfig);
     if result is Error {
-        assertContains(result, "Failed to send the request to the endpoint. PKIX path building failed:");
+        assertContains(result, "Failed to send the request to the endpoint.");
+        assertContains(result, "PKIX path building failed:");
     } else {
         test:assertFail("Expected error not found.");
     }

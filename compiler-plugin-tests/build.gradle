@@ -42,7 +42,6 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
-sourceCompatibility = JavaVersion.VERSION_21
 
 test {
     systemProperty "ballerina.offline.flag", "true"
@@ -70,12 +69,13 @@ spotbugsTest {
     ignoreFailures = true
     effort = SpotBugsEffort.MAX
     reportLevel = SpotBugsConfidence.LOW
-    reportsDir = file("$project.buildDir/reports/spotbugs")
+    reportsDir = layout.buildDirectory.dir("reports/spotbugs")
     def excludeFile = file("${rootDir}/build-config/spotbugs-exclude.xml")
     if (excludeFile.exists()) {
         it.excludeFilter = excludeFile
     }
     reports {
+        html.enabled true
         text.enabled = true
     }
 }
