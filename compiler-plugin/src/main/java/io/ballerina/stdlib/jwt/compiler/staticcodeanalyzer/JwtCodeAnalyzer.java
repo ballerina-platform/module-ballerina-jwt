@@ -33,7 +33,7 @@ public class JwtCodeAnalyzer extends CodeAnalyzer {
     @Override
     public void init(CodeAnalysisContext codeAnalysisContext) {
         codeAnalysisContext.addSyntaxNodeAnalysisTask(
-                new JwtCipherAlgorithmAnalyzer(reporter),
+                new JwtFunctionCallAnalyzer(reporter),
                 SyntaxKind.FUNCTION_CALL
         );
     }
