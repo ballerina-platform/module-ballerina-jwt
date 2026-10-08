@@ -5,9 +5,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [2.15.2] - 2026-10-08
+
+### Added
+
+- Add six static code analysis rules for `jwt`, covering weak or unsuitable algorithms, validation without a signature configuration, validation without issuer and audience checks, long expiry times, large clock skew allowances, and disabled TLS certificate validation for JWKS endpoints
+
 ### Changed
 
-[[#9132] Updated Keywords and Reformat README for Connector Store Discoverability](https://github.com/ballerina-platform/ballerina-library/issues/9132)
+- [[#9132] Updated Keywords and Reformat README for Connector Store Discoverability](https://github.com/ballerina-platform/ballerina-library/issues/9132)
+- Narrow the exceptions thrown by the SSL context, key store and trust store handling of the JWKS client to `GeneralSecurityException` and `IOException`
+- Upgrade Gradle to 9.5.1 and the Ballerina Gradle plugin to 4.0.0
 
 ## [2.15.1] - 2025-10-03
 
