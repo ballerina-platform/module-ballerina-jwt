@@ -1,0 +1,7 @@
+# False positive: ballerina:14 matches variables/fields named keyPassword and secret that hold values read from the caller's public-API configuration
+# records (JWT issuer/validator signature config); no secret is hardcoded.
+# TODO: replace this rule exclusion with a targeted scan suppression (with a reason) once `bal scan` supports it
+# (planned for v0.13.0), and fix the false positives on the scan tool side: a secret-named identifier should only be
+# reported when it is assigned a fixed value.
+[rule]
+exclude = ["ballerina:14"]
