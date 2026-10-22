@@ -1,0 +1,4 @@
+# False positive: ballerina:14 matches variables/fields named keyPassword and secret that hold values read from the caller's public-API configuration
+# records (JWT issuer/validator signature config); no secret is hardcoded.
+[rule]
+exclude = ["ballerina:14"]

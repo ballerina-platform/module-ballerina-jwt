@@ -1,0 +1,3 @@
+# False positive: ballerina:13 matches the 'authors' field of the sample book catalog data (e.g. "authors": "Prabath Siriwardena"); these are book authors, not credentials.
+[rule]
+exclude = ["ballerina:13"]

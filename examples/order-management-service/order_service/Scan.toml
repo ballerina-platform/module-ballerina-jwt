@@ -1,0 +1,3 @@
+# False positive: ballerina:14 matches the 'auth' field name of http:ResourceConfig; the JWT validator config is referenced, no secret is hardcoded.
+[rule]
+exclude = ["ballerina:14"]
